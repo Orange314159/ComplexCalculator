@@ -24,7 +24,7 @@ public class Main {
         String input = scanner.nextLine();
         scanner.close();
         Equation e1 = new Equation(input);
-
+        System.out.println(e1.tree.get(e1.length));
         System.out.println(e1.evaluateEquation(new ComplexNumber(0,0), e1.length) + " @x=" + new ComplexNumber(0,0));
         System.out.println(e1.evaluateEquation(new ComplexNumber(1,0), e1.length) + " @x=" + new ComplexNumber(1,0));
         System.out.println(e1.evaluateEquation(new ComplexNumber(0,1), e1.length) + " @x=" + new ComplexNumber(0,1));

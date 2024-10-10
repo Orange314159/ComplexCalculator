@@ -64,11 +64,11 @@ public class Equation {
         int skip = 0;
         for (int i = 0; i < input.length(); i++) {
             if (input.charAt(i) == '('){
-                partialEqP.append("{");
+                partialEqP.append("~");
 //                System.out.println(input.substring(i+1,findCloseParenthesis(i)));
                 partialEqP.append(createTreeParenthesis(input.substring(i+1,findCloseParenthesis(i))));
                 skip = findCloseParenthesis(i)-i;
-                partialEqP.append("}");
+                partialEqP.append("~");
             } else {
                 if (skip > 0){
                     skip--;
@@ -98,12 +98,13 @@ public class Equation {
                 }
                 // I turn these two "raw" values to new nodes or recognize that they are already nodes
 
+//                System.out.println(leftRaw + "___" + rightRaw);
                 addNodes(leftRaw.toString(), rightRaw.toString(), "^");
 
                 partialEqE = new StringBuilder(partialEqE.substring(0, i - leftRaw.length()));
                 skip = rightRaw.length();
                 foundOne = true;
-                partialEqE.append("{").append(tree.size() - 1).append("}"); // the last node is the one that we just made, so we can assign the node at this location to be that head node
+                partialEqE.append("~").append(tree.size() - 1).append("~"); // the last node is the one that we just made, so we can assign the node at this location to be that head node
             }
             else{
                 if (skip <1) {
@@ -144,7 +145,7 @@ public class Equation {
                 partialEqMD = new StringBuilder(partialEqMD.substring(0, i - leftRaw.length()));
                 skip = rightRaw.length();
                 found = true;
-                partialEqMD.append("{").append(tree.size() - 1).append("}"); // the last node is the one that we just made, so we can assign the node at this location to be that head node
+                partialEqMD.append("~").append(tree.size() - 1).append("~"); // the last node is the one that we just made, so we can assign the node at this location to be that head node
             } else if (input.charAt(i) == '/' && !found) {
                 // go left till reach operator
                 StringBuilder leftRaw = new StringBuilder();
@@ -163,7 +164,7 @@ public class Equation {
                 partialEqMD = new StringBuilder(partialEqMD.substring(0, i - leftRaw.length()));
                 skip = rightRaw.length();
                 found = true;
-                partialEqMD.append("{").append(tree.size() - 1).append("}"); // the last node is the one that we just made, so we can assign the node at this location to be that head node
+                partialEqMD.append("~").append(tree.size() - 1).append("~"); // the last node is the one that we just made, so we can assign the node at this location to be that head node
             } else{
                 if (skip < 1){
                     partialEqMD.append(input.charAt(i));
@@ -206,7 +207,7 @@ public class Equation {
                 partialEqSA = new StringBuilder(partialEqSA.substring(0, i - leftRaw.length()));
                 skip = rightRaw.length();
                 found = true;
-                partialEqSA.append("{").append(tree.size() - 1).append("}"); // the last node is the one that we just made, so we can assign the node at this location to be that head node
+                partialEqSA.append("~").append(tree.size() - 1).append("~"); // the last node is the one that we just made, so we can assign the node at this location to be that head node
             } else if (input.charAt(i) == '-' && !found) {
                 // go left till reach operator
                 StringBuilder leftRaw = new StringBuilder();
@@ -225,7 +226,7 @@ public class Equation {
                 partialEqSA = new StringBuilder(partialEqSA.substring(0, i - leftRaw.length()));
                 skip = rightRaw.length();
                 found = true;
-                partialEqSA.append("{").append(tree.size() - 1).append("}"); // the last node is the one that we just made, so we can assign the node at this location to be that head node
+                partialEqSA.append("~").append(tree.size() - 1).append("~"); // the last node is the one that we just made, so we can assign the node at this location to be that head node
             } else {
                 if (skip < 1){
                     partialEqSA.append(input.charAt(i));
@@ -239,20 +240,23 @@ public class Equation {
         if (found){
             return createTreeAddSub(partialEqSA.toString());
         } else {
+            if(!partialEqSA.toString().contains("~")){
+                tree.add(new Node("", new ComplexNumber(partialEqSA.toString())));
+            }
             return tree.size()-1;
         }
     }
 
     public void addNodes(String leftStr, String rightStr, String operation){
 
-        if (leftStr.contains("{") && rightStr.contains("{")){ // both nodes have already been created
+        if (leftStr.contains("~") && rightStr.contains("~")){ // both nodes have already been created
             tree.add(new Node(operation, new ComplexNumber(), tree.get(Integer.parseInt(leftStr.substring(1,leftStr.length()-1))), tree.get(Integer.parseInt(rightStr.substring(1,rightStr.length()-1))) ));
 
-        } else if (leftStr.contains("{")){ // left node exists
+        } else if (leftStr.contains("~")){ // left node exists
 
             tree.add(new Node("", new ComplexNumber(rightStr)));
             tree.add(new Node(operation, new ComplexNumber(), tree.get(Integer.parseInt(leftStr.substring(1,leftStr.length()-1))), tree.get(tree.size()-1)));
-        } else if (rightStr.contains("{")){ // right node exists
+        } else if (rightStr.contains("~")){ // right node exists
             tree.add(new Node("", new ComplexNumber(leftStr)));
             tree.add(new Node(operation, new ComplexNumber(), tree.get(tree.size()-1), tree.get(Integer.parseInt(rightStr.substring(1,rightStr.length()-1)))));
         } else { // neither node exists
@@ -276,6 +280,12 @@ public class Equation {
         if (startNode == -1){
             System.out.println("ERROR: Tree Has Not Been Created Properly Yet or There is a Problem With The Start Node");
             return new ComplexNumber();
+        }
+        if(startNode == 0){ // there is only one node (this would look like 2.4 or x or 10
+            if(tree.get(0).data.isX){
+                return myX;
+            }
+            return tree.get(0).data;
         }
         String nodeOperator = tree.get(startNode).operator;
         ComplexNumber nodeData = tree.get(startNode).data;
