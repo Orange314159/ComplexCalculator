@@ -112,7 +112,7 @@ public class ComplexNumber {
             c.a = xValue.a;
             c.b = xValue.b;
         }
-        System.out.println(this + "_^_" + c);
+//        System.out.println(this + "_^_" + c);
         if(this.a == 0 && this.b == 0){
             return new ComplexNumber(0,0);
         }

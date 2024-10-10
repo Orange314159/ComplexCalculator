@@ -29,8 +29,10 @@ public class Main {
         System.out.println(e1.evaluateEquation(new ComplexNumber(1,0), e1.length) + " @x=" + new ComplexNumber(1,0));
         System.out.println(e1.evaluateEquation(new ComplexNumber(0,1), e1.length) + " @x=" + new ComplexNumber(0,1));
 
-
-
+//        SweepXValues sweepXValues = new SweepXValues(0,10,0,10,9,e1);
+//        sweepXValues.calculateYValues();
+//        System.out.println(sweepXValues.xValues);
+//        System.out.println(sweepXValues.yValues);
     }
 
 }
