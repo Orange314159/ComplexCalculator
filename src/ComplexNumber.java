@@ -112,6 +112,9 @@ public class ComplexNumber {
             c.a = xValue.a;
             c.b = xValue.b;
         }
+        if(this.a == 0 && this.b == 0){
+            return new ComplexNumber(0,0);
+        }
         // this one is also complicated, im not going to explain it...
         // this method is saying this^c
         // I am aware that there are an infinite number of solutions but im just doing this one for now (10/08/24)
