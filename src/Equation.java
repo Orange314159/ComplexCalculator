@@ -119,11 +119,55 @@ public class Equation {
 
                     skip = findCloseBrace(findCloseBrace(i+5, input)+1, input)+1 - i-1;
                 } else if (input.startsWith("log_", i+1)){
-                    // this is a log
-                    System.out.println("log");
-                } else if (input.startsWith("log", i+1) || input.startsWith("ln", i+1)){
+//                    System.out.println("fraction");
+                    if (input.charAt(i+5) == '{'){
+                        int leftTree = createTreeSpecialFunctions(input.substring(i+5,findCloseBrace(i+5, input)+1));
+                        int rightTree = 0;
+                        if (input.charAt(findCloseBrace(i+5, input)+1) == '{'){
+//                            System.out.println(input.substring(findCloseBrace(i+5, input)+1, findCloseBrace(findCloseBrace(i+5, input)+1, input)+1));
+                            rightTree = createTreeSpecialFunctions(input.substring(findCloseBrace(i+5, input)+1, findCloseBrace(findCloseBrace(i+5, input)+1, input)+1));
+                        } else {
+                            System.out.println("ERROR: Missing Second End Brace in a Fraction");
+                        }
+//                        System.out.println(rightTree + "____" + tree.get(rightTree));
+//                        System.out.println(leftTree  + "____" + tree.get(leftTree));
+                        String leftRaw  = "~" + leftTree  + "~";
+                        String rightRaw = "~" + rightTree + "~";
+//                        System.out.println(leftTree + "_" + rightTree);
+                        addNodes(leftRaw,rightRaw,"log");
+//                        System.out.println(tree.get(tree.size()-1));
+                        partialEqSP.append("~").append(tree.size() - 1).append("~");
+                    } else {
+                        tree.add(new Node("", new ComplexNumber(input.substring(i+1,i+2))));
+                    }
+
+                    skip = findCloseBrace(findCloseBrace(i+5, input)+1, input)+1 - i-1;
+//                    System.out.println("log");
+                } else if (input.startsWith("log", i+1)){
                     // this is a ln
                     System.out.println("ln");
+                    if (input.charAt(i+4) == '{'){
+                        int leftTree = createTreeSpecialFunctions(input.substring(i+5,findCloseBrace(i+5, input)+1));
+                        int rightTree = 0;
+                        if (input.charAt(findCloseBrace(i+4, input)+1) == '{'){
+//                            System.out.println(input.substring(findCloseBrace(i+5, input)+1, findCloseBrace(findCloseBrace(i+5, input)+1, input)+1));
+                            rightTree = createTreeSpecialFunctions(input.substring(findCloseBrace(i+4, input)+1, findCloseBrace(findCloseBrace(i+4, input)+1, input)+1));
+                        } else {
+                            System.out.println("ERROR: Missing Second End Brace in a Fraction");
+                        }
+//                        System.out.println(rightTree + "____" + tree.get(rightTree));
+//                        System.out.println(leftTree  + "____" + tree.get(leftTree));
+                        String leftRaw  = "~" + leftTree  + "~";
+                        String rightRaw = "~" + rightTree + "~";
+//                        System.out.println(leftTree + "_" + rightTree);
+                        addNodes(leftRaw,rightRaw,"log");
+//                        System.out.println(tree.get(tree.size()-1));
+                        partialEqSP.append("~").append(tree.size() - 1).append("~");
+                    } else {
+                        tree.add(new Node("", new ComplexNumber(input.substring(i+1,i+2))));
+                    }
+
+                    skip = findCloseBrace(findCloseBrace(i+5, input)+1, input)+1 - i-1;
                 }
 
             } else {
@@ -392,6 +436,8 @@ public class Equation {
                     this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).sub(this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).right)), myX);
             case "^" ->
                     this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).pow(this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).right)), myX);
+            case "log" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).log(this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).right)), myX);
             default -> new ComplexNumber();
         };
     }

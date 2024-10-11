@@ -95,10 +95,10 @@ public class ComplexNumber {
         // this function is saying log_c(this)
         // log_b(a) = ln(a)/ln(b)
         // Math.atan2(y, x)
-        double r1 = Math.log(Math.sqrt(this.a * this.a + this.b * this.b)); // these are the logs of the magnitudes
-        double r2 = Math.log(Math.sqrt(c.a * c.a + c.b * c.b));
-        double t1 = Math.atan2(this.b, this.a); // these are the theta values
-        double t2 = Math.atan2(c.b, c.a);
+        double r1 = Math.log(Math.sqrt(c.a * c.a + c.b * c.b)); // these are the logs of the magnitudes
+        double r2 = Math.log(Math.sqrt(this.a * this.a + this.b * this.b));
+        double t1 = Math.atan2(c.b, c.a); // these are the theta values
+        double t2 = Math.atan2(this.b, this.a);
         double realPart      = (r1*r2 + t1*t2)/(r2*r2 + t2*t2);
         double imaginaryPart = (r2*t1 - r1*t2)/(r2*r2 + t2*t2);
         return new ComplexNumber(realPart, imaginaryPart);

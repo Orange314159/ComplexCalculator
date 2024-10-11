@@ -1,7 +1,4 @@
 import org.jetbrains.annotations.NotNull;
-// TODO: add in latex support for fractions (\frac{n}{d})
-//
-// TODO: add in latex support for exponents (x^{y})
 // TODO: add in latex support for logarithms (log_{b}{a})
 // TODO: add in graphical view of inputs (2d)
 // TODO: add in graphical view of output (2d)
@@ -33,19 +30,26 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         String input = scanner.nextLine();
         scanner.close();
-        Equation e1 = new Equation(input);
+        Equation e1 = new Equation("\\\\log_{23.2}{7*x-3}");
 //        System.out.println(e1.tree.get(e1.length));
 //        e1.printTree();
         System.out.println(e1.evaluateEquation(new ComplexNumber(0,0), e1.length) + " @x=" + new ComplexNumber(0,0));
         System.out.println(e1.evaluateEquation(new ComplexNumber(1,0), e1.length) + " @x=" + new ComplexNumber(1,0));
         System.out.println(e1.evaluateEquation(new ComplexNumber(0,1), e1.length) + " @x=" + new ComplexNumber(0,1));
 
-//        e1.createTreeSpecialFunctions("\\frac{23.2}{7*x-3}");
+//        e1.createTreeSpecialFunctions("\\log_{23.2}{7*x-3}");
+//        e1.printTree();
+//        System.out.println(e1.tree.get(e1.tree.size()-1));
+
 
 //        SweepXValues sweepXValues = new SweepXValues(0,10,0,10,9,e1);
 //        sweepXValues.calculateYValues();
 //        System.out.println(sweepXValues.xValues);
 //        System.out.println(sweepXValues.yValues);
+//        ComplexNumber c1 = new  ComplexNumber(23.2,0);
+//        ComplexNumber c2 = new  ComplexNumber(4,0);
+//        ComplexNumber c3 = c2.log(c1, new ComplexNumber(1,0));
+//        System.out.println(c3);
     }
 
 }
