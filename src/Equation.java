@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 public class Equation {
+    // important notes:
+    // 1. When creating the binary tree I use "~" as a delimiter for pointers DO NOT USE "~" IN YOUR EQUATIONS
 
     public String eq;
     public int length = -1;
@@ -11,7 +13,7 @@ public class Equation {
         removeSpaces();
         includeOmittedMultiplication();
 //        System.out.println(eq + "CLEAN");
-        length = createTreeParenthesis(eq);
+        length = createTreeSpecialFunctions(eq);
     }
 
     public int findCloseParenthesis(int start){
@@ -25,6 +27,24 @@ public class Equation {
                 counter--;
             }
 
+            // close has been found
+            if (counter == 0){
+                return i;
+            }
+        }
+        return -1; // this is if the close can't be found, this should result in the user fixing their input
+    }
+
+    public int findCloseBrace(int start, String input){
+        int counter = 1; // this signifies that there is one open parenthesis (the one that we start with)
+        // once we find a close parenthesis we will decrement this, once we find an open parenthesis we increment
+        for (int i = start+1; i < input.length(); i++){
+            if(input.charAt(i) == '{'){
+                counter++;
+            }
+            else if(input.charAt(i) == '}'){
+                counter--;
+            }
             // close has been found
             if (counter == 0){
                 return i;
@@ -52,15 +72,76 @@ public class Equation {
                 temp.insert(j, '*');
                 eq = temp.toString();
 
+            } else if (eq.charAt(i) == '}' && (eq.charAt(j) == 'x' || eq.charAt(j) == 'y' || eq.charAt(j) == 'z' || Character.isDigit(eq.charAt(j)) || eq.charAt(j) == '(' || eq.charAt(i=j) == 'i')) {
+                StringBuilder temp = new StringBuilder(eq);
+                temp.insert(j, '*');
+                eq = temp.toString();
             }
             // Debug
 //            System.out.println("i:" + i + " - " + eq.charAt(i) + " eq:" + eq + " j:"+j + " - " + eq.charAt(j));
         }
     }
 
+    public int createTreeSpecialFunctions(String input){
+        // this is similar to that of createTreeParenthesis but is about \frac or \log
+        StringBuilder partialEqSP = new StringBuilder(); // idk what to call this
+        int skip = 0;
+        for (int i = 0; i < input.length(); i++) {
+            if (input.charAt(i) == '\\'){
+                // look for:
+                // \frac
+                // \log or \ln (refers to log base e in my code)
+                // \log_
+//                System.out.println("in function");
+                if(input.startsWith("frac", i+1)){
+                    // this is a fraction
+//                    System.out.println("fraction");
+                    if (input.charAt(i+5) == '{'){
+                        int leftTree = createTreeSpecialFunctions(input.substring(i+5,findCloseBrace(i+5, input)+1));
+                        int rightTree = 0;
+                        if (input.charAt(findCloseBrace(i+5, input)+1) == '{'){
+//                            System.out.println(input.substring(findCloseBrace(i+5, input)+1, findCloseBrace(findCloseBrace(i+5, input)+1, input)+1));
+                            rightTree = createTreeSpecialFunctions(input.substring(findCloseBrace(i+5, input)+1, findCloseBrace(findCloseBrace(i+5, input)+1, input)+1));
+                        } else {
+                            System.out.println("ERROR: Missing Second End Brace in a Fraction");
+                        }
+//                        System.out.println(rightTree + "____" + tree.get(rightTree));
+//                        System.out.println(leftTree  + "____" + tree.get(leftTree));
+                        String leftRaw  = "~" + leftTree  + "~";
+                        String rightRaw = "~" + rightTree + "~";
+//                        System.out.println(leftTree + "_" + rightTree);
+                        addNodes(leftRaw,rightRaw,"/");
+//                        System.out.println(tree.get(tree.size()-1));
+                        partialEqSP.append("~").append(tree.size() - 1).append("~");
+                    } else {
+                        System.out.println("ERROR: No End Brace Found In A Fraction");
+                    }
+
+                    skip = findCloseBrace(findCloseBrace(i+5, input)+1, input)+1 - i-1;
+                } else if (input.startsWith("log_", i+1)){
+                    // this is a log
+                    System.out.println("log");
+                } else if (input.startsWith("log", i+1) || input.startsWith("ln", i+1)){
+                    // this is a ln
+                    System.out.println("ln");
+                }
+
+            } else {
+                if (skip > 0){
+                    skip--;
+                }else{
+//                    System.out.print(input.charAt(i));
+                    partialEqSP.append(input.charAt(i));
+                }
+            }
+        }
+        return createTreeParenthesis(partialEqSP.toString());
+    }
+
     public int createTreeParenthesis(String input){
+
         StringBuilder partialEqP = new StringBuilder(); // idk what to call this
-        // start with parenthesis
+        // start with parenthesis (I allow parenthesis and curly braces)
         int skip = 0;
         for (int i = 0; i < input.length(); i++) {
             if (input.charAt(i) == '('){
@@ -68,6 +149,11 @@ public class Equation {
 //                System.out.println(input.substring(i+1,findCloseParenthesis(i)));
                 partialEqP.append(createTreeParenthesis(input.substring(i+1,findCloseParenthesis(i))));
                 skip = findCloseParenthesis(i)-i;
+                partialEqP.append("~");
+            } else if (input.charAt(i) == '{'){
+                partialEqP.append("~");
+                partialEqP.append(createTreeParenthesis(input.substring(i+1,findCloseBrace(i, input))));
+                skip = findCloseBrace(i, input)-i;
                 partialEqP.append("~");
             } else {
                 if (skip > 0){
@@ -308,6 +394,12 @@ public class Equation {
                     this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).pow(this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).right)), myX);
             default -> new ComplexNumber();
         };
+    }
+
+    public void printTree(){
+        for (Node n : tree){
+            System.out.println("data:" + n.data + " operator:" + n.operator);
+        }
     }
 
     @Override
