@@ -1,11 +1,23 @@
 import org.jetbrains.annotations.NotNull;
-// TODO: add in latex support for logarithms (log_{b}{a})
-// TODO: add in graphical view of inputs (2d)
-// TODO: add in graphical view of output (2d)
+
 // TODO: put last two parts together to create a 4d representation of graph
+//
+//  ^
+//  |
+//  |
+//  |           ----- > (X)
+//
+//  (y real)
+//
+//              . (y imaginary)
+//
+// TODO: add in trig
+// TODO: add in d/dx
+
+
 // TODO: connect the dots created by visualization to make surfaces (this sounds especially hard)
 // TODO: add in a way to visualize the infinite number of complex exponents
-
+// TODO: add in integrals ?
 
 import java.util.Scanner;
 import javax.swing.*;

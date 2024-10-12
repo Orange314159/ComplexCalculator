@@ -2,6 +2,8 @@ import java.util.ArrayList;
 public class Equation {
     // important notes:
     // 1. When creating the binary tree I use "~" as a delimiter for pointers DO NOT USE "~" IN YOUR EQUATIONS
+    // 2. Spaces do not matter, I will remove all the spaces at the beginning so don't worry about that
+    // 3.
 
     public String eq;
     public int length = -1;
@@ -398,6 +400,9 @@ public class Equation {
     }
 
     public boolean isNotOperator(char c){
+        // you may be yelling at me here for forgetting log or sin, etc.
+        // I did consider these at first, but they will all be gone by the time that this function is used
+        // if you end up using this function at a different point in your own code you may want to adjust it
         for (char operator : this.operators) {
             if (c == operator) {
                 return false;
