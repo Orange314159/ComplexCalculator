@@ -1,3 +1,9 @@
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
+import java.util.Scanner;
+
 public class DeprecatedCode {
     // from Equation.java
 //    public int createTree(int start, int end){
@@ -190,6 +196,79 @@ public class DeprecatedCode {
 //        }
 //        return -1; // this is if the close can't be found, this should result in the user fixing their input
 //    }
+
+//    // Main.java
+//    SweepXValues sweepXValues = new SweepXValues(0,10,0,10,9,e1);
+//        sweepXValues.calculateYValues();
+//        System.out.println(sweepXValues.xValues);
+//        System.out.println(sweepXValues.yValues);
+//        ComplexNumber c1 = new  ComplexNumber(23.2,0);
+//        ComplexNumber c2 = new  ComplexNumber(4,0);
+//        ComplexNumber c3 = c2.log(c1, new ComplexNumber(1,0));
+//        System.out.println(c3);
+
+
+    // Main.java
+//    Scanner scanner = new Scanner(System.in);
+//    String input = scanner.nextLine();
+//        scanner.close();
+
+// FULL MOUSE CONFINER (THIS WAS NEVER USED AND WRITTEN IN PART BY AI)
+//    import java.awt.*;
+//import java.awt.event.*;
+//
+//    class MouseConfiner implements MouseMotionListener {
+//        private final Rectangle bounds;
+//
+//        public MouseConfiner(Rectangle bounds) {
+//            this.bounds = bounds;
+//        }
+//
+//        @Override
+//        public void mouseDragged(MouseEvent e) {
+//            // Handle mouse dragging if needed
+//            Point p = e.getPoint();
+//            // Calculate the closest point within the bounds
+//            int x = Math.min(Math.max(p.x, bounds.x), bounds.x + bounds.width - 1);
+//            int y = Math.min(Math.max(p.y, bounds.y), bounds.y + bounds.height - 1);
+//            p.setLocation(x, y);
+//            setCursor(p); // Set the cursor to the calculated point
+//
+//        }
+//
+//        @Override
+//        public void mouseMoved(MouseEvent e) {
+//            Point p = e.getPoint();
+//            // Calculate the closest point within the bounds
+//            int x = Math.min(Math.max(p.x, bounds.x), bounds.x + bounds.width - 1);
+//            int y = Math.min(Math.max(p.y, bounds.y), bounds.y + bounds.height - 1);
+//            p.setLocation(x, y);
+//            setCursor(p); // Set the cursor to the calculated point
+//        }
+//
+//        private void setCursor(Point p) {
+//            // Set the cursor to the calculated point
+//            PointerInfo pointerInfo = MouseInfo.getPointerInfo();
+//            Robot robot = null;
+//            try {
+//                robot = new Robot();
+//                robot.mouseMove(p.x, p.y);
+//            } catch (AWTException ex) {
+//                ex.printStackTrace();
+//            }
+//        }
+//    }
+
+
+    // OTHER MOUSE STUFF THAT WAS IN MAIN.java
+// Transparent 16 x 16 pixel cursor image.
+//    BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+//
+//    // Create a new blank cursor.
+//    Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0, 0), "blank cursor");
+//
+//    // Set the blank cursor to the JFrame.
+//        frame.getContentPane().setCursor(blankCursor);
 
 
 }

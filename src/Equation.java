@@ -7,7 +7,7 @@ public class Equation {
 
     public String eq;
     public int length = -1;
-    char[] operators = {'+', '-', '*', '/', '^'};
+    private static final char[] operators = {'+', '-', '*', '/', '^'};
     ArrayList<Node> tree = new ArrayList<>();
 
     public Equation (String in){
