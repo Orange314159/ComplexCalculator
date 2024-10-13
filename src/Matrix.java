@@ -74,7 +74,7 @@ public class Matrix {
         }
         return m;
     }
-    public void quickInverse(){
+    public Matrix quickInverse(){
         Matrix matrix = new Matrix(4,4);
         matrix.mat[0][0] = this.mat[0][0];    matrix.mat[0][1] = this.mat[1][0];  matrix.mat[0][2] = this.mat[2][0];  matrix.mat[0][3] = 0.0f;
         matrix.mat[1][0] = this.mat[0][1];    matrix.mat[1][1] = this.mat[1][1];  matrix.mat[1][2] = this.mat[2][1];  matrix.mat[1][3] = 0.0f;
@@ -83,7 +83,7 @@ public class Matrix {
         matrix.mat[3][1] = -(this.mat[3][0] * matrix.mat[0][1] + this.mat[3][1] * matrix.mat[1][1] + this.mat[3][2] * matrix.mat[2][1]);
         matrix.mat[3][2] = -(this.mat[3][0] * matrix.mat[0][2] + this.mat[3][1] * matrix.mat[1][2] + this.mat[3][2] * matrix.mat[2][2]);
         matrix.mat[3][3] = 1.0f;
-        this.mat = matrix.mat;
+        return matrix;
     }
     public void add(Matrix matrix){
         this.mat[0][0] = this.mat[0][0] + matrix.mat[0][0];
@@ -105,5 +105,27 @@ public class Matrix {
         this.mat[3][1] = this.mat[3][1] + matrix.mat[3][1];
         this.mat[3][2] = this.mat[3][2] + matrix.mat[3][2];
         this.mat[3][3] = this.mat[3][3] + matrix.mat[3][3];
+    }
+    public void pointAt(Vector position, Vector target, Vector up){
+        // Vector Stuff
+        Vector newForward = new Vector();
+        newForward = target.sub(position);
+        newForward.normalize();
+
+        Vector a = new Vector();
+        a = newForward.mul(up.dotProduct(newForward));
+        Vector newUp = up.sub(a);
+        newUp.normalize();
+
+        Vector newRight = new Vector();
+        newRight = newUp.crossProduct(newForward);
+
+        // Construct Matrix
+        Matrix matrix = new Matrix(4,4);
+        matrix.mat[0][0] = newRight.x;	    matrix.mat[0][1] = newRight.y;	    matrix.mat[0][2] = newRight.z;	    matrix.mat[0][3] = 0.0f;
+        matrix.mat[1][0] = newUp.x;		    matrix.mat[1][1] = newUp.y;		    matrix.mat[1][2] = newUp.z;		    matrix.mat[1][3] = 0.0f;
+        matrix.mat[2][0] = newForward.x;	matrix.mat[2][1] = newForward.y;	matrix.mat[2][2] = newForward.z;	matrix.mat[2][3] = 0.0f;
+        matrix.mat[3][0] = position.x;		matrix.mat[3][1] = position.y;		matrix.mat[3][2] = position.z;		matrix.mat[3][3] = 1.0f;
+        this.mat = matrix.mat;
     }
 }
