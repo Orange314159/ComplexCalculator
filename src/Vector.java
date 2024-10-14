@@ -83,4 +83,8 @@ public class Vector {
         return v;
     }
 
+    @Override
+    public String toString() {
+        return "x=" + x + "y=" + y + "z=" + z + "w=" + w;
+    }
 }

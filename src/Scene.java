@@ -8,8 +8,8 @@ public class Scene {
     public double FOV;
     public double near;
     public double far;
-    private double yaw;
-    private double pitch;
+    public double yaw;
+    public double pitch;
     private Matrix viewMatrix;
     //---------------------------- Camera ----------------------------//
 
@@ -20,7 +20,7 @@ public class Scene {
     //---------------------------- Screen ----------------------------//
 
     //---------------------------- Points ----------------------------//
-    public Vector[] points;
+    public Vector[]  points;
     private Vector[] pointsToDraw;
     //---------------------------- Points ----------------------------//
 

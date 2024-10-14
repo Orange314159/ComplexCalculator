@@ -41,30 +41,36 @@ public class Main {
 
 
     public static void main(String[] args) {
-        // read input
+        //------------------------------ Equation Stuff ------------------------------\\
         System.out.println("Hello world!");
-        
-
         Equation e1 = new Equation("\\\\log_{23.2}{7*x-3}");
         System.out.println(e1.evaluateEquation(new ComplexNumber(0,0), e1.length) + " @x=" + new ComplexNumber(0,0));
         System.out.println(e1.evaluateEquation(new ComplexNumber(1,0), e1.length) + " @x=" + new ComplexNumber(1,0));
         System.out.println(e1.evaluateEquation(new ComplexNumber(0,1), e1.length) + " @x=" + new ComplexNumber(0,1));
+        //------------------------------ Equation Stuff ------------------------------\\
 
 
+        //------------------------------ Swing Stuff ------------------------------\\
         JFrame frame = new JFrame("Complex Graph");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // fill the screen
         frame.setSize(720, 480);
+        frame.setVisible(true);
+        //------------------------------ Swing Stuff ------------------------------\\
 
 
-        Vector camera = new Vector(-1,-1,-1,1);
-
+        //------------------------------ Scene Stuff ------------------------------\\
+        Vector camera = new Vector(-5,0,0,1);
         Vector[] points = {new Vector(0,0,0,1), new Vector(1,0,0,1)};
-
         Scene scene = new Scene(camera, 90, 0, 0, 0.1, 1000, points, 480, 720);
-
         DrawPoint drawPoint = new DrawPoint();
         drawPoint.points = new ArrayList<>();
+        frame.add(drawPoint);
+        //------------------------------ Scene Stuff ------------------------------\\
+
+        //------------------------------ Camera Stuff ------------------------------\\
+        double theta1 = 0;
+        double theta2 = 0;
+        //------------------------------ Camera Stuff ------------------------------\\
 
         frame.addKeyListener(new KeyAdapter() {
             @Override
@@ -72,17 +78,25 @@ public class Main {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     // remove the window VERY IMPORTANT
                     frame.dispose();
+                } else if (e.getKeyCode() == KeyEvent.VK_W) {
+                    scene.yaw += 0.1;
+                } else if (e.getKeyCode() == KeyEvent.VK_S) {
+                    scene.yaw -= 0.1;
+                } else if (e.getKeyCode() == KeyEvent.VK_A) {
+                    scene.pitch += 0.1;
+                } else if (e.getKeyCode() == KeyEvent.VK_D) {
+                    scene.pitch -= 0.1;
                 }
                 Vector[] drawPoints = scene.drawFrame();
+                drawPoint.points = new ArrayList<>();
                 for (Vector point : drawPoints){
                     System.out.println(point);
-//                    frame.add(new DrawPoint(512, 382));
-//                    frame.add(new DrawPoint(305, 382));
+                    drawPoint.addPoint((int)point.x+360, (int)point.y+240);
                 }
 
             }
         });
 
-        frame.setVisible(true);
+
     }
 }
