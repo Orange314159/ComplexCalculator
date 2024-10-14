@@ -1,3 +1,6 @@
+import java.util.Arrays;
+import java.util.Vector;
+
 public class Scene {
 
     //---------------------------- Camera ----------------------------//
@@ -19,6 +22,7 @@ public class Scene {
 
     //---------------------------- Points ----------------------------//
     public Vector[] points;
+    private Vector[] pointsToDraw;
     //---------------------------- Points ----------------------------//
 
     public Scene(){
@@ -30,19 +34,21 @@ public class Scene {
         this.near          = 0.1;
         this.far           = 1000;
         this.points        = new Vector[0];
+        this.pointsToDraw        = new Vector[0];
         this.HEIGHT        = 100;
         this.WIDTH         = 100;
         this.aspectRatio   = (double) HEIGHT /WIDTH;
     }
-    public Scene(Vector camera, Vector lookDirection, double FOV, double yaw, double pitch, double near, double far, Vector[] points, int HEIGHT, int WIDTH){
+    public Scene(Vector camera, double FOV, double yaw, double pitch, double near, double far, Vector[] points, int HEIGHT, int WIDTH){
         this.camera        = camera;
-        this.lookDirection = lookDirection;
+        this.lookDirection = new Vector();
         this.FOV           = FOV;
         this.yaw           = yaw;
         this.pitch         = pitch;
         this.near          = near;
         this.far           = far;
         this.points        = points;
+        this.pointsToDraw  = new Vector[points.length];
         this.HEIGHT        = HEIGHT;
         this.WIDTH         = WIDTH;
         this.aspectRatio   = (double) HEIGHT /WIDTH;
@@ -63,7 +69,47 @@ public class Scene {
         this.viewMatrix = cameraMatrix.quickInverse();
     }
 
-    public void drawFrame(){
+    private Matrix getWorldMatrix() {
+        Matrix rotationZMatrix = new Matrix();
+        Matrix rotationXMatrix = new Matrix();
+        rotationZMatrix.makeRotationZ(0);
+        rotationXMatrix.makeRotationX(0);
+        // general translation mat, there is no movement to the object
+        Matrix translationMatrix = new Matrix();
+        translationMatrix.makeTranslation(0.0f, 0.0f, 0.0f);
 
+        Matrix worldMatrix = new Matrix(4,4);
+        worldMatrix.makeIdentityMatrix(4);
+        worldMatrix = rotationZMatrix.multiplyMatrix(rotationXMatrix);
+        worldMatrix = worldMatrix.multiplyMatrix(translationMatrix);
+        return worldMatrix;
     }
+
+    public Vector[] drawFrame(){
+        this.pointAt();
+        Matrix worldMatrix = getWorldMatrix();
+        int counter = 0;
+        for(Vector point : this.points){
+            Vector transformedVector = new Vector();
+            transformedVector = point.multiplyByMatrix(worldMatrix);
+            Vector cameraRay = new Vector();
+            cameraRay = transformedVector.sub(this.camera);
+            // scale
+            Vector projectedVector = transformedVector.multiplyByMatrix(this.viewMatrix);
+            projectedVector = projectedVector.div(projectedVector.w);
+            // fix xy inversion
+            projectedVector.x *= -1;
+            projectedVector.y *= -1;
+            // fit into normalized space
+            Vector offsetVector = new Vector(1,1,0,1);
+            projectedVector = projectedVector.add(offsetVector);
+            projectedVector.x *= 0.5 * (double) this.WIDTH;
+            projectedVector.y *= 0.5 * (double) this.HEIGHT;
+            pointsToDraw[counter] = projectedVector;
+            counter++;
+        }
+        return pointsToDraw;
+    }
+
+
 }

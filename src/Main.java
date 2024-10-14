@@ -20,12 +20,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Scanner;
 import javax.swing.*;
 import java.awt.Robot;
 import java.awt.AWTException;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Vector;
 
 
 public class Main {
@@ -55,37 +57,36 @@ public class Main {
 
         JFrame frame = new JFrame("Complex Graph");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // fill the screen
+//        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // fill the screen
+        frame.setSize(720, 480);
+
+
+        Vector camera = new Vector(-1,-1,-1,1);
+
+        Vector[] points = {new Vector(0,0,0,1), new Vector(1,0,0,1)};
+
+        Scene scene = new Scene(camera, 90, 0, 0, 0.1, 1000, points, 480, 720);
+
+        DrawPoint drawPoint = new DrawPoint();
+        drawPoint.points = new ArrayList<>();
+
         frame.addKeyListener(new KeyAdapter() {
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                // remove the window VERY IMPORTANT
-                frame.dispose();
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    // remove the window VERY IMPORTANT
+                    frame.dispose();
+                }
+                Vector[] drawPoints = scene.drawFrame();
+                for (Vector point : drawPoints){
+                    System.out.println(point);
+//                    frame.add(new DrawPoint(512, 382));
+//                    frame.add(new DrawPoint(305, 382));
+                }
+
             }
-        }
         });
 
-
-//        DrawPoint drawPoint = new DrawPoint();
-//        drawPoint.size = 1;
-
-        Vector vector = new Vector(0,0,1,1);
-        Matrix matrix = new Matrix(4,4);
-        for (int i = 0; i < 3600; i++) {
-            matrix.makeRotationX((double) i /10);
-            Vector v2 = vector.multiplyByMatrix(matrix);
-        }
-
-
-//        frame.add(drawPoint);
-
-
         frame.setVisible(true);
-
-
-
-
     }
-
 }
