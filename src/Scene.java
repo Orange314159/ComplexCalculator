@@ -11,6 +11,8 @@ public class Scene {
     public double yaw;
     public double pitch;
     private Matrix viewMatrix;
+    private double relativeCameraYaw; // idk what to call this, but it is the angle from the origin that the camera is at
+    private double relativeCameraPitch;
     //---------------------------- Camera ----------------------------//
 
     //---------------------------- Screen ----------------------------//
@@ -27,13 +29,13 @@ public class Scene {
     public Scene(){
         this.camera        = new Vector();
         this.lookDirection = new Vector();
-        this.FOV           = 90;
+        this.FOV           = 90.0;
         this.yaw           = 0;
         this.pitch         = 0;
         this.near          = 0.1;
         this.far           = 1000;
         this.points        = new Vector[0];
-        this.pointsToDraw        = new Vector[0];
+        this.pointsToDraw  = new Vector[0];
         this.HEIGHT        = 100;
         this.WIDTH         = 100;
         this.aspectRatio   = (double) HEIGHT /WIDTH;
@@ -53,14 +55,37 @@ public class Scene {
         this.aspectRatio   = (double) HEIGHT /WIDTH;
     }
 
+    public void moveCameraInCircle(double deltaYaw, double deltaPitch){
+        this.relativeCameraYaw   += deltaYaw;
+        this.relativeCameraPitch += deltaPitch;
+
+        this.camera.x = 2 * Math.cos(relativeCameraYaw);
+        this.camera.y = 2 * Math.sin(relativeCameraYaw);
+
+        if (pitch - deltaPitch > (3.14/2)){
+            this.pitch = (3.14/2);
+            this.camera.z = -2.0;
+        } else if (pitch - deltaPitch < -(3.14/2)) {
+            this.pitch = -(3.14/2);
+            this.camera.z = 2.0;
+        } else {
+            this.pitch   -= deltaPitch;
+            this.camera.z = 2 * Math.sin(relativeCameraPitch);
+        }
+
+
+
+//        this.yaw   -= deltaYaw;
+    }
+
     public void pointAt(){
-        Vector upVector        = new Vector(0, 1, 0, 1);
-        Vector targetVector    = new Vector(0, 0, 1, 1);
+        Vector upVector        = new Vector(0, 1.0, 0, 1.0);
+        Vector targetVector    = new Vector(0, 0, 1.0, 1.0);
         Matrix cameraRotationY = new Matrix(4,4);
         cameraRotationY.makeRotationY(this.yaw);
-        Matrix cameraRotationZ = new Matrix(4,4);
-        cameraRotationZ.makeRotationZ(this.pitch);
-        this.lookDirection = targetVector.multiplyByMatrix(cameraRotationZ);
+        Matrix cameraRotationX = new Matrix(4,4);
+        cameraRotationX.makeRotationX(this.pitch);
+        this.lookDirection = targetVector.multiplyByMatrix(cameraRotationX);
         this.lookDirection = this.lookDirection.multiplyByMatrix(cameraRotationY);
         targetVector = this.camera.add(this.lookDirection); // does not change camera vector
         Matrix cameraMatrix = new Matrix();
@@ -85,22 +110,21 @@ public class Scene {
     }
 
     public Vector[] drawFrame(){
+        // limit pitch to no more than pi/2 and no less than -pi/2
         this.pointAt();
         Matrix worldMatrix = getWorldMatrix();
         int counter = 0;
         for(Vector point : this.points){
             Vector transformedVector = new Vector();
             transformedVector = point.multiplyByMatrix(worldMatrix);
-            Vector cameraRay = new Vector();
-            cameraRay = transformedVector.sub(this.camera);
             // scale
             Vector projectedVector = transformedVector.multiplyByMatrix(this.viewMatrix);
             projectedVector = projectedVector.div(projectedVector.w);
             // fix xy inversion
-            projectedVector.x *= -1;
-            projectedVector.y *= -1;
+            projectedVector.x *= -1.0;
+            projectedVector.y *= -1.0;
             // fit into normalized space
-            Vector offsetVector = new Vector(1,1,0,1);
+            Vector offsetVector = new Vector(1.0,1.0,0,1.0);
             projectedVector = projectedVector.add(offsetVector);
             projectedVector.x *= 0.5 * (double) this.WIDTH;
             projectedVector.y *= 0.5 * (double) this.HEIGHT;

@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 import javax.swing.*;
 import java.awt.event.*;
@@ -43,11 +44,19 @@ public class Main {
     public static void main(String[] args) {
         //------------------------------ Equation Stuff ------------------------------\\
         System.out.println("Hello world!");
-        Equation e1 = new Equation("\\\\log_{23.2}{7*x-3}");
+//        Equation e1 = new Equation("\\log_{23.2}{7*x-3}");
+        Equation e1 = new Equation("x^2");
         System.out.println(e1.evaluateEquation(new ComplexNumber(0,0), e1.length) + " @x=" + new ComplexNumber(0,0));
         System.out.println(e1.evaluateEquation(new ComplexNumber(1,0), e1.length) + " @x=" + new ComplexNumber(1,0));
         System.out.println(e1.evaluateEquation(new ComplexNumber(0,1), e1.length) + " @x=" + new ComplexNumber(0,1));
         //------------------------------ Equation Stuff ------------------------------\\
+
+        //------------------------------ Sweep Stuff ------------------------------\\
+        SweepXValues sweepXValues = new SweepXValues(-10.0, 10.0, 0.0,0.1,100,e1);
+        Vector[] points = sweepXValues.calculateYValuesVector();
+        System.out.println(Arrays.toString(points));
+        //------------------------------ Sweep Stuff ------------------------------\\
+
 
 
         //------------------------------ Swing Stuff ------------------------------\\
@@ -59,43 +68,48 @@ public class Main {
 
 
         //------------------------------ Scene Stuff ------------------------------\\
-        Vector camera = new Vector(-5,0,0,1);
-        Vector[] points = {new Vector(0,0,0,1), new Vector(1,0,0,1)};
-        Scene scene = new Scene(camera, 90, 0, 0, 0.1, 1000, points, 480, 720);
+        Vector camera = new Vector(0,0,0,1); // i don't know why this works
+//        Vector[] points = {new Vector(0,0,0,1), new Vector(1,0,0,1), new Vector(0,1,0,1), new Vector(0,0,1,1), new Vector(-1,0,0,1)};
+        Scene scene = new Scene(camera, 90, Math.PI, 0, 0.1, 1000, points, 480, 720);
         DrawPoint drawPoint = new DrawPoint();
         drawPoint.points = new ArrayList<>();
         frame.add(drawPoint);
         //------------------------------ Scene Stuff ------------------------------\\
 
-        //------------------------------ Camera Stuff ------------------------------\\
-        double theta1 = 0;
-        double theta2 = 0;
-        //------------------------------ Camera Stuff ------------------------------\\
 
         frame.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
+                double theta1 = 0;
+                double theta2 = 0;
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     // remove the window VERY IMPORTANT
                     frame.dispose();
                 } else if (e.getKeyCode() == KeyEvent.VK_W) {
-                    scene.yaw += 0.1;
+                    scene.camera.y += 0.1;
                 } else if (e.getKeyCode() == KeyEvent.VK_S) {
-                    scene.yaw -= 0.1;
+                    scene.camera.y -= 0.1;
                 } else if (e.getKeyCode() == KeyEvent.VK_A) {
-                    scene.pitch += 0.1;
+                    scene.camera.x += 0.1;
                 } else if (e.getKeyCode() == KeyEvent.VK_D) {
-                    scene.pitch -= 0.1;
+                    scene.camera.x -= 0.1;
+                } else if(e.getKeyCode() == KeyEvent.VK_LEFT){
+                    scene.yaw +=0.1;
+                }else if(e.getKeyCode() == KeyEvent.VK_RIGHT){
+                    scene.yaw -=0.1;
                 }
+
+
+                System.out.println(scene.camera.x + "," + scene.camera.y + "," + scene.camera.z + "\t Yaw=" + scene.yaw + " Pitch=" + scene.pitch);
                 Vector[] drawPoints = scene.drawFrame();
                 drawPoint.points = new ArrayList<>();
                 for (Vector point : drawPoints){
-                    System.out.println(point);
-                    drawPoint.addPoint((int)point.x+360, (int)point.y+240);
+                    drawPoint.addPoint((int)point.x, (int)point.y);
                 }
 
             }
         });
+
 
 
     }
