@@ -116,14 +116,15 @@ public class Main {
                 Vector[] drawPoints = scene.drawFrame();
                 drawPoint.points = new ArrayList<>();
                 drawPoint.axisPoints = new ArrayList<>();
-                System.out.println(Arrays.toString(drawPoints));
+//                System.out.println(Arrays.toString(drawPoints));
                 for (Vector point : drawPoints){
                     drawPoint.addPoint((int)point.x, (int)point.y);
                 }
                 Vector[] drawAxis = scene.drawAxis();
-                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[0].y , (int)drawAxis[1].x, (int)drawAxis[1].y);
-                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[0].y , (int)drawAxis[3].x, (int)drawAxis[3].y);
-                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[0].y , (int)drawAxis[5].x, (int)drawAxis[5].y);
+                System.out.println(Arrays.toString(drawAxis));
+                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[1].x , (int)drawAxis[0].y, (int)drawAxis[1].y);
+                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[3].x , (int)drawAxis[0].y, (int)drawAxis[3].y);
+                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[5].x , (int)drawAxis[0].y, (int)drawAxis[5].y);
 
 
             }

@@ -125,8 +125,8 @@ public class Scene {
 
             projectedVector = projectedVector.div(projectedVector.w);
             // fix xy inversion
-            projectedVector.x *= -1.0;
-            projectedVector.y *= -1.0;
+//            projectedVector.x *= -1.0;
+//            projectedVector.y *= -1.0;
             // fit into normalized space
             Vector offsetVector = new Vector(1.0,1.0,0,1.0);
             projectedVector = projectedVector.add(offsetVector);
@@ -166,8 +166,8 @@ public class Scene {
 
             projectedVector = projectedVector.div(projectedVector.w);
             // fix xy inversion
-            projectedVector.x *= -1.0;
-            projectedVector.y *= -1.0;
+//            projectedVector.x *= -1.0;
+//            projectedVector.y *= -1.0;
             // fit into normalized space
             Vector offsetVector = new Vector(1.0,1.0,0,1.0);
             projectedVector = projectedVector.add(offsetVector);

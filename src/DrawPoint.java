@@ -31,6 +31,7 @@ public class DrawPoint extends JPanel {
         }
         for(int[] point : axisPoints){
             g.drawLine(point[0], point[1], point[2], point[3]);
+            System.out.println(point[0] + "," + point[1]);
         }
 
     }
