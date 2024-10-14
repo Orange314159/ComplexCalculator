@@ -18,16 +18,12 @@ import org.jetbrains.annotations.NotNull;
 // TODO: add in integrals ? This seems very very difficult
 //  ^something about u replacement could help (i don't know how to integral)
 
-import java.awt.event.InputEvent;
-import java.awt.image.BufferedImage;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 import javax.swing.*;
-import java.awt.Robot;
-import java.awt.AWTException;
-import java.awt.*;
 import java.awt.event.*;
-import java.util.Vector;
+
 
 
 public class Main {
