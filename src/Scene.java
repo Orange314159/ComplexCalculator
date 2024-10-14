@@ -12,7 +12,7 @@ public class Scene {
     public double pitch;
     private Matrix viewMatrix;
     private double relativeCameraYaw; // idk what to call this, but it is the angle from the origin that the camera is at
-    private double relativeCameraPitch;
+    private double relativeCameraPitch; // it is only used for move camera in circle
     //---------------------------- Camera ----------------------------//
 
     //---------------------------- Screen ----------------------------//
@@ -75,7 +75,7 @@ public class Scene {
 
 
 
-//        this.yaw   -= deltaYaw;
+        this.yaw   -= deltaYaw;
     }
 
     public void pointAt(){
@@ -85,7 +85,7 @@ public class Scene {
         cameraRotationY.makeRotationY(this.yaw);
         Matrix cameraRotationX = new Matrix(4,4);
         cameraRotationX.makeRotationX(this.pitch);
-        this.lookDirection = targetVector.multiplyByMatrix(cameraRotationX);
+        this.lookDirection =       targetVector.multiplyByMatrix(cameraRotationX);
         this.lookDirection = this.lookDirection.multiplyByMatrix(cameraRotationY);
         targetVector = this.camera.add(this.lookDirection); // does not change camera vector
         Matrix cameraMatrix = new Matrix();
@@ -113,12 +113,16 @@ public class Scene {
         // limit pitch to no more than pi/2 and no less than -pi/2
         this.pointAt();
         Matrix worldMatrix = getWorldMatrix();
+        Matrix projectionMatrix = new Matrix();
+        projectionMatrix.makeProjection(this.FOV, this.aspectRatio, this.near, this.far);
         int counter = 0;
         for(Vector point : this.points){
             Vector transformedVector = new Vector();
             transformedVector = point.multiplyByMatrix(worldMatrix);
             // scale
             Vector projectedVector = transformedVector.multiplyByMatrix(this.viewMatrix);
+            projectedVector = projectedVector.multiplyByMatrix(projectionMatrix);
+
             projectedVector = projectedVector.div(projectedVector.w);
             // fix xy inversion
             projectedVector.x *= -1.0;
@@ -132,6 +136,49 @@ public class Scene {
             counter++;
         }
         return pointsToDraw;
+    }
+
+    public Vector[] drawAxis(){
+        Vector[] pointsOfAxis = new Vector[6];
+        // x axis
+        pointsOfAxis[0] = new Vector(0,0,0,1.0);
+        pointsOfAxis[1] = new Vector(1.0,0,0,1.0);
+        // y axis
+        pointsOfAxis[2] = new Vector(0,0,0,1.0);
+        pointsOfAxis[3] = new Vector(0,1.0,0,1.0);
+        // z axis
+        pointsOfAxis[4] = new Vector(0,0,0,1.0);
+        pointsOfAxis[5] = new Vector(0,0,1.0,1.0);
+
+        Vector[] returnPoints = new Vector[6];
+        this.pointAt();
+        Matrix worldMatrix = getWorldMatrix();
+        Matrix projectionMatrix = new Matrix();
+        projectionMatrix.makeProjection(this.FOV, this.aspectRatio, this.near, this.far);
+
+        int counter = 0;
+        for(Vector point : pointsOfAxis){
+            Vector transformedVector = new Vector();
+            transformedVector = point.multiplyByMatrix(worldMatrix);
+            // scale
+            Vector projectedVector = transformedVector.multiplyByMatrix(this.viewMatrix);
+            projectedVector = projectedVector.multiplyByMatrix(projectionMatrix);
+
+            projectedVector = projectedVector.div(projectedVector.w);
+            // fix xy inversion
+            projectedVector.x *= -1.0;
+            projectedVector.y *= -1.0;
+            // fit into normalized space
+            Vector offsetVector = new Vector(1.0,1.0,0,1.0);
+            projectedVector = projectedVector.add(offsetVector);
+            projectedVector.x *= 0.5 * (double) this.WIDTH;
+            projectedVector.y *= 0.5 * (double) this.HEIGHT;
+            returnPoints[counter] = projectedVector;
+            counter++;
+        }
+
+
+        return returnPoints;
     }
 
 

@@ -3,48 +3,57 @@ import java.util.ArrayList;
 
 public class SweepXValues {
 
-    public ArrayList<ComplexNumber> xValues = new ArrayList<>();
+    public ArrayList<ArrayList<ComplexNumber>> xValues = new ArrayList<>();
     public ArrayList<ComplexNumber> yValues = new ArrayList<>();
     public Equation equation;
 
 
     public SweepXValues(double minXReal, double maxXReal, double minXImaginary, double maxXImaginary, int detail){
         // x values will be calculated at min, max and detail number of times in between
-        for (double i = minXReal; i <= maxXReal; i += (maxXReal-minXReal)/(detail+1)) {
-            for (double j = minXImaginary; j <= maxXImaginary ; j += (maxXImaginary-minXImaginary)/(detail+1)) {
-                xValues.add(new ComplexNumber(i,j));
+        int counter = 0;
+        for (double i = minXImaginary; i <= maxXImaginary; i += (maxXImaginary-minXImaginary)/(detail+1)) {
+            xValues.add(new ArrayList<ComplexNumber>());
+            for (double j = minXReal; j <= maxXReal ; j += (maxXReal-minXReal)/(detail+1)) {
+                xValues.get(counter).add(new ComplexNumber(j,i));
             }
+            counter++;
         }
         // if they do not include equation here they will have to set it later
     }
 
     public SweepXValues(double minXReal, double maxXReal, double minXImaginary, double maxXImaginary, int detail, Equation equation1){
         // x values will be calculated at min, max and detail number of times in between
-        for (double i = minXReal; i <= maxXReal; i += (maxXReal-minXReal)/(detail+1)) {
-            for (double j = minXImaginary; j <= maxXImaginary ; j += (maxXImaginary-minXImaginary)/(detail+1)) {
-                xValues.add(new ComplexNumber(i,j));
+        int counter = 0;
+        for (double i = minXImaginary; i <= maxXImaginary; i += (maxXImaginary-minXImaginary)/(detail+1)) {
+            xValues.add(new ArrayList<ComplexNumber>());
+            for (double j = minXReal; j <= maxXReal ; j += (maxXReal-minXReal)/(detail+1)) {
+                xValues.get(counter).add(new ComplexNumber(j,i));
             }
+            counter++;
         }
         this.equation = equation1;
     }
 
-    public ArrayList<ComplexNumber> calculateYValues(){
+    public ArrayList<ComplexNumber> calculateYValues(int whichBValue){
         yValues.clear();
-        for (ComplexNumber complexNumber : xValues){
+        int counter = 0;
+        for (ComplexNumber complexNumber : xValues.get(whichBValue)){
+//            System.out.println(counter);
             yValues.add(equation.evaluateEquation(complexNumber, equation.length));
+            counter++;
         }
         return yValues;
     }
 
-    public Vector[] calculateYValuesVector(){
-        ArrayList<ComplexNumber> complexNumbers = calculateYValues();
-        Vector[] ret = new Vector[complexNumbers.size()];
+    public Vector[] calculateYValuesVector(int whichBValue){
+        calculateYValues(whichBValue);
+        Vector[] ret = new Vector[yValues.size()];
 
         double maxA = 0.0;
         double maxB = 0.0;
         double maxX = 0.0;
-        maxX = xValues.get(xValues.size()-1).a;
-        for (ComplexNumber complexNumber : complexNumbers){
+        maxX = xValues.get(whichBValue).get(xValues.size()-1).a;
+        for (ComplexNumber complexNumber : yValues){
             if (complexNumber.a > maxA){
                 maxA = complexNumber.a;
             }
@@ -54,9 +63,9 @@ public class SweepXValues {
         }
 
         int counter = 0;
-        for (ComplexNumber complexNumber : complexNumbers){
-            System.out.println(counter);
-            ret[counter] = new Vector(xValues.get(counter).a/maxX, complexNumber.a/maxA, complexNumber.b/maxB, 1);
+        for (ComplexNumber complexNumber : yValues){
+//            System.out.println(counter);
+            ret[counter] = new Vector(xValues.get(whichBValue).get(counter).a/maxX, complexNumber.a/maxA, complexNumber.b/maxB, 1);
             counter++;
         }
         return ret;

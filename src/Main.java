@@ -44,8 +44,8 @@ public class Main {
     public static void main(String[] args) {
         //------------------------------ Equation Stuff ------------------------------\\
         System.out.println("Hello world!");
-//        Equation e1 = new Equation("\\log_{23.2}{7*x-3}");
-        Equation e1 = new Equation("x^2");
+        Equation e1 = new Equation("\\log_{23.2}{7*x-3}");
+//        Equation e1 = new Equation("x^2");
         System.out.println(e1.evaluateEquation(new ComplexNumber(0,0), e1.length) + " @x=" + new ComplexNumber(0,0));
         System.out.println(e1.evaluateEquation(new ComplexNumber(1,0), e1.length) + " @x=" + new ComplexNumber(1,0));
         System.out.println(e1.evaluateEquation(new ComplexNumber(0,1), e1.length) + " @x=" + new ComplexNumber(0,1));
@@ -53,7 +53,7 @@ public class Main {
 
         //------------------------------ Sweep Stuff ------------------------------\\
         SweepXValues sweepXValues = new SweepXValues(-10.0, 10.0, 0.0,0.1,100,e1);
-        Vector[] points = sweepXValues.calculateYValuesVector();
+        Vector[] points = sweepXValues.calculateYValuesVector(0);
         System.out.println(Arrays.toString(points));
         //------------------------------ Sweep Stuff ------------------------------\\
 
@@ -68,9 +68,9 @@ public class Main {
 
 
         //------------------------------ Scene Stuff ------------------------------\\
-        Vector camera = new Vector(0,0,0,1); // i don't know why this works
+        Vector camera = new Vector(2,0,0,1); // I don't know why this works, well kinda
 //        Vector[] points = {new Vector(0,0,0,1), new Vector(1,0,0,1), new Vector(0,1,0,1), new Vector(0,0,1,1), new Vector(-1,0,0,1)};
-        Scene scene = new Scene(camera, 90, Math.PI, 0, 0.1, 1000, points, 480, 720);
+        Scene scene = new Scene(camera, 90, 3*Math.PI/2, 0, 0.1, 1000, points, 480, 720);
         DrawPoint drawPoint = new DrawPoint();
         drawPoint.points = new ArrayList<>();
         frame.add(drawPoint);
@@ -93,19 +93,38 @@ public class Main {
                     scene.camera.x += 0.1;
                 } else if (e.getKeyCode() == KeyEvent.VK_D) {
                     scene.camera.x -= 0.1;
+                } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                    scene.camera.z += 0.1;
+                } else if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                    scene.camera.z -= 0.1;
                 } else if(e.getKeyCode() == KeyEvent.VK_LEFT){
                     scene.yaw +=0.1;
-                }else if(e.getKeyCode() == KeyEvent.VK_RIGHT){
+                } else if(e.getKeyCode() == KeyEvent.VK_RIGHT){
                     scene.yaw -=0.1;
+                } else if(e.getKeyCode() == KeyEvent.VK_UP){
+                    scene.pitch +=0.1;
+                } else if(e.getKeyCode() == KeyEvent.VK_DOWN){
+                    scene.pitch -=0.1;
+                } else if(e.getKeyCode() == KeyEvent.VK_H){
+                    scene.moveCameraInCircle(0.1, 0);
+                } else if(e.getKeyCode() == KeyEvent.VK_F){
+                    scene.moveCameraInCircle(-0.1, 0);
                 }
 
 
                 System.out.println(scene.camera.x + "," + scene.camera.y + "," + scene.camera.z + "\t Yaw=" + scene.yaw + " Pitch=" + scene.pitch);
                 Vector[] drawPoints = scene.drawFrame();
                 drawPoint.points = new ArrayList<>();
+                drawPoint.axisPoints = new ArrayList<>();
+                System.out.println(Arrays.toString(drawPoints));
                 for (Vector point : drawPoints){
                     drawPoint.addPoint((int)point.x, (int)point.y);
                 }
+                Vector[] drawAxis = scene.drawAxis();
+                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[0].y , (int)drawAxis[1].x, (int)drawAxis[1].y);
+                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[0].y , (int)drawAxis[3].x, (int)drawAxis[3].y);
+                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[0].y , (int)drawAxis[5].x, (int)drawAxis[5].y);
+
 
             }
         });
