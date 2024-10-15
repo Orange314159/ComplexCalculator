@@ -57,25 +57,25 @@ public class Scene {
 
     public void moveCameraInCircle(double deltaYaw, double deltaPitch){
         this.relativeCameraYaw   += deltaYaw;
-        this.relativeCameraPitch += deltaPitch;
 
-        this.camera.x = 2 * Math.cos(relativeCameraYaw);
-        this.camera.y = 2 * Math.sin(relativeCameraYaw);
-
-        if (pitch - deltaPitch > (3.14/2)){
-            this.pitch = (3.14/2);
-            this.camera.z = -2.0;
-        } else if (pitch - deltaPitch < -(3.14/2)) {
-            this.pitch = -(3.14/2);
-            this.camera.z = 2.0;
+        double circleRadiusXZ = 2;
+        if (pitch - deltaPitch > (1.3)){
+            this.pitch = (1.3);
+            this.camera.y = -2.0;
+        } else if (pitch - deltaPitch < -(1.3)) {
+            this.pitch = -(1.3);
+            this.camera.y = 2.0;
         } else {
-            this.pitch   -= deltaPitch;
-            this.camera.z = 2 * Math.sin(relativeCameraPitch);
+            this.relativeCameraPitch += deltaPitch;
+            this.pitch    -= deltaPitch;
+            this.camera.y  = 2.2 * Math.sin(relativeCameraPitch) + 1;
+            circleRadiusXZ = 2.2 * Math.cos(relativeCameraPitch);
         }
 
+        this.camera.x = circleRadiusXZ * Math.cos(relativeCameraYaw);
+        this.camera.z = circleRadiusXZ * Math.sin(relativeCameraYaw);
 
-
-        this.yaw   -= deltaYaw;
+        this.yaw   += deltaYaw;
     }
 
     public void pointAt(){

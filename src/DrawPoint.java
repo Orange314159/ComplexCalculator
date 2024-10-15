@@ -29,9 +29,18 @@ public class DrawPoint extends JPanel {
         for (Point point : points) {
             g.fillOval(point.x,point.y, 5, 5);
         }
+        int counter = 0;
         for(int[] point : axisPoints){
+            if (counter == 0){
+                g.setColor(Color.GREEN);
+            } else if (counter == 1){
+                g.setColor(Color.BLUE);
+            } else {
+                g.setColor(Color.RED);
+            }
             g.drawLine(point[0], point[1], point[2], point[3]);
-            System.out.println(point[0] + "," + point[1]);
+//            System.out.println(point[0] + "," + point[1]);
+            counter++;
         }
 
     }

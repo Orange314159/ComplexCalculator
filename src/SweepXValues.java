@@ -4,6 +4,7 @@ import java.util.ArrayList;
 public class SweepXValues {
 
     public ArrayList<ArrayList<ComplexNumber>> xValues = new ArrayList<>();
+    public int imaginaryValues;
     public ArrayList<ComplexNumber> yValues = new ArrayList<>();
     public Equation equation;
 
@@ -18,13 +19,14 @@ public class SweepXValues {
             }
             counter++;
         }
+        this.imaginaryValues = counter;
         // if they do not include equation here they will have to set it later
     }
 
-    public SweepXValues(double minXReal, double maxXReal, double minXImaginary, double maxXImaginary, int detail, Equation equation1){
+    public SweepXValues(double minXReal, double maxXReal, double minXImaginary, double maxXImaginary, int detail, int detail2, Equation equation1){
         // x values will be calculated at min, max and detail number of times in between
         int counter = 0;
-        for (double i = minXImaginary; i <= maxXImaginary; i += (maxXImaginary-minXImaginary)/(detail+1)) {
+        for (double i = minXImaginary; i <= maxXImaginary; i += (maxXImaginary-minXImaginary)/(detail2+1)) {
             xValues.add(new ArrayList<ComplexNumber>());
             for (double j = minXReal; j <= maxXReal ; j += (maxXReal-minXReal)/(detail+1)) {
                 xValues.get(counter).add(new ComplexNumber(j,i));
@@ -32,6 +34,7 @@ public class SweepXValues {
             counter++;
         }
         this.equation = equation1;
+        this.imaginaryValues = counter;
     }
 
     public ArrayList<ComplexNumber> calculateYValues(int whichBValue){
