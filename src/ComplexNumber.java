@@ -44,7 +44,6 @@ public class ComplexNumber {
         }
         return new ComplexNumber((this.a*c.a - this.b*c.b), (this.a*c.b + this.b*c.a));
     }
-
     public ComplexNumber div(ComplexNumber c, ComplexNumber xValue){
 //        System.out.println(this + " / " + c);
         if (isX){
@@ -59,6 +58,7 @@ public class ComplexNumber {
         double imaginaryPart = (this.b*c.a - this.a*c.b)/(c.a*c.a + c.b*c.b);
         return new ComplexNumber(realPart, imaginaryPart); // this one is complicated, so I split it up (there is no real reason to do this other than readability)
     }
+
     public ComplexNumber add(ComplexNumber c, ComplexNumber xValue){
         if (isX){
             this.a = xValue.a;
@@ -124,6 +124,85 @@ public class ComplexNumber {
         double realPart      = Math.pow(r, c.a) / (Math.pow(Math.E, (c.b*t))) * Math.cos(c.b*Math.log(r) + c.a*t);
         double imaginaryPart = Math.pow(r, c.a) / (Math.pow(Math.E, (c.b*t))) * Math.sin(c.b*Math.log(r) + c.a*t);
         return new ComplexNumber(realPart, imaginaryPart);
+    }
+
+    public ComplexNumber sinh(ComplexNumber xValue){
+        // \frac{e^x-e^{-x}}{2}
+        if (this.isX){
+            this.a = xValue.a;
+            this.b = xValue.b;
+        }
+        ComplexNumber numerator = (new ComplexNumber(2.71828, 0)).pow(this, this).sub((new ComplexNumber(2.71828, 0)).pow(this.mul(new ComplexNumber(-1,0), xValue), xValue), xValue);
+        double realPart = numerator.a / 2;
+        double imaginaryPart = numerator.b/2;
+        return new ComplexNumber(realPart, imaginaryPart);
+    }
+    public ComplexNumber cosh(ComplexNumber xValue){
+        // \frac{e^+e^{-x}}{2}
+        if (this.isX){
+            this.a = xValue.a;
+            this.b = xValue.b;
+        }
+        ComplexNumber numerator = (new ComplexNumber(2.71828, 0)).pow(this, this).add((new ComplexNumber(2.71828, 0)).pow(this.mul(new ComplexNumber(-1,0), xValue), xValue), xValue);
+        double realPart = numerator.a / 2;
+        double imaginaryPart = numerator.b/2;
+        return new ComplexNumber(realPart, imaginaryPart);
+    }
+    public ComplexNumber tanh(ComplexNumber xValue){
+        // \frac{sinh}{cosh]
+        ComplexNumber numerator = sinh(xValue);
+        ComplexNumber denominator = cosh(xValue);
+        return numerator.div(denominator, xValue);
+    }
+    public ComplexNumber coth(ComplexNumber xValue){
+        // \frac{cosh}{sinh]
+        ComplexNumber numerator = cosh(xValue);
+        ComplexNumber denominator = sinh(xValue);
+        return numerator.div(denominator, xValue);
+    }
+    public ComplexNumber sech(ComplexNumber xValue){
+        // \frac{1}{cosh}
+        ComplexNumber denominator = cosh(xValue);
+        return new ComplexNumber(1/denominator.a, 1/denominator.b);
+    }
+    public ComplexNumber csch(ComplexNumber xValue){
+        // \frac{1}{sinh}
+        ComplexNumber denominator = sinh(xValue);
+        return new ComplexNumber(1/denominator.a, 1/denominator.b);
+    }
+
+    public ComplexNumber sin(ComplexNumber xValue){
+        // I have to use angle sum formula and angle difference formula, also some wierd stuff with sinh and cosh
+        double bValue = this.b;
+        ComplexNumber  firstPart = (new ComplexNumber(Math.sin(a), 0)).mul((new ComplexNumber(bValue, 0).cosh(xValue)), xValue);
+        ComplexNumber secondPart = (new ComplexNumber(Math.cos(a), 0)).mul((new ComplexNumber(bValue, 0).sinh(xValue)), xValue);
+        return new ComplexNumber(firstPart.a, secondPart.a);
+    }
+    public ComplexNumber cos(ComplexNumber xValue){
+        double bValue = this.b;
+        ComplexNumber firstPart = (new ComplexNumber(Math.cos(a), 0)).mul((new ComplexNumber(bValue, 0).cosh(xValue)), xValue);
+        ComplexNumber secondPart = (new ComplexNumber(Math.sin(a), 0)).mul((new ComplexNumber(bValue, 0).sinh(xValue)), xValue);
+        return new ComplexNumber(firstPart.a, -1*secondPart.a);
+    }
+    public ComplexNumber tan(ComplexNumber xValue){
+        ComplexNumber numerator = sin(xValue);
+        ComplexNumber denominator = cos(xValue);
+        return numerator.div(denominator, xValue);
+    }
+    public ComplexNumber cot(ComplexNumber xValue){
+        ComplexNumber numerator = cos(xValue);
+        ComplexNumber denominator = sin(xValue);
+        return numerator.div(denominator, xValue);
+    }
+    public ComplexNumber sec(ComplexNumber xValue){
+        ComplexNumber numerator = new ComplexNumber(1,0);
+        ComplexNumber denominator = cos(xValue);
+        return numerator.div(denominator, xValue);
+    }
+    public ComplexNumber csc(ComplexNumber xValue){
+        ComplexNumber numerator = new ComplexNumber(1,0);
+        ComplexNumber denominator = sin(xValue);
+        return numerator.div(denominator, xValue);
     }
 
     @Override
