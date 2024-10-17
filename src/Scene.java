@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 public class Scene {
 
     //---------------------------- Camera ----------------------------//
@@ -16,14 +14,14 @@ public class Scene {
     //---------------------------- Camera ----------------------------//
 
     //---------------------------- Screen ----------------------------//
-    private int WIDTH;
-    private int HEIGHT;
-    private double aspectRatio;
+    public int WIDTH;
+    public int HEIGHT;
+    public double aspectRatio;
     //---------------------------- Screen ----------------------------//
 
     //---------------------------- Points ----------------------------//
     public Vector[]  points;
-    private Vector[] pointsToDraw;
+    public Vector[] pointsToDraw;
     //---------------------------- Points ----------------------------//
 
     public Scene(){
@@ -117,7 +115,7 @@ public class Scene {
         projectionMatrix.makeProjection(this.FOV, this.aspectRatio, this.near, this.far);
         int counter = 0;
         for(Vector point : this.points){
-            Vector transformedVector = new Vector();
+            Vector transformedVector;
             transformedVector = point.multiplyByMatrix(worldMatrix);
             // scale
             Vector projectedVector = transformedVector.multiplyByMatrix(this.viewMatrix);
@@ -158,7 +156,7 @@ public class Scene {
 
         int counter = 0;
         for(Vector point : pointsOfAxis){
-            Vector transformedVector = new Vector();
+            Vector transformedVector;
             transformedVector = point.multiplyByMatrix(worldMatrix);
             // scale
             Vector projectedVector = transformedVector.multiplyByMatrix(this.viewMatrix);

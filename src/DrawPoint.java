@@ -5,8 +5,8 @@ import java.util.List;
 
 
 public class DrawPoint extends JPanel {
-    public List<Point> points = new ArrayList<>();
-    public List<int[]> axisPoints = new ArrayList<>();
+    public List<Point> points ;
+    public List<int[]> axisPoints;
 
     public DrawPoint(){
         points = new ArrayList<>();

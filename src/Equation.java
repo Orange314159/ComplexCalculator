@@ -95,7 +95,7 @@ public class Equation {
                 // \log or \ln (refers to log base e in my code)
                 // \log_
 //                System.out.println("in function");
-                if(input.startsWith("frac", i+1)){
+                if(input.startsWith("frac", i+1) && skip <1){
                     // this is a fraction
 //                    System.out.println("fraction");
                     if (input.charAt(i+5) == '{'){
@@ -120,7 +120,7 @@ public class Equation {
                     }
 
                     skip = findCloseBrace(findCloseBrace(i+5, input)+1, input)+1 - i-1;
-                } else if (input.startsWith("log_", i+1)){
+                } else if (input.startsWith("log_", i+1) && skip <1){
 //                    System.out.println("fraction");
                     if (input.charAt(i+5) == '{'){
                         int leftTree = createTreeSpecialFunctions(input.substring(i+5,findCloseBrace(i+5, input)+1));
@@ -145,9 +145,8 @@ public class Equation {
 
                     skip = findCloseBrace(findCloseBrace(i+5, input)+1, input)+1 - i-1;
 //                    System.out.println("log");
-                } else if (input.startsWith("log", i+1)){
+                } else if (input.startsWith("log", i+1) && skip <1){
                     // this is a ln
-                    System.out.println("ln");
                     if (input.charAt(i+4) == '{'){
                         int leftTree = createTreeSpecialFunctions(input.substring(i+5,findCloseBrace(i+5, input)+1));
                         int rightTree = 0;
@@ -170,13 +169,40 @@ public class Equation {
                     }
 
                     skip = findCloseBrace(findCloseBrace(i+5, input)+1, input)+1 - i-1;
+                } else if ((input.substring(i+1, i+5).equals("sinh") || input.substring(i+1, i+5).equals("cosh") || input.substring(i+1, i+5).equals("tanh")|| input.substring(i+1, i+5).equals("coth")|| input.substring(i+1, i+5).equals("sech")|| input.substring(i+1, i+5).equals("csch"))&& skip <1) {
+                    // any hyperbolic trig function
+                    String functionName = input.substring(i+1,i+5);
+//                    System.out.println(input + "  " + input.substring(i+6,findCloseBrace(i+5, input)));
+                    if (input.charAt(i+5) == '{'){
+                        int subTree = createTreeSpecialFunctions(input.substring(i+6,findCloseBrace(i+5, input)));
+                        tree.add(new Node(functionName, new ComplexNumber(), tree.get(subTree), new Node()));
+//                        System.out.println(partialEqSP + "___" + "~" + (tree.size() - 1) + "~");
+                        partialEqSP.append("~").append(tree.size() - 1).append("~");
+                    } else {
+                        System.out.println("Error");
+                    }
+                    skip = findCloseBrace(i+5, input) - i;
+//                    System.out.println(skip);
+                } else if ((input.substring(i+1, i+4).equals("sin") || input.substring(i+1, i+4).equals("cos") || input.substring(i+1, i+4).equals("tan")|| input.substring(i+1, i+4).equals("cot")|| input.substring(i+1, i+4).equals("sec")|| input.substring(i+1, i+4).equals("csc"))&& skip <1) {
+                    // any hyperbolic trig function
+                    String functionName = input.substring(i+1,i+4);
+//                    System.out.println(input + "  " + input.substring(i+6,findCloseBrace(i+5, input)));
+                    if (input.charAt(i+4) == '{'){
+                        int subTree = createTreeSpecialFunctions(input.substring(i+5,findCloseBrace(i+4, input)));
+                        tree.add(new Node(functionName, new ComplexNumber(), tree.get(subTree), new Node()));
+//                        System.out.println(partialEqSP + "___" + "~" + (tree.size() - 1) + "~");
+                        partialEqSP.append("~").append(tree.size() - 1).append("~");
+                    } else {
+                        System.out.println("Error");
+                    }
+                    skip = findCloseBrace(i+4, input) - i;
+//                    System.out.println(skip);
                 }
 
             } else {
                 if (skip > 0){
                     skip--;
                 }else{
-//                    System.out.print(input.charAt(i));
                     partialEqSP.append(input.charAt(i));
                 }
             }
@@ -403,7 +429,7 @@ public class Equation {
         // you may be yelling at me here for forgetting log or sin, etc.
         // I did consider these at first, but they will all be gone by the time that this function is used
         // if you end up using this function at a different point in your own code you may want to adjust it
-        for (char operator : this.operators) {
+        for (char operator : operators) {
             if (c == operator) {
                 return false;
             }
@@ -443,6 +469,32 @@ public class Equation {
                     this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).pow(this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).right)), myX);
             case "log" ->
                     this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).log(this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).right)), myX);
+            case "sinh" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).sinh(myX);
+            case "cosh" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).cosh(myX);
+            case "tanh" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).tanh(myX);
+            case "coth" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).coth(myX);
+            case "sech" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).sech(myX);
+            case "csch" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).csch(myX);
+            case "sin" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).sin(myX);
+            case "cos" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).cos(myX);
+            case "tan" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).tan(myX);
+            case "sec" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).sec(myX);
+            case "csc" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).csc(myX);
+            case "cot" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).cot(myX);
+
+
             default -> new ComplexNumber();
         };
     }
@@ -455,7 +507,7 @@ public class Equation {
 
     @Override
     public String toString() {
-        return eq + "\n" + tree.get(length);
+        return "INPUT:\t" + eq + "\nOUTPUT:\t" + tree.get(length);
     }
 
     @Override

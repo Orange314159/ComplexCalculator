@@ -108,16 +108,16 @@ public class Matrix {
     }
     public void pointAt(Vector position, Vector target, Vector up){
         // Vector Stuff
-        Vector newForward = new Vector();
+        Vector newForward;
         newForward = target.sub(position);
         newForward.normalize();
 
-        Vector a = new Vector();
+        Vector a;
         a = newForward.mul(up.dotProduct(newForward));
         Vector newUp = up.sub(a);
         newUp.normalize();
 
-        Vector newRight = new Vector();
+        Vector newRight;
         newRight = newUp.crossProduct(newForward);
 
         // Construct Matrix
