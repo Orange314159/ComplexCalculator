@@ -205,6 +205,51 @@ public class ComplexNumber {
         return numerator.div(denominator, xValue);
     }
 
+    public Double gammaIntegral(double detail, ComplexNumber input, boolean real){
+        double total = 0;
+        if (real){
+            for (double i = 0.000000000000000001; i < 30; i+=detail) {
+                // this converges quickly (we will go to 16 for a good approximation (this gets us to the order of E-6 or E-7 precision)
+                total += Math.pow(i,(input.a)) * (1/Math.pow(Math.E, (i))) * Math.cos(input.b * Math.log(i));
+            }
+            total *= detail;
+        } else {
+            // imaginary
+            for (double i = 0.000000000000000001; i < 30; i+=detail) {
+                // this converges quickly (we will go to 16 for a good approximation (this gets us to the order of E-6 or E-7 precision)
+                total += Math.pow(i,(input.a)) * (1/Math.pow(Math.E, (i))) * Math.sin(input.b * Math.log(i));
+            }
+            total *= detail;
+        }
+//        System.out.println(total);
+        return total;
+    }
+    public ComplexNumber gam(ComplexNumber xValue){
+        if (this.isX){
+            this.a = xValue.a;
+            this.b = xValue.b;
+        }
+        // the gamma function is the extension of the factorial to all real numbers, what I am doing here is
+        // analytically continuing this to a general complex number (not 0 or any negative integer)
+        if((this.a == ((int)this.a) && this.a < 0)){
+            return new ComplexNumber();
+        } else if (this.a == 0 && this.b == 0) {
+            return new ComplexNumber(1,0);
+        } else if(this.a == 0){
+            // when a == 0 the graph moves rapidly at the beginning so a smaller detail is required
+            double realPart      = gammaIntegral(0.0005,this,true);
+            // imaginary part = integral from 0 to infinity {t^{a-1}*e^{-t}*sin(b*ln{t})dt}
+            double imaginaryPart = gammaIntegral(0.0005,this,false);
+            return new ComplexNumber(realPart, imaginaryPart);
+        }
+        // real part = integral from 0 to infinity {t^{a-1}*e^{-t}*cos(b*ln{t})dt}
+        // to evaluate the integral I will use a left Riemann sum
+        double realPart      = gammaIntegral(0.2,this,true);
+        // imaginary part = integral from 0 to infinity {t^{a-1}*e^{-t}*sin(b*ln{t})dt}
+        double imaginaryPart = gammaIntegral(0.2,this,false);
+        return new ComplexNumber(realPart, imaginaryPart);
+    }
+
     @Override
     public String toString() {
         if (isX){

@@ -183,8 +183,8 @@ public class Equation {
                     }
                     skip = findCloseBrace(i+5, input) - i;
 //                    System.out.println(skip);
-                } else if ((input.substring(i+1, i+4).equals("sin") || input.substring(i+1, i+4).equals("cos") || input.substring(i+1, i+4).equals("tan")|| input.substring(i+1, i+4).equals("cot")|| input.substring(i+1, i+4).equals("sec")|| input.substring(i+1, i+4).equals("csc"))&& skip <1) {
-                    // any hyperbolic trig function
+                } else if ((input.substring(i+1, i+4).equals("sin") || input.substring(i+1, i+4).equals("cos") || input.substring(i+1, i+4).equals("tan")|| input.substring(i+1, i+4).equals("cot")|| input.substring(i+1, i+4).equals("sec")|| input.substring(i+1, i+4).equals("csc") || input.substring(i+1, i+4).equals("gam"))&& skip <1) {
+                    // any three letter function (i attempt to make all of my functions like this)
                     String functionName = input.substring(i+1,i+4);
 //                    System.out.println(input + "  " + input.substring(i+6,findCloseBrace(i+5, input)));
                     if (input.charAt(i+4) == '{'){
@@ -493,8 +493,8 @@ public class Equation {
                     this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).csc(myX);
             case "cot" ->
                     this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).cot(myX);
-
-
+            case "gam" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).gam(myX); // this might be slow
             default -> new ComplexNumber();
         };
     }

@@ -36,19 +36,21 @@ public class Main {
         //------------------------------ Equation Stuff ------------------------------\\
         System.out.println("Hello world!");
 
+        ComplexNumber c0 = new ComplexNumber(0,1);
+        System.out.println(c0.gam(c0));
 //        Equation e0 = new Equation("\\sin{x-\\tan{2}}");
 //        System.out.println(e0);
 //        System.out.println(e0.evaluateEquation(new ComplexNumber(1,0), e0.length));
 //        Equation e1 = new Equation("\\log_{23.2}{7*x-3}");
 //        Equation e1 = new Equation("x^2");
-        Equation e1 = new Equation("\\sin{x-\\tan{2}}");
+        Equation e1 = new Equation("\\gam{x}");
         System.out.println(e1.evaluateEquation(new ComplexNumber(0,0), e1.length) + " @x=" + new ComplexNumber(0,0));
         System.out.println(e1.evaluateEquation(new ComplexNumber(1,0), e1.length) + " @x=" + new ComplexNumber(1,0));
         System.out.println(e1.evaluateEquation(new ComplexNumber(0,1), e1.length) + " @x=" + new ComplexNumber(0,1));
         //------------------------------ Equation Stuff ------------------------------\\
 
         //------------------------------ Sweep Stuff ------------------------------\\
-        SweepXValues sweepXValues = new SweepXValues(-10.0, 10.0, 0.0,10,1000, 50,e1);
+        SweepXValues sweepXValues = new SweepXValues(0, 2.0, 0.0,10,10000, 100,e1);
         final Integer[] bValue = {0};
         int bMax = sweepXValues.imaginaryValues;
         final Vector[][] points = {sweepXValues.calculateYValuesVector(bValue[0])};
@@ -70,6 +72,7 @@ public class Main {
         DrawPoint drawPoint = new DrawPoint();
         drawPoint.points = new ArrayList<>();
         frame.add(drawPoint);
+        System.out.println("Start Now");
         //------------------------------ Scene Stuff ------------------------------\\
 
 
@@ -149,7 +152,7 @@ public class Main {
                         System.out.println(scene.camera.x + "," + scene.camera.y + "," + scene.camera.z + "\t Yaw=" + scene.yaw + " Pitch=" + scene.pitch);
                     }
                     Vector[] drawPoints = scene.drawFrame();
-                    System.out.println(Arrays.toString(drawPoints));
+//                    System.out.println(Arrays.toString(drawPoints));
                     drawPoint.points = new ArrayList<>();
                     drawPoint.axisPoints = new ArrayList<>();
                     for (Vector point : drawPoints){

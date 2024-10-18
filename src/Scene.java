@@ -140,7 +140,7 @@ public class Scene {
         Vector[] pointsOfAxis = new Vector[6];
         // x axis
         pointsOfAxis[0] = new Vector(0,0,0,1.0);
-        pointsOfAxis[1] = new Vector(1.0,0,0,1.0);
+        pointsOfAxis[1] = new Vector(-1.0,0,0,1.0);
         // y axis
         pointsOfAxis[2] = new Vector(0,0,0,1.0);
         pointsOfAxis[3] = new Vector(0,1.0,0,1.0);

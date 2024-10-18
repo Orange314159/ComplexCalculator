@@ -50,15 +50,26 @@ public class SweepXValues {
 
         double maxA = 0.0;
         double maxB = 0.0;
-        double maxX;
-        maxX = xValues.get(whichBValue).get(xValues.size()-1).a;
+        double maxX = 0.0;
+        for (ComplexNumber complexNumber : xValues.get(whichBValue)){
+            if (Math.abs(complexNumber.a) > maxA){
+                maxX = Math.abs(complexNumber.a);
+            }
+        }
         for (ComplexNumber complexNumber : yValues){
-            if (complexNumber.a > maxA){
-                maxA = complexNumber.a;
+            if (Math.abs(complexNumber.a) > maxA){
+                maxA = Math.abs(complexNumber.a);
             }
-            if (complexNumber.b > maxB){
-                maxB = complexNumber.b;
+            if (Math.abs(complexNumber.b)> maxB){
+                maxB = Math.abs(complexNumber.b);
             }
+        }
+        if (maxA == 0.0){
+            maxA = 1;
+        } else if (maxB == 0.0) {
+            maxB = 1;
+        } else if (maxX == 0.0){
+            maxX =1;
         }
 
         int counter = 0;

@@ -6,7 +6,7 @@ In addition, many functions make use of ArrayLists and Lists.
 The main function also uses scanner to take input from the user of the equation that they wish to graph.
 When inputting and equation to graph you should use the LATEX common format for equations.
 You may not include a `~` in your equation because it is a reserved character that I use to link nodes on the binary tree.
-The currently supported functions are as follows: `log_{b}{a}` `log{a}` `\frac{a}{b}` `^` `^{a}` `*` `/` `+` `-` `sin{a}` `cos{a}` `tan{a}` `sec{a}` `csc{a}` `cot{a}` `sinh{a}` `cosh{a}` `tanh{a}` `sech{a}` `csch{a}` `coth{a}`.
+The currently supported functions are as follows: `log_{b}{a}` `log{a}` `\frac{a}{b}` `^` `^{a}` `*` `/` `+` `-` `sin{a}` `cos{a}` `tan{a}` `sec{a}` `csc{a}` `cot{a}` `sinh{a}` `cosh{a}` `tanh{a}` `sech{a}` `csch{a}` `coth{a}` `gam{a}`.
 ## What you should know before reading the code
 You should be familiar with the concept of complex numbers (a number that includes both a real and imaginary part).
 You should also have some familiarity with the idea of how functions may act on numbers like these.
