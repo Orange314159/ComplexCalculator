@@ -209,19 +209,17 @@ public class ComplexNumber {
         double total = 0;
         if (real){
             for (double i = 0.000000000000000001; i < 30; i+=detail) {
-                // this converges quickly (we will go to 16 for a good approximation (this gets us to the order of E-6 or E-7 precision)
+                // this converges quickly (we will go to 30 for a good approximation (this gets us to the order of E-6 or E-7 precision)
+                // I cant take log of zero, so I will get very close to zero to start with
                 total += Math.pow(i,(input.a)) * (1/Math.pow(Math.E, (i))) * Math.cos(input.b * Math.log(i));
             }
-            total *= detail;
         } else {
-            // imaginary
+            // imaginary (only difference is the sin)
             for (double i = 0.000000000000000001; i < 30; i+=detail) {
-                // this converges quickly (we will go to 16 for a good approximation (this gets us to the order of E-6 or E-7 precision)
                 total += Math.pow(i,(input.a)) * (1/Math.pow(Math.E, (i))) * Math.sin(input.b * Math.log(i));
             }
-            total *= detail;
         }
-//        System.out.println(total);
+        total *= detail;
         return total;
     }
     public ComplexNumber gam(ComplexNumber xValue){
