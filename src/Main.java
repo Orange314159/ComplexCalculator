@@ -1,6 +1,5 @@
 // TODO: add in inverse trig
 // TODO: add in way to show imaginary x value
-// TODO: add in a way to zoom in
 // TODO: add in d/dx
 // TODO: connect the dots created by visualization to make surfaces (this sounds especially hard)
 // TODO: add in a way to visualize the infinite number of complex exponents
