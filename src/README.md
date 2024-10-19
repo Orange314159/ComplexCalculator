@@ -38,3 +38,6 @@ Hopefully this makes sense and if anything does not make sense I recommend readi
 I recommend using this code by inputting an equation in a string in the code, but if you prefer to take user input from you should import java scanner and scan for nextLine. (The parser in equation should be able to handle the direct output from that)
 When typing in the equation you should keep in mind Latex format.
 In addition, for trig functions you must use curly braces instead of regular parenthesis for the argument. (Ex. Sin{2} NOT Sin(2))
+Wait for the program to print "Start Now" before you start to move the camera.
+Use `t` `f` `g` `h` to move and `z` and `x` to zoom in and out.
+Use the scroll wheel or scroll on the trackpad to move through different imaginary inputs for x.

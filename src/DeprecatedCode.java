@@ -271,4 +271,27 @@ public class DeprecatedCode {
 //        frame.getContentPane().setCursor(blankCursor);
 
 
+    // Main.java (for player movement)
+    //                } else if (e.getKeyCode() == KeyEvent.VK_W) {
+//                    scene.camera.y += 0.1;
+//                } else if (e.getKeyCode() == KeyEvent.VK_S) {
+//                    scene.camera.y -= 0.1;
+//                } else if (e.getKeyCode() == KeyEvent.VK_A) {
+//                    scene.camera.x += 0.1;
+//                } else if (e.getKeyCode() == KeyEvent.VK_D) {
+//                    scene.camera.x -= 0.1;
+//                } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+//                    scene.camera.z += 0.1;
+//                } else if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+//                    scene.camera.z -= 0.1;
+//                } else if(e.getKeyCode() == KeyEvent.VK_LEFT){
+//                    scene.yaw +=0.1;
+//                } else if(e.getKeyCode() == KeyEvent.VK_RIGHT){
+//                    scene.yaw -=0.1;
+//                } else if(e.getKeyCode() == KeyEvent.VK_UP){
+//                    scene.pitch +=0.1;
+//                } else if(e.getKeyCode() == KeyEvent.VK_DOWN){
+//                    scene.pitch -=0.1;
+
+
 }

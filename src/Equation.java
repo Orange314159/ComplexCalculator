@@ -3,7 +3,6 @@ public class Equation {
     // important notes:
     // 1. When creating the binary tree I use "~" as a delimiter for pointers DO NOT USE "~" IN YOUR EQUATIONS
     // 2. Spaces do not matter, I will remove all the spaces at the beginning so don't worry about that
-    // 3.
 
     public String eq;
     public int length = -1;
@@ -18,14 +17,14 @@ public class Equation {
         length = createTreeSpecialFunctions(eq);
     }
 
-    public int findCloseParenthesis(int start){
+    public int findCloseParenthesis(int start, String input){
         int counter = 1; // this signifies that there is one open parenthesis (the one that we start with)
         // once we find a close parenthesis we will decrement this, once we find an open parenthesis we increment
-        for (int i = start+1; i < eq.length(); i++){
+        for (int i = start+1; i < input.length(); i++){
             if(eq.charAt(i) == '('){
                 counter++;
             }
-            else if(eq.charAt(i) == ')'){
+            else if(input.charAt(i) == ')'){
                 counter--;
             }
 
@@ -36,10 +35,8 @@ public class Equation {
         }
         return -1; // this is if the close can't be found, this should result in the user fixing their input
     }
-
     public int findCloseBrace(int start, String input){
-        int counter = 1; // this signifies that there is one open parenthesis (the one that we start with)
-        // once we find a close parenthesis we will decrement this, once we find an open parenthesis we increment
+        int counter = 1;
         for (int i = start+1; i < input.length(); i++){
             if(input.charAt(i) == '{'){
                 counter++;
@@ -86,123 +83,106 @@ public class Equation {
 
     public int createTreeSpecialFunctions(String input){
         // this is similar to that of createTreeParenthesis but is about \frac or \log
-        StringBuilder partialEqSP = new StringBuilder(); // idk what to call this
+        // partialEqSP might be the most important variable in this method and the next few
+        // the idea behind this is that it will be equal to the String "input" EXCEPT in places where a function is
+        // in this case the function will add in a signifier "~" and an integer to refer to a node in tree that is added (this is not to be confused with a reference like what would be found in a language like C++)
+        // it will then skip adding in the characters from the function and just add in this signifier integer combination
+        // in addition, I use a stringBuilder class to make the addition of strings more clear and efficient
+        // all of these functions will be denoted with a "\" before the function name in order to signal that it's a function
+        StringBuilder partialEqSP = new StringBuilder();
         int skip = 0;
         for (int i = 0; i < input.length(); i++) {
             if (input.charAt(i) == '\\'){
-                // look for:
-                // \frac
-                // \log or \ln (refers to log base e in my code)
-                // \log_
-//                System.out.println("in function");
                 if(input.startsWith("frac", i+1) && skip <1){
                     // this is a fraction
-//                    System.out.println("fraction");
+                    // "frac" is 4 characters, so we expect an open brace immediately after (5 chars - i+5)
                     if (input.charAt(i+5) == '{'){
-                        int leftTree = createTreeSpecialFunctions(input.substring(i+5,findCloseBrace(i+5, input)+1));
+                        // I will make a "leftTree" and "rightTree" which are integers that refer to the location of a node in the array "tree" in this class
+                        int leftTree = createTreeSpecialFunctions(input.substring(i+5,findCloseBrace(i+5, input)+1)); // this is a recursive call that will look for special function inside the function
                         int rightTree = 0;
                         if (input.charAt(findCloseBrace(i+5, input)+1) == '{'){
-//                            System.out.println(input.substring(findCloseBrace(i+5, input)+1, findCloseBrace(findCloseBrace(i+5, input)+1, input)+1));
                             rightTree = createTreeSpecialFunctions(input.substring(findCloseBrace(i+5, input)+1, findCloseBrace(findCloseBrace(i+5, input)+1, input)+1));
                         } else {
+                            // This is bad
                             System.out.println("ERROR: Missing Second End Brace in a Fraction");
                         }
-//                        System.out.println(rightTree + "____" + tree.get(rightTree));
-//                        System.out.println(leftTree  + "____" + tree.get(leftTree));
+                        // turns the integer values into strings with tildes to denote that it is reference
                         String leftRaw  = "~" + leftTree  + "~";
                         String rightRaw = "~" + rightTree + "~";
-//                        System.out.println(leftTree + "_" + rightTree);
+                        // adding nodes is very repetitive
                         addNodes(leftRaw,rightRaw,"/");
-//                        System.out.println(tree.get(tree.size()-1));
                         partialEqSP.append("~").append(tree.size() - 1).append("~");
                     } else {
+                        // also very Bad
                         System.out.println("ERROR: No End Brace Found In A Fraction");
                     }
-
+                    // This is how many characters we have to skip in the input (I see the +1 -1, but I left it like that for readability)
                     skip = findCloseBrace(findCloseBrace(i+5, input)+1, input)+1 - i-1;
                 } else if (input.startsWith("log_", i+1) && skip <1){
-//                    System.out.println("fraction");
+                    // this is very similar to fraction but with log (reference the above section if you don't understand any part of the code here)
                     if (input.charAt(i+5) == '{'){
                         int leftTree = createTreeSpecialFunctions(input.substring(i+5,findCloseBrace(i+5, input)+1));
                         int rightTree = 0;
                         if (input.charAt(findCloseBrace(i+5, input)+1) == '{'){
-//                            System.out.println(input.substring(findCloseBrace(i+5, input)+1, findCloseBrace(findCloseBrace(i+5, input)+1, input)+1));
                             rightTree = createTreeSpecialFunctions(input.substring(findCloseBrace(i+5, input)+1, findCloseBrace(findCloseBrace(i+5, input)+1, input)+1));
                         } else {
                             System.out.println("ERROR: Missing Second End Brace in a Fraction");
                         }
-//                        System.out.println(rightTree + "____" + tree.get(rightTree));
-//                        System.out.println(leftTree  + "____" + tree.get(leftTree));
                         String leftRaw  = "~" + leftTree  + "~";
                         String rightRaw = "~" + rightTree + "~";
-//                        System.out.println(leftTree + "_" + rightTree);
                         addNodes(leftRaw,rightRaw,"log");
-//                        System.out.println(tree.get(tree.size()-1));
                         partialEqSP.append("~").append(tree.size() - 1).append("~");
                     } else {
                         tree.add(new Node("", new ComplexNumber(input.substring(i+1,i+2))));
                     }
-
                     skip = findCloseBrace(findCloseBrace(i+5, input)+1, input)+1 - i-1;
-//                    System.out.println("log");
                 } else if (input.startsWith("log", i+1) && skip <1){
-                    // this is a ln
+                    // this is a ln, again similar to log_ and frac
                     if (input.charAt(i+4) == '{'){
                         int leftTree = createTreeSpecialFunctions(input.substring(i+5,findCloseBrace(i+5, input)+1));
                         int rightTree = 0;
                         if (input.charAt(findCloseBrace(i+4, input)+1) == '{'){
-//                            System.out.println(input.substring(findCloseBrace(i+5, input)+1, findCloseBrace(findCloseBrace(i+5, input)+1, input)+1));
                             rightTree = createTreeSpecialFunctions(input.substring(findCloseBrace(i+4, input)+1, findCloseBrace(findCloseBrace(i+4, input)+1, input)+1));
                         } else {
                             System.out.println("ERROR: Missing Second End Brace in a Fraction");
                         }
-//                        System.out.println(rightTree + "____" + tree.get(rightTree));
-//                        System.out.println(leftTree  + "____" + tree.get(leftTree));
                         String leftRaw  = "~" + leftTree  + "~";
                         String rightRaw = "~" + rightTree + "~";
-//                        System.out.println(leftTree + "_" + rightTree);
                         addNodes(leftRaw,rightRaw,"log");
-//                        System.out.println(tree.get(tree.size()-1));
                         partialEqSP.append("~").append(tree.size() - 1).append("~");
                     } else {
                         tree.add(new Node("", new ComplexNumber(input.substring(i+1,i+2))));
                     }
-
                     skip = findCloseBrace(findCloseBrace(i+5, input)+1, input)+1 - i-1;
-                } else if ((input.substring(i+1, i+5).equals("sinh") || input.substring(i+1, i+5).equals("cosh") || input.substring(i+1, i+5).equals("tanh")|| input.substring(i+1, i+5).equals("coth")|| input.substring(i+1, i+5).equals("sech")|| input.substring(i+1, i+5).equals("csch"))&& skip <1) {
-                    // any hyperbolic trig function
+                } else if ((input.startsWith("sinh", i+1) || input.startsWith("cosh", i+1) || input.startsWith("tanh", i+1)|| input.startsWith("coth", i+1)|| input.startsWith("sech", i+1)|| input.startsWith("csch", i+1))&& skip <1) {
+                    // any hyperbolic trig function (they are all very similar and take equal characters to represent, so I will lump them all here)
                     String functionName = input.substring(i+1,i+5);
-//                    System.out.println(input + "  " + input.substring(i+6,findCloseBrace(i+5, input)));
                     if (input.charAt(i+5) == '{'){
                         int subTree = createTreeSpecialFunctions(input.substring(i+6,findCloseBrace(i+5, input)));
                         tree.add(new Node(functionName, new ComplexNumber(), tree.get(subTree), new Node()));
-//                        System.out.println(partialEqSP + "___" + "~" + (tree.size() - 1) + "~");
                         partialEqSP.append("~").append(tree.size() - 1).append("~");
                     } else {
                         System.out.println("Error");
                     }
                     skip = findCloseBrace(i+5, input) - i;
-//                    System.out.println(skip);
-                } else if ((input.substring(i+1, i+4).equals("sin") || input.substring(i+1, i+4).equals("cos") || input.substring(i+1, i+4).equals("tan")|| input.substring(i+1, i+4).equals("cot")|| input.substring(i+1, i+4).equals("sec")|| input.substring(i+1, i+4).equals("csc") || input.substring(i+1, i+4).equals("gam"))&& skip <1) {
-                    // any three letter function (i attempt to make all of my functions like this)
+                } else if ((input.startsWith("sin", i+1) || input.startsWith("cos", i+1) || input.startsWith("tan", i+1)|| input.startsWith("cot", i+1)|| input.startsWith("sec", i+1)|| input.startsWith("csc", i+1) || input.startsWith("gam", i+1))&& skip <1) {
+                    // any three letter function (I attempt to make all of my functions like this)
                     String functionName = input.substring(i+1,i+4);
 //                    System.out.println(input + "  " + input.substring(i+6,findCloseBrace(i+5, input)));
                     if (input.charAt(i+4) == '{'){
                         int subTree = createTreeSpecialFunctions(input.substring(i+5,findCloseBrace(i+4, input)));
                         tree.add(new Node(functionName, new ComplexNumber(), tree.get(subTree), new Node()));
-//                        System.out.println(partialEqSP + "___" + "~" + (tree.size() - 1) + "~");
                         partialEqSP.append("~").append(tree.size() - 1).append("~");
                     } else {
                         System.out.println("Error");
                     }
                     skip = findCloseBrace(i+4, input) - i;
-//                    System.out.println(skip);
                 }
-
             } else {
                 if (skip > 0){
                     skip--;
                 }else{
+                    // add in the regular character to partialEqSP
                     partialEqSP.append(input.charAt(i));
                 }
             }
@@ -211,16 +191,16 @@ public class Equation {
     }
 
     public int createTreeParenthesis(String input){
-
-        StringBuilder partialEqP = new StringBuilder(); // idk what to call this
-        // start with parenthesis (I allow parenthesis and curly braces)
+        // this is another stringBuilder like in createTreeSpecialFunctions
+        // if you don't understand the purpose of it I recommend you read the comments in createTreeSpecialFunctions
+        StringBuilder partialEqP = new StringBuilder();
+        // start with parenthesis (I allow parenthesis and curly braces) (you should really just use parenthesis though, I prefer braces for functions)
         int skip = 0;
         for (int i = 0; i < input.length(); i++) {
             if (input.charAt(i) == '('){
                 partialEqP.append("~");
-//                System.out.println(input.substring(i+1,findCloseParenthesis(i)));
-                partialEqP.append(createTreeParenthesis(input.substring(i+1,findCloseParenthesis(i))));
-                skip = findCloseParenthesis(i)-i;
+                partialEqP.append(createTreeParenthesis(input.substring(i+1,findCloseParenthesis(i, input))));
+                skip = findCloseParenthesis(i, input)-i;
                 partialEqP.append("~");
             } else if (input.charAt(i) == '{'){
                 partialEqP.append("~");
@@ -239,11 +219,15 @@ public class Equation {
     }
 
     public int createTreeExponents(String input){
+        // refer to createTreeSpecialFunctions for an explanation of partialEQ
         StringBuilder partialEqE = new StringBuilder();
         int skip = 0;
+        // I will loop through the entire input until I have not found an exponent
+        // foundOne is set to true if the code finds at least one exponent, this causes the method to run again
         boolean foundOne = false;
         for (int i = 0; i < input.length(); i++) {
             if(input.charAt(i) == '^' && !foundOne){
+                // I create "leftRaw" and "rightRaw" to be strings that include either a reference to another node or some number / "x"
                 // go left till reach operator
                 StringBuilder leftRaw = new StringBuilder();
                 for (int j = i-1; j > -1 && (isNotOperator(input.charAt(j))); j--){
@@ -254,9 +238,8 @@ public class Equation {
                 for (int j = i+1; j < input.length() && isNotOperator(input.charAt(j)); j++){
                     rightRaw.append(input.charAt(j));
                 }
-                // I turn these two "raw" values to new nodes or recognize that they are already nodes
+                // I turn these two "raw" values to new nodes or recognize that they are already nodes, they would include "~" if they are nodes
 
-//                System.out.println(leftRaw + "___" + rightRaw);
                 addNodes(leftRaw.toString(), rightRaw.toString(), "^");
 
                 partialEqE = new StringBuilder(partialEqE.substring(0, i - leftRaw.length()));
@@ -273,13 +256,15 @@ public class Equation {
             }
         }
         if (foundOne){
-            return createTreeExponents(partialEqE.toString());
+            return createTreeExponents(partialEqE.toString()); // recursive
         } else {
-            return createTreeMultDiv(partialEqE.toString());
+            return createTreeMultDiv(partialEqE.toString()); // move on to the next step
         }
     }
 
     public int createTreeMultDiv(String input){
+        // refer to createTreeSpecialFunctions for an explanation of partialEQ
+        // very similar to the exponents but just two functions here
         StringBuilder partialEqMD = new StringBuilder();
         int skip = 0;
         boolean found = false;
@@ -297,7 +282,6 @@ public class Equation {
                 }
                 // I turn these two "raw" values to new nodes or recognize that they are already nodes
 
-//                System.out.println(leftRaw + " <-> " + rightRaw);
                 addNodes(leftRaw.toString(), rightRaw.toString(), "*");
 
                 partialEqMD = new StringBuilder(partialEqMD.substring(0, i - leftRaw.length()));
@@ -323,6 +307,7 @@ public class Equation {
                 skip = rightRaw.length();
                 found = true;
                 partialEqMD.append("~").append(tree.size() - 1).append("~"); // the last node is the one that we just made, so we can assign the node at this location to be that head node
+
             } else{
                 if (skip < 1){
                     partialEqMD.append(input.charAt(i));
@@ -330,19 +315,18 @@ public class Equation {
                     skip--;
                 }
             }
-        }
+        } // end for
 
         if(found){
-
             return createTreeMultDiv(partialEqMD.toString());
         } else {
-//            System.out.println(input + "_MD_" +partialEqMD);
             return createTreeAddSub(partialEqMD.toString());
         }
 
     }
 
     public int createTreeAddSub(String input){
+        // refer to createTreeSpecialFunctions for an explanation of partialEQ
         StringBuilder partialEqSA = new StringBuilder();
         int skip = 0;
         boolean found = false;
@@ -406,12 +390,10 @@ public class Equation {
     }
 
     public void addNodes(String leftStr, String rightStr, String operation){
-
+        // I check for each left and right to be a reference and then create new nodes accordingly and repurpose the nodes that have already been created to be child nodes of the new node that I create
         if (leftStr.contains("~") && rightStr.contains("~")){ // both nodes have already been created
             tree.add(new Node(operation, new ComplexNumber(), tree.get(Integer.parseInt(leftStr.substring(1,leftStr.length()-1))), tree.get(Integer.parseInt(rightStr.substring(1,rightStr.length()-1))) ));
-
         } else if (leftStr.contains("~")){ // left node exists
-
             tree.add(new Node("", new ComplexNumber(rightStr)));
             tree.add(new Node(operation, new ComplexNumber(), tree.get(Integer.parseInt(leftStr.substring(1,leftStr.length()-1))), tree.get(tree.size()-1)));
         } else if (rightStr.contains("~")){ // right node exists
@@ -422,7 +404,6 @@ public class Equation {
             tree.add(new Node("", new ComplexNumber(rightStr)));
             tree.add(new Node(operation, new ComplexNumber(), tree.get(tree.size()-2), tree.get(tree.size()-1)));
         }
-//        System.out.println(tree.get(tree.size()-1));
     }
 
     public boolean isNotOperator(char c){
@@ -456,6 +437,7 @@ public class Equation {
             return nodeData;
 
         }
+        // big switch statement to check for every possible operator (that I include in my code)
         return switch (nodeOperator) {
             case "*" ->
                     this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).mul(this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).right)), myX);
@@ -494,12 +476,13 @@ public class Equation {
             case "cot" ->
                     this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).cot(myX);
             case "gam" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).gam(myX); // this might be slow
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).gam(myX); // this might be slow because it has to solve a Riemann sum (especially for values of x that follow 0 + bi)
             default -> new ComplexNumber();
         };
     }
 
     public void printTree(){
+        // little used function for debug
         for (Node n : tree){
             System.out.println("data:" + n.data + " operator:" + n.operator);
         }

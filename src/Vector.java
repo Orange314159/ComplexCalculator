@@ -18,6 +18,7 @@ public class Vector {
     }
 
     public Vector multiplyByMatrix(Matrix matrix){
+        // multiply each value of the vector by a row of the matrix
         Vector vector = new Vector();
         vector.x = matrix.mat[0][0] * this.x + matrix.mat[1][0] * this.y + matrix.mat[2][0] * this.z + matrix.mat[3][0] * this.w;
         vector.y = matrix.mat[0][1] * this.x + matrix.mat[1][1] * this.y + matrix.mat[2][1] * this.z + matrix.mat[3][1] * this.w;
@@ -58,6 +59,7 @@ public class Vector {
         return vector;
     }
     public double dotProduct(Vector vector){
+        // this is kinda like pythagoras but with four dimensions x^2 + y^2 + z^2 + w^2 and no sqrt
         double total = 0;
         total += this.x * vector.x;
         total += this.y * vector.y;
@@ -69,6 +71,7 @@ public class Vector {
         return Math.sqrt(this.dotProduct(this));
     }
     public void normalize(){
+        // make a unit vector
         double r = this.vectorLength();
         this.x /= r;
         this.y /= r;
@@ -76,6 +79,7 @@ public class Vector {
         this.w /= r;
     }
     public Vector crossProduct(Vector vector){
+        // this gives a value to how off skew two vectors are
         Vector v = new Vector();
         v.x = this.y * vector.z - this.z * vector.y;
         v.y = this.z * vector.x - this.x * vector.z;

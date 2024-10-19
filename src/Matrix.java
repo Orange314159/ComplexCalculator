@@ -1,3 +1,4 @@
+// this class attempts to be a kinda general matrix class but is almost exclusively used for 4x4 matrices
 public class Matrix {
     double[][] mat;
 
@@ -12,6 +13,7 @@ public class Matrix {
     }
 
     public void makeIdentityMatrix(int x){
+        // this is a matrix that is all zeros but has ones going through the diagonal
         mat = new double[x][x];
         for (int i = 0; i < x; i++) {
             mat[i][i] = 1;
@@ -19,6 +21,7 @@ public class Matrix {
     }
     public void makeRotationX(double angle){
         // angle should be in rad
+        // you can find any of these matrices on wikipedia
         mat = new double[4][4];
         mat[0][0] = 1;
         mat[1][1] = Math.cos(angle);
@@ -56,7 +59,8 @@ public class Matrix {
         mat[3][2] = z;
     }
     public void makeProjection(double fovDeg, double aspectRatio, double fNear, double fFar){
-        double fovRad = 1.0f / Math.tan(fovDeg * 0.5f / 180.0f * 3.14159f);
+        // this matrix is hard to explain, but the general idea is that you are able to multiply a 3d point by this matrix, and it will return a point that compresses it into two dimensions
+        double fovRad = 1.0f / Math.tan(fovDeg * 0.5f / 180.0f * Math.PI);
         mat = new double[4][4];
         mat[0][0] = aspectRatio * fovRad;
         mat[1][1] = fovRad;
@@ -75,6 +79,7 @@ public class Matrix {
         return m;
     }
     public Matrix quickInverse(){
+        // this inverse is not correct for any matrix but is a quick method that I can use for the matrices that I am dealing with here
         Matrix matrix = new Matrix(4,4);
         matrix.mat[0][0] = this.mat[0][0];    matrix.mat[0][1] = this.mat[1][0];  matrix.mat[0][2] = this.mat[2][0];  matrix.mat[0][3] = 0.0f;
         matrix.mat[1][0] = this.mat[0][1];    matrix.mat[1][1] = this.mat[1][1];  matrix.mat[1][2] = this.mat[2][1];  matrix.mat[1][3] = 0.0f;
@@ -107,6 +112,7 @@ public class Matrix {
         this.mat[3][3] = this.mat[3][3] + matrix.mat[3][3];
     }
     public void pointAt(Vector position, Vector target, Vector up){
+        // I understood this at one point, but I don't anymore (10/18/24)
         // Vector Stuff
         Vector newForward;
         newForward = target.sub(position);

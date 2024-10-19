@@ -1,7 +1,8 @@
 class Node {
+    // each node includes EITHER an operator or data, NOT both
     String operator;
     ComplexNumber data;
-    Node left, right;
+    Node left, right; // if the node does not have left and right nodes then it will have data
     Node(){
         data = new ComplexNumber();
         operator = "";

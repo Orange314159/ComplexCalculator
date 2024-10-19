@@ -38,6 +38,7 @@ public class SweepXValues {
 
     public ArrayList<ComplexNumber> calculateYValues(int whichBValue){
         yValues.clear();
+        // loop through all the x-values and calculate the corresponding y-values
         for (ComplexNumber complexNumber : xValues.get(whichBValue)){
             yValues.add(equation.evaluateEquation(complexNumber, equation.length));
         }
@@ -48,6 +49,7 @@ public class SweepXValues {
         yValues = calculateYValues(whichBValue);
         Vector[] ret = new Vector[yValues.size()];
 
+        // I want to scale all the values to fit within 1x1x1 cube, so I have to find the max values and divide byt the max (at some point I hope to include a log scale option)
         double maxA = 0.0;
         double maxB = 0.0;
         double maxX = 0.0;
@@ -64,6 +66,7 @@ public class SweepXValues {
                 maxB = Math.abs(complexNumber.b);
             }
         }
+        // if the max does not exist I should set it to one that way I am not dividing by zero
         if (maxA == 0.0){
             maxA = 1;
         } else if (maxB == 0.0) {
@@ -74,13 +77,7 @@ public class SweepXValues {
 
         int counter = 0;
         for (ComplexNumber complexNumber : yValues){
-//            System.out.println(counter);
-            if(maxB < 0.001){
-                ret[counter] = new Vector(xValues.get(whichBValue).get(counter).a/maxX, complexNumber.a/maxA, complexNumber.b, 1);
-            } else{
-                ret[counter] = new Vector(xValues.get(whichBValue).get(counter).a/maxX, complexNumber.a/maxA, complexNumber.b/maxB, 1);
-            }
-
+            ret[counter] = new Vector(xValues.get(whichBValue).get(counter).a/maxX, complexNumber.a/maxA, complexNumber.b/maxB, 1);
             counter++;
         }
         return ret;

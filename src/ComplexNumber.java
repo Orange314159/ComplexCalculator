@@ -1,7 +1,10 @@
+// A complex number is a number that is a combination of a real and imaginary part
+// An imaginary number is considered to be a number that is some real number times "i" the imaginary unit equal to sqrt(-1)
+// As a convention of my code I will use the form (a + bi) for all complex numbers unless otherwise stated
 public class ComplexNumber {
     public double a;
-    public boolean isX = false; // some people may want to use something like x or xi in their eq and this code supports that
     public double b;
+    public boolean isX = false; // some people may want to use something like x or xi in their eq and this code supports that
 
     public ComplexNumber(){
         this.a = 0;
@@ -14,6 +17,7 @@ public class ComplexNumber {
         this.isX = false;
     }
     public ComplexNumber(String str){
+        // the expected input for "str" is some number such as 23.452 or i or x
         this.a = 0;
         this.b = 0;
 
@@ -27,13 +31,14 @@ public class ComplexNumber {
                 this.a = 0;
                 this.b = 1;
             } else {
-                this.a = Double.parseDouble(str);
+                this.a = Double.parseDouble(str); // in Equation.java I will handle imaginary numbers such as 4i as 4 * i, this is why I only ever have to parse a double for the real component of x
                 this.b = 0;
             }
         }
     }
 
     public ComplexNumber mul(ComplexNumber c, ComplexNumber xValue){
+        // if either complex number is x it is important to make sure it gets updated when calculating the result
         if (isX){
             this.a = xValue.a;
             this.b = xValue.b;
@@ -42,10 +47,10 @@ public class ComplexNumber {
             c.a = xValue.a;
             c.b = xValue.b;
         }
+        // this equation is derived by solving (a + bi) * (c + di) using the FOIL method
         return new ComplexNumber((this.a*c.a - this.b*c.b), (this.a*c.b + this.b*c.a));
     }
     public ComplexNumber div(ComplexNumber c, ComplexNumber xValue){
-//        System.out.println(this + " / " + c);
         if (isX){
             this.a = xValue.a;
             this.b = xValue.b;
@@ -54,9 +59,11 @@ public class ComplexNumber {
             c.a = xValue.a;
             c.b = xValue.b;
         }
+        // in order to split the number into both a real and imaginary part we multiply the denominator by its conjugate
+        // this will result in a real number denominator which we can then use to solve for the real and imaginary parts
         double realPart = (this.a*c.a + this.b*c.b)/(c.a*c.a + c.b*c.b);
         double imaginaryPart = (this.b*c.a - this.a*c.b)/(c.a*c.a + c.b*c.b);
-        return new ComplexNumber(realPart, imaginaryPart); // this one is complicated, so I split it up (there is no real reason to do this other than readability)
+        return new ComplexNumber(realPart, imaginaryPart); // this one is kinda complicated, so I split it up (there is no real reason to do this other than readability)
     }
 
     public ComplexNumber add(ComplexNumber c, ComplexNumber xValue){
@@ -68,6 +75,7 @@ public class ComplexNumber {
             c.a = xValue.a;
             c.b = xValue.b;
         }
+        // this is quite trivial, it is just adding like terms
         return new ComplexNumber((this.a + c.a), (this.b + c.b));
     }
     public ComplexNumber sub(ComplexNumber c, ComplexNumber xValue){
@@ -79,6 +87,7 @@ public class ComplexNumber {
             c.a = xValue.a;
             c.b = xValue.b;
         }
+        // same as addition
         return new ComplexNumber((this.a - c.a), (this.b - c.b));
     }
 
@@ -94,8 +103,7 @@ public class ComplexNumber {
         // you may be saying, is it possible to take a complex log, well of course
         // this function is saying log_c(this)
         // log_b(a) = ln(a)/ln(b)
-        // Math.atan2(y, x)
-        double r1 = Math.log(Math.sqrt(c.a * c.a + c.b * c.b)); // these are the logs of the magnitudes
+        double r1 = Math.log(Math.sqrt(c.a * c.a + c.b * c.b)); // these are the logs of the magnitudes it would be more technically correct to not call them "r" but I only ever use the log of the magnitudes
         double r2 = Math.log(Math.sqrt(this.a * this.a + this.b * this.b));
         double t1 = Math.atan2(c.b, c.a); // these are the theta values
         double t2 = Math.atan2(this.b, this.a);
@@ -112,15 +120,14 @@ public class ComplexNumber {
             c.a = xValue.a;
             c.b = xValue.b;
         }
-//        System.out.println(this + "_^_" + c);
+        // zero to the zero is controversial, so I just set it to one. If you care so much just change it (but you're wrong) (unless you do something smart like set it to NaN and remove the value)
         if(this.a == 0 && this.b == 0){
-            return new ComplexNumber(0,0);
+            return new ComplexNumber(1,0);
         }
-        // this one is also complicated, im not going to explain it...
         // this method is saying this^c
-        // I am aware that there are an infinite number of solutions but im just doing this one for now (10/08/24)
-        double r = Math.sqrt(this.a * this.a + this.b * this.b);
-        double t = Math.atan2(this.b, this.a);
+        // I am aware that there are an infinite number of solutions but im just doing this one (the principal power) for now (10/08/24)
+        double r = Math.sqrt(this.a * this.a + this.b * this.b); // this time "r" is the proper magnitude
+        double t = Math.atan2(this.b, this.a); // again this is theta
         double realPart      = Math.pow(r, c.a) / (Math.pow(Math.E, (c.b*t))) * Math.cos(c.b*Math.log(r) + c.a*t);
         double imaginaryPart = Math.pow(r, c.a) / (Math.pow(Math.E, (c.b*t))) * Math.sin(c.b*Math.log(r) + c.a*t);
         return new ComplexNumber(realPart, imaginaryPart);
@@ -128,22 +135,26 @@ public class ComplexNumber {
 
     public ComplexNumber sinh(ComplexNumber xValue){
         // \frac{e^x-e^{-x}}{2}
+        // or
+        // -i * \sin{ix}
         if (this.isX){
             this.a = xValue.a;
             this.b = xValue.b;
         }
-        ComplexNumber numerator = (new ComplexNumber(2.71828, 0)).pow(this, this).sub((new ComplexNumber(2.71828, 0)).pow(this.mul(new ComplexNumber(-1,0), xValue), xValue), xValue);
+        // this is just solving the above equation
+        ComplexNumber numerator = (new ComplexNumber(Math.E, 0)).pow(this, this).sub((new ComplexNumber(Math.E, 0)).pow(this.mul(new ComplexNumber(-1,0), xValue), xValue), xValue);
         double realPart = numerator.a / 2;
-        double imaginaryPart = numerator.b/2;
+        double imaginaryPart = numerator.b / 2;
         return new ComplexNumber(realPart, imaginaryPart);
     }
     public ComplexNumber cosh(ComplexNumber xValue){
+        // trig functions become very repetitive so just assume that they all follow similar rules
         // \frac{e^+e^{-x}}{2}
         if (this.isX){
             this.a = xValue.a;
             this.b = xValue.b;
         }
-        ComplexNumber numerator = (new ComplexNumber(2.71828, 0)).pow(this, this).add((new ComplexNumber(2.71828, 0)).pow(this.mul(new ComplexNumber(-1,0), xValue), xValue), xValue);
+        ComplexNumber numerator = (new ComplexNumber(Math.E, 0)).pow(this, this).add((new ComplexNumber(Math.E, 0)).pow(this.mul(new ComplexNumber(-1,0), xValue), xValue), xValue);
         double realPart = numerator.a / 2;
         double imaginaryPart = numerator.b/2;
         return new ComplexNumber(realPart, imaginaryPart);
@@ -173,7 +184,8 @@ public class ComplexNumber {
 
     public ComplexNumber sin(ComplexNumber xValue){
         // I have to use angle sum formula and angle difference formula, also some wierd stuff with sinh and cosh
-        double bValue = this.b;
+        // we can use the idea that sinh(x) = -isin(ix) to derive the formula that I use here to calculate sine(x)
+        double bValue = this.b; // idk why I did this
         ComplexNumber  firstPart = (new ComplexNumber(Math.sin(a), 0)).mul((new ComplexNumber(bValue, 0).cosh(xValue)), xValue);
         ComplexNumber secondPart = (new ComplexNumber(Math.cos(a), 0)).mul((new ComplexNumber(bValue, 0).sinh(xValue)), xValue);
         return new ComplexNumber(firstPart.a, secondPart.a);
@@ -206,6 +218,7 @@ public class ComplexNumber {
     }
 
     public Double gammaIntegral(double detail, ComplexNumber input, boolean real){
+        // this is truly solving the Riemann sum of the gamma function over some small set
         double total = 0;
         if (real){
             for (double i = 0.000000000000000001; i < 30; i+=detail) {
@@ -214,7 +227,7 @@ public class ComplexNumber {
                 total += Math.pow(i,(input.a)) * (1/Math.pow(Math.E, (i))) * Math.cos(input.b * Math.log(i));
             }
         } else {
-            // imaginary (only difference is the sin)
+            // imaginary (only difference is the sin here where cos was used in the real part)
             for (double i = 0.000000000000000001; i < 30; i+=detail) {
                 total += Math.pow(i,(input.a)) * (1/Math.pow(Math.E, (i))) * Math.sin(input.b * Math.log(i));
             }
@@ -223,12 +236,13 @@ public class ComplexNumber {
         return total;
     }
     public ComplexNumber gam(ComplexNumber xValue){
+        // yes I dislike the abbreviation as well, but I want all of my functions to have a three or four letter abbreviation that is used
         if (this.isX){
             this.a = xValue.a;
             this.b = xValue.b;
         }
         // the gamma function is the extension of the factorial to all real numbers, what I am doing here is
-        // analytically continuing this to a general complex number (not 0 or any negative integer)
+        // analytically continuing this to a general complex number (not 0 or any negative integer which are out of the domain of the function)
         if((this.a == ((int)this.a) && this.a < 0)){
             return new ComplexNumber();
         } else if (this.a == 0 && this.b == 0) {
