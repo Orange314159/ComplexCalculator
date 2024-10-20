@@ -154,7 +154,20 @@ public class Equation {
                         tree.add(new Node("", new ComplexNumber(input.substring(i+1,i+2))));
                     }
                     skip = findCloseBrace(findCloseBrace(i+5, input)+1, input)+1 - i-1;
-                } else if ((input.startsWith("sinh", i+1) || input.startsWith("cosh", i+1) || input.startsWith("tanh", i+1)|| input.startsWith("coth", i+1)|| input.startsWith("sech", i+1)|| input.startsWith("csch", i+1))&& skip <1) {
+                }else if ((input.startsWith("asinh", i+1) || input.startsWith("acosh", i+1) || input.startsWith("atanh", i+1)|| input.startsWith("acoth", i+1)|| input.startsWith("asech", i+1)|| input.startsWith("acsch", i+1))&& skip <1) {
+                    // any three letter function (I attempt to make all of my functions like this)
+                    String functionName = input.substring(i+1,i+6);
+//                    System.out.println(input + "  " + input.substring(i+6,findCloseBrace(i+5, input)));
+                    if (input.charAt(i+6) == '{'){
+                        int subTree = createTreeSpecialFunctions(input.substring(i+7,findCloseBrace(i+6, input)));
+                        tree.add(new Node(functionName, new ComplexNumber(), tree.get(subTree), new Node()));
+                        partialEqSP.append("~").append(tree.size() - 1).append("~");
+                    } else {
+                        System.out.println("Error");
+                        System.out.println(input.charAt(i+6));
+                    }
+                    skip = findCloseBrace(i+6, input) - i;
+                } else if ((input.startsWith("sinh", i+1) || input.startsWith("cosh", i+1) || input.startsWith("tanh", i+1)|| input.startsWith("coth", i+1)|| input.startsWith("sech", i+1)|| input.startsWith("csch", i+1) || input.startsWith("asin", i+1) || input.startsWith("acos", i+1) || input.startsWith("atan", i+1) || input.startsWith("acot", i+1) || input.startsWith("asec", i+1) || input.startsWith("acsc", i+1))&& skip <1) {
                     // any hyperbolic trig function (they are all very similar and take equal characters to represent, so I will lump them all here)
                     String functionName = input.substring(i+1,i+5);
                     if (input.charAt(i+5) == '{'){
@@ -475,6 +488,30 @@ public class Equation {
                     this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).csc(myX);
             case "cot" ->
                     this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).cot(myX);
+            case "asinh" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).asinh(myX);
+            case "acosh" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).acosh(myX);
+            case "atanh" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).atanh(myX);
+            case "acoth" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).acoth(myX);
+            case "asech" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).asech(myX);
+            case "acsch" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).acsch(myX);
+            case "asin" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).asin(myX);
+            case "acos" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).acos(myX);
+            case "atan" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).atan(myX);
+            case "asec" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).asec(myX);
+            case "acsc" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).acsc(myX);
+            case "acot" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).acot(myX);
             case "gam" ->
                     this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).gam(myX); // this might be slow because it has to solve a Riemann sum (especially for values of x that follow 0 + bi)
             default -> new ComplexNumber();
