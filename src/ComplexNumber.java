@@ -101,7 +101,7 @@ public class ComplexNumber {
             c.b = xValue.b;
         }
         // you may be saying, is it possible to take a complex log, well of course
-        // this function is saying log_c(this)
+        // this function is saying log_this(c)
         // log_b(a) = ln(a)/ln(b)
         double r1 = Math.log(Math.sqrt(c.a * c.a + c.b * c.b)); // these are the logs of the magnitudes it would be more technically correct to not call them "r" but I only ever use the log of the magnitudes
         double r2 = Math.log(Math.sqrt(this.a * this.a + this.b * this.b));
@@ -120,9 +120,8 @@ public class ComplexNumber {
             c.a = xValue.a;
             c.b = xValue.b;
         }
-        // zero to the zero is controversial, so I just set it to one. If you care so much just change it (but you're wrong) (unless you do something smart like set it to NaN and remove the value)
         if(this.a == 0 && this.b == 0){
-            return new ComplexNumber(1,0);
+            return new ComplexNumber(0,0);
         }
         // this method is saying this^c
         // I am aware that there are an infinite number of solutions but im just doing this one (the principal power) for now (10/08/24)
@@ -215,6 +214,104 @@ public class ComplexNumber {
         ComplexNumber numerator = new ComplexNumber(1,0);
         ComplexNumber denominator = sin(xValue);
         return numerator.div(denominator, xValue);
+    }
+
+    public ComplexNumber asinh(ComplexNumber xValue){
+        // \log{x + (x^2 + 1)^{1/2} }
+        if (this.isX){
+            this.a = xValue.a;
+            this.b = xValue.b;
+        }
+        return new ComplexNumber(Math.E ,0).log(((((this.pow(new ComplexNumber(2,0),xValue)).add(new ComplexNumber(1,0), xValue)).pow(new ComplexNumber(0.5,0),xValue)).add(this, xValue)),xValue);
+    }
+    public ComplexNumber acosh(ComplexNumber xValue){
+        // \log{x + (x^2 - 1)^{1/2} }
+        if (this.isX){
+            this.a = xValue.a;
+            this.b = xValue.b;
+        }
+        return new ComplexNumber(Math.E ,0).log(((((this.pow(new ComplexNumber(2,0),xValue)).sub(new ComplexNumber(1,0), xValue)).pow(new ComplexNumber(0.5,0),xValue)).add(this, xValue)),xValue);
+    }
+    public ComplexNumber atanh(ComplexNumber xValue){
+        // 1/2 * \log{\frac{1+x}{1-x}}
+        if (this.isX){
+            this.a = xValue.a;
+            this.b = xValue.b;
+        }
+        return (new ComplexNumber(Math.E ,0).log( (this.add(new ComplexNumber(1,0),xValue)).div((new ComplexNumber(1,0).sub(this,xValue)),xValue),xValue)).mul(new ComplexNumber(0.5,0),xValue);
+    }
+    public ComplexNumber acoth(ComplexNumber xValue){
+        // 1/2 * \log{\frac{1+x}{1-x}}
+        if (this.isX){
+            this.a = xValue.a;
+            this.b = xValue.b;
+        }
+        return (new ComplexNumber(Math.E ,0).log( (this.add(new ComplexNumber(1,0),xValue)).div((this.sub(new ComplexNumber(1,0),xValue)),xValue),xValue)).mul(new ComplexNumber(0.5,0),xValue);
+    }
+    public ComplexNumber asech(ComplexNumber xValue){
+        // 1/2 * \log{\frac{1+x}{1-x}}
+        if (this.isX){
+            this.a = xValue.a;
+            this.b = xValue.b;
+        }
+        return new ComplexNumber(Math.E, 0).log((new ComplexNumber(1,0).add((new ComplexNumber(1,0).sub(this.pow(new ComplexNumber(2,0),xValue),xValue)).pow(new ComplexNumber(0.5,0),xValue), xValue)).div(this,xValue), xValue);
+    }
+    public ComplexNumber acsch(ComplexNumber xValue){
+        // 1/2 * \log{\frac{1+x}{1-x}}
+        if (this.isX){
+            this.a = xValue.a;
+            this.b = xValue.b;
+        }
+        return new ComplexNumber(Math.E, 0).log((new ComplexNumber(1,0).add((new ComplexNumber(1,0).add(this.pow(new ComplexNumber(2,0),xValue),xValue)).pow(new ComplexNumber(0.5,0),xValue), xValue)).div(this,xValue), xValue);
+    }
+
+    public ComplexNumber asin(ComplexNumber xValue){
+        // -i * \log{(1-x^2)^{1/2} + ix}
+        if (this.isX){
+            this.a = xValue.a;
+            this.b = xValue.b;
+        }
+        return (new ComplexNumber(Math.E, 0).log((((new ComplexNumber(1,0).sub(this.pow(new ComplexNumber(2,0),xValue),xValue)).pow(new ComplexNumber(0.5,0),xValue)).add(this.mul(new ComplexNumber(0,1),xValue),xValue)),xValue)).mul(new ComplexNumber(0,-1),xValue);
+    }
+    public ComplexNumber acos(ComplexNumber xValue){
+        // -i * \log{(1-x^2)^{1/2}i + x}
+        if (this.isX){
+            this.a = xValue.a;
+            this.b = xValue.b;
+        }
+        return (new ComplexNumber(Math.E, 0).log((((new ComplexNumber(1,0).sub(this.pow(new ComplexNumber(2,0),xValue),xValue)).pow(new ComplexNumber(0.5,0),xValue)).mul(new ComplexNumber(0,1),xValue).add(this,xValue)),xValue)).mul(new ComplexNumber(0,-1),xValue);
+    }
+    public ComplexNumber atan(ComplexNumber xValue){
+        // -i/2 * \log{\frac{i-x}{1+x}}
+        if (this.isX){
+            this.a = xValue.a;
+            this.b = xValue.b;
+        }
+        return ((new ComplexNumber(Math.E, 0).log(((new ComplexNumber(0,1)).sub(this,xValue)).div(((new ComplexNumber(0,1)).add(this,xValue)),xValue),xValue)).mul(new ComplexNumber(0,-1),xValue)).div(new ComplexNumber(2,0),xValue);
+    }
+    public ComplexNumber acot(ComplexNumber xValue){
+        // \atan(1/x)
+        if (this.isX){
+            this.a = xValue.a;
+            this.b = xValue.b;
+        }
+        return (new ComplexNumber(1,0).div(this,xValue)).atan(xValue);
+    }
+    public ComplexNumber asec(ComplexNumber xValue){
+        // \acos(1/x)
+        if (this.isX){
+            this.a = xValue.a;
+            this.b = xValue.b;
+        }
+        return (new ComplexNumber(1,0).div(this,xValue)).acos(xValue);
+    }
+    public ComplexNumber acsc(ComplexNumber xValue){
+        // \asin(1/x)
+        if (this.isX){
+            this.a = xValue.a;
+            this.b = xValue.b;
+        }
+        return (new ComplexNumber(1,0).div(this,xValue)).asin(xValue);
     }
 
     public Double gammaIntegral(double detail, ComplexNumber input, boolean real){

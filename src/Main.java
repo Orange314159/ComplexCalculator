@@ -37,7 +37,9 @@ public class Main {
 
         //------------------------------ Equation Stuff ------------------------------\\
         System.out.println("Hello world!"); // this is still here to make sure that the code actually runs and isn't broken
-
+        // Testing of Complex Functions
+//        ComplexNumber c0 = new ComplexNumber(1, 0);
+//        System.out.println(c0.asin(c0));
         // Other options for e1 that can be interesting
 //        Equation e1 = new Equation("\\log_{23.2}{7*x-3}");
 //        Equation e1 = new Equation("x^2");
