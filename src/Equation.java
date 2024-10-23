@@ -518,6 +518,18 @@ public class Equation {
         };
     }
 
+    public ComplexNumber riemannSumOfDefiniteIntegral(double min, double max, double stepSize){
+        // this will be a function to return the definite integral of a given function over some size
+        ComplexNumber total = new ComplexNumber(0,0);
+        // step through the entire thing
+        for (double i = min; i < max; i += stepSize){
+            total = total.add(this.evaluateEquation(new ComplexNumber(i,0), this.length), new ComplexNumber(i,0));
+        }
+        total = total.mul(new ComplexNumber(stepSize,0),new ComplexNumber());
+
+        return total;
+    }
+
     public void printTree(){
         // little used function for debug
         for (Node n : tree){

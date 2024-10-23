@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DrawPoint extends JPanel {
-    // while it is called DrawPoint it also is the class that is used to draw the axis which are lines
+    // while it is called DrawPoint it also is the class that is used to draw the axis which are lines (not points)
     public List<Point> points ;
     public List<int[]> axisPoints;
 

@@ -36,7 +36,7 @@ public class ComplexNumber {
             }
         }
     }
-
+    // multiplication and division
     public ComplexNumber mul(ComplexNumber c, ComplexNumber xValue){
         // if either complex number is x it is important to make sure it gets updated when calculating the result
         if (isX){
@@ -65,7 +65,7 @@ public class ComplexNumber {
         double imaginaryPart = (this.b*c.a - this.a*c.b)/(c.a*c.a + c.b*c.b);
         return new ComplexNumber(realPart, imaginaryPart); // this one is kinda complicated, so I split it up (there is no real reason to do this other than readability)
     }
-
+    // addition and subtraction
     public ComplexNumber add(ComplexNumber c, ComplexNumber xValue){
         if (isX){
             this.a = xValue.a;
@@ -90,7 +90,7 @@ public class ComplexNumber {
         // same as addition
         return new ComplexNumber((this.a - c.a), (this.b - c.b));
     }
-
+    // exponents and logarithms
     public ComplexNumber log(ComplexNumber c, ComplexNumber xValue){
         if (isX){
             this.a = xValue.a;
@@ -131,7 +131,7 @@ public class ComplexNumber {
         double imaginaryPart = Math.pow(r, c.a) / (Math.pow(Math.E, (c.b*t))) * Math.sin(c.b*Math.log(r) + c.a*t);
         return new ComplexNumber(realPart, imaginaryPart);
     }
-
+    // hyperbolic trig
     public ComplexNumber sinh(ComplexNumber xValue){
         // \frac{e^x-e^{-x}}{2}
         // or
@@ -180,7 +180,7 @@ public class ComplexNumber {
         ComplexNumber denominator = sinh(xValue);
         return new ComplexNumber(1/denominator.a, 1/denominator.b);
     }
-
+    // regular trig
     public ComplexNumber sin(ComplexNumber xValue){
         // I have to use angle sum formula and angle difference formula, also some wierd stuff with sinh and cosh
         // we can use the idea that sinh(x) = -isin(ix) to derive the formula that I use here to calculate sine(x)
@@ -215,7 +215,7 @@ public class ComplexNumber {
         ComplexNumber denominator = sin(xValue);
         return numerator.div(denominator, xValue);
     }
-
+    // inverse hyperbolic trig
     public ComplexNumber asinh(ComplexNumber xValue){
         // \log{x + (x^2 + 1)^{1/2} }
         if (this.isX){
@@ -264,7 +264,7 @@ public class ComplexNumber {
         }
         return new ComplexNumber(Math.E, 0).log((new ComplexNumber(1,0).add((new ComplexNumber(1,0).add(this.pow(new ComplexNumber(2,0),xValue),xValue)).pow(new ComplexNumber(0.5,0),xValue), xValue)).div(this,xValue), xValue);
     }
-
+    // inverse regular trig
     public ComplexNumber asin(ComplexNumber xValue){
         // -i * \log{(1-x^2)^{1/2} + ix}
         if (this.isX){

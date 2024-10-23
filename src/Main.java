@@ -1,10 +1,10 @@
-// TODO: add in inverse trig
 // TODO: add in way to show imaginary x value
 // TODO: add in d/dx
-// TODO: connect the dots created by visualization to make surfaces (this sounds especially hard)
-// TODO: add in a way to visualize the infinite number of complex exponents
 // TODO: add in integrals ? This seems very very difficult
 //  ^something about u replacement could help (i don't know how to integral)
+// TODO: add in different "modes", different ways to represent the points
+// TODO: connect the dots created by visualization to make surfaces (this sounds especially hard)
+
 
 
 import java.util.ArrayList;
@@ -25,6 +25,10 @@ public class Main {
         //------------------------------ Equation Stuff ------------------------------\\
         System.out.println("Hello world!"); // this is still here to make sure that the code actually runs and isn't broken
         // Testing of Complex Functions
+
+        Equation e0 = new Equation("x^{5.0}*(2.7182818)^{-x}");
+        System.out.println(e0.riemannSumOfDefiniteIntegral(0,30,0.2));
+
 //        ComplexNumber c0 = new ComplexNumber(1, 0);
 //        System.out.println(c0.asin(c0));
         // Other options for e1 that can be interesting
@@ -77,8 +81,6 @@ public class Main {
         frame.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                double theta1 = 0;
-                double theta2 = 0;
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     // remove the window VERY IMPORTANT
                     frame.dispose();
