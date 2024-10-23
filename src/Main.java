@@ -1,4 +1,3 @@
-// TODO: add in way to show imaginary x value
 // TODO: add in d/dx
 // TODO: add in integrals ? This seems very very difficult
 //  ^something about u replacement could help (i don't know how to integral)
@@ -7,6 +6,7 @@
 
 
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Scanner; // although I don't use this I still will include it if someone wishes to use it in their code
 import javax.swing.*;
@@ -24,11 +24,9 @@ public class Main {
 
         //------------------------------ Equation Stuff ------------------------------\\
         System.out.println("Hello world!"); // this is still here to make sure that the code actually runs and isn't broken
-        // Testing of Complex Functions
-
-        Equation e0 = new Equation("x^{5.0}*(2.7182818)^{-x}");
-        System.out.println(e0.riemannSumOfDefiniteIntegral(0,30,0.2));
-
+        // Testing of Complex Function
+//        Equation e0 = new Equation("x^{5.0}*(2.7182818)^{-x}");
+//        System.out.println(e0.riemannSumOfDefiniteIntegral(0,30,0.2));
 //        ComplexNumber c0 = new ComplexNumber(1, 0);
 //        System.out.println(c0.asin(c0));
         // Other options for e1 that can be interesting
@@ -44,7 +42,10 @@ public class Main {
         //------------------------------ Sweep Stuff ------------------------------\\
         // Instantiate a sweepXValues class to solve the equation (e1) at x values from -10 to 10 real and 0 to 10 imaginary.
         // The detail 1 tells how many dots will be drawn and the detail 2 tells how many imaginary steps you can move through by scrolling.
-        SweepXValues sweepXValues = new SweepXValues(-10.0, 10.0, 0.0,10,10000, 100,e1);
+        int grain = 100; // detail 2
+        double minIm = 0.0;
+        double maxIm = 10.0;
+        SweepXValues sweepXValues = new SweepXValues(-10.0, 10.0, minIm,maxIm,10000, grain,e1);
         final Integer[] bValue = {0};
         int bMax = sweepXValues.imaginaryValues;
         // The initial array of points
@@ -72,7 +73,13 @@ public class Main {
         DrawPoint drawPoint = new DrawPoint();
         drawPoint.points = new ArrayList<>();
         frame.add(drawPoint);
-        // Start Now lets the user know that they can start to move in the scene
+        //
+        JTextField textField = new JTextField(20);
+        textField.setText(" Im(x)=0");
+        textField.setForeground(Color.BLUE);
+        textField.setBounds(0, 0, 200, 30);
+        frame.add(textField);
+        // "Start Now" lets the user know that they can start to move in the scene
         // If they attempt to do something before this it might not work
         System.out.println("Start Now");
         //------------------------------ Scene Stuff ------------------------------\\
@@ -81,17 +88,18 @@ public class Main {
         frame.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
+                textField.repaint();
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     // remove the window VERY IMPORTANT
                     frame.dispose();
                 } else if(e.getKeyCode() == KeyEvent.VK_H){
-                    scene.moveCameraInCircle(0.1, 0);
+                    scene.moveCameraInCircle(0.1,  0);
                 } else if(e.getKeyCode() == KeyEvent.VK_F){
                     scene.moveCameraInCircle(-0.1, 0);
                 } else if(e.getKeyCode() == KeyEvent.VK_T){
-                    scene.moveCameraInCircle(0, 0.1);
+                    scene.moveCameraInCircle(0,    0.1);
                 } else if(e.getKeyCode() == KeyEvent.VK_G){
-                    scene.moveCameraInCircle(0, -0.1);
+                    scene.moveCameraInCircle(0,   -0.1);
                 } else if (e.getKeyCode() == KeyEvent.VK_Z) {
                     scene.FOV -= 1;
                     // zoom in
@@ -115,40 +123,42 @@ public class Main {
                 drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[1].x , (int)drawAxis[0].y, (int)drawAxis[1].y);
                 drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[3].x , (int)drawAxis[0].y, (int)drawAxis[3].y);
                 drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[5].x , (int)drawAxis[0].y, (int)drawAxis[5].y);
+                textField.repaint();
             }
+
         });
 
         // This is called each time that the mouseWheel changes (this can be from a mouse or trackpad)
         // I highly recommend using a mouse because it gives much higher precision
-        frame.addMouseWheelListener(new MouseWheelListener() {
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                int notches = e.getWheelRotation();
-                bValue[0] += notches;
-                if (bValue[0] < 0){
-                    bValue[0] = bMax-1; // loops up to the end
-                } else if (bValue[0] >= bMax) {
-                    bValue[0] = 0; // loops back to the start
-                }
-                scene.points = sweepXValues.calculateYValuesVector(bValue[0]);
-
-                if (autoUpdate){
-                    if (debugOn){
-                        System.out.println(scene.camera.x + "," + scene.camera.y + "," + scene.camera.z + "\t Yaw=" + scene.yaw + " Pitch=" + scene.pitch);
-                    }
-                    // This is the same code that is used in the keyListener
-                    Vector[] drawPoints = scene.drawFrame();
-                    drawPoint.points = new ArrayList<>();
-                    drawPoint.axisPoints = new ArrayList<>();
-                    for (Vector point : drawPoints){
-                        drawPoint.addPoint((int)point.x, (int)point.y);
-                    }
-                    Vector[] drawAxis = scene.drawAxis();
-                    drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[1].x , (int)drawAxis[0].y, (int)drawAxis[1].y);
-                    drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[3].x , (int)drawAxis[0].y, (int)drawAxis[3].y);
-                    drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[5].x , (int)drawAxis[0].y, (int)drawAxis[5].y);
-                } // end autoUpdate
+        frame.addMouseWheelListener(e -> {
+            textField.repaint();
+            int notches = e.getWheelRotation();
+            bValue[0] += notches;
+            if (bValue[0] < 0){
+                bValue[0] = bMax-1; // loops up to the end
+            } else if (bValue[0] >= bMax) {
+                bValue[0] = 0; // loops back to the start
             }
+            scene.points = sweepXValues.calculateYValuesVector(bValue[0]);
+            textField.setText(" Im(x)=" + (((Integer.parseInt(bValue[0].toString()))/(double)grain)*(maxIm-minIm) + minIm));
+
+            if (autoUpdate){
+                if (debugOn){
+                    System.out.println(scene.camera.x + "," + scene.camera.y + "," + scene.camera.z + "\t Yaw=" + scene.yaw + " Pitch=" + scene.pitch);
+                }
+                // This is the same code that is used in the keyListener
+                Vector[] drawPoints = scene.drawFrame();
+                drawPoint.points = new ArrayList<>();
+                drawPoint.axisPoints = new ArrayList<>();
+                for (Vector point : drawPoints){
+                    drawPoint.addPoint((int)point.x, (int)point.y);
+                }
+                Vector[] drawAxis = scene.drawAxis();
+                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[1].x , (int)drawAxis[0].y, (int)drawAxis[1].y);
+                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[3].x , (int)drawAxis[0].y, (int)drawAxis[3].y);
+                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[5].x , (int)drawAxis[0].y, (int)drawAxis[5].y);
+            } // end autoUpdate
+            textField.repaint();
         }); // end wheelListener
     } // end main
 } // end Main
