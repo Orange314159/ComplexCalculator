@@ -8,6 +8,7 @@ public class Equation {
     public int length = -1;
     private static final char[] operators = {'+', '-', '*', '/', '^'};
     ArrayList<Node> tree = new ArrayList<>();
+    ArrayList<Node> ddxTree = new ArrayList<>(); // this is a tree
 
     public Equation (String in){
         eq = in;
@@ -82,7 +83,7 @@ public class Equation {
     }
 
     public int createTreeSpecialFunctions(String input){
-        // this is similar to that of createTreeParenthesis but is about \frac or \log
+        // this is similar to that of createTreeParenthesis but is about \frac{a} or \log{a}
         // partialEqSP might be the most important variable in this method and the next few
         // the idea behind this is that it will be equal to the String "input" EXCEPT in places where a function is
         // in this case the function will add in a signifier "~" and an integer to refer to a node in tree that is added (this is not to be confused with a reference like what would be found in a language like C++)

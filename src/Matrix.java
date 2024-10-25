@@ -90,27 +90,6 @@ public class Matrix {
         matrix.mat[3][3] = 1.0f;
         return matrix;
     }
-    public void add(Matrix matrix){
-        this.mat[0][0] = this.mat[0][0] + matrix.mat[0][0];
-        this.mat[0][1] = this.mat[0][1] + matrix.mat[0][1];
-        this.mat[0][2] = this.mat[0][2] + matrix.mat[0][2];
-        this.mat[0][3] = this.mat[0][3] + matrix.mat[0][3];
-
-        this.mat[1][0] = this.mat[1][0] + matrix.mat[1][0];
-        this.mat[1][1] = this.mat[1][1] + matrix.mat[1][1];
-        this.mat[1][2] = this.mat[1][2] + matrix.mat[1][2];
-        this.mat[1][3] = this.mat[1][3] + matrix.mat[1][3];
-
-        this.mat[2][0] = this.mat[2][0] + matrix.mat[2][0];
-        this.mat[2][1] = this.mat[2][1] + matrix.mat[2][1];
-        this.mat[2][2] = this.mat[2][2] + matrix.mat[2][2];
-        this.mat[2][3] = this.mat[2][3] + matrix.mat[2][3];
-
-        this.mat[3][0] = this.mat[3][0] + matrix.mat[3][0];
-        this.mat[3][1] = this.mat[3][1] + matrix.mat[3][1];
-        this.mat[3][2] = this.mat[3][2] + matrix.mat[3][2];
-        this.mat[3][3] = this.mat[3][3] + matrix.mat[3][3];
-    }
     public void pointAt(Vector position, Vector target, Vector up){
         // I understood this at one point, but I don't anymore (10/18/24)
         // Vector Stuff

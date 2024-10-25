@@ -1,5 +1,4 @@
 public class Scene {
-
     //---------------------------- Camera ----------------------------//
     public Vector camera;
     public Vector lookDirection;

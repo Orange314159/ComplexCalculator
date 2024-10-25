@@ -1,6 +1,7 @@
-// TODO: add in d/dx
-// TODO: add in integrals ? This seems very very difficult
-//  ^something about u replacement could help (i don't know how to integral)
+// TODO: add in d/dx (using power and chain rule) (and definitions for all the other functions)
+// TODO: add in d/dx at a point (using slope formula)
+// TODO: add in indefinite integrals? This seems very very difficult
+//  ^something about u substitution could help (i don't know how to integral)
 // TODO: add in different "modes", different ways to represent the points
 // TODO: connect the dots created by visualization to make surfaces (this sounds especially hard)
 
