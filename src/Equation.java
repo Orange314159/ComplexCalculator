@@ -8,7 +8,7 @@ public class Equation {
     public int length = -1;
     private static final char[] operators = {'+', '-', '*', '/', '^'};
     ArrayList<Node> tree = new ArrayList<>();
-    ArrayList<Node> ddxTree = new ArrayList<>(); // this is a tree
+    ArrayList<Node> ddxTree = new ArrayList<>(); // this is a tree of the derivative
 
     public Equation (String in){
         eq = in;
@@ -529,6 +529,66 @@ public class Equation {
         total = total.mul(new ComplexNumber(stepSize,0),new ComplexNumber());
 
         return total;
+    }
+
+    public Node createDerivativeTree(Node thisNode){
+        if (thisNode.operator.isEmpty()){
+            if(thisNode.data.isX){
+                return new Node("", new ComplexNumber(1,0), null, null); // return one if the data is "X"
+            }
+            return new Node("", new ComplexNumber(0,0), null, null); // return zero if the data is just a random number
+        }
+        if (thisNode.left == null){ // in case of errors
+            System.out.println("Error: nodes require either data or operator");
+            return new Node("", new ComplexNumber(0,0), null, null);
+        }
+        switch (thisNode.operator) {
+            case "+" -> {
+                return new Node("+", new ComplexNumber(), createDerivativeTree(thisNode.left), createDerivativeTree(thisNode.right));
+            } // sum rule
+            case "-" -> {
+                return new Node("-", new ComplexNumber(), createDerivativeTree(thisNode.left), createDerivativeTree(thisNode.right));
+            } // inverse sum rule
+            case "*" -> {
+                return new Node("+", new ComplexNumber(), new Node("*", new ComplexNumber(), createDerivativeTree(thisNode.left), thisNode.right), new Node("*", new ComplexNumber(), createDerivativeTree(thisNode.right), thisNode.left));
+            } // product rule
+            case "/" -> {
+                return new Node("/", new ComplexNumber(), new Node("-", new ComplexNumber(), new Node("*", new ComplexNumber(), createDerivativeTree(thisNode.left), thisNode.right), new Node("*", new ComplexNumber(), createDerivativeTree(thisNode.right), thisNode.left)), new Node("^", new ComplexNumber(), thisNode.left, new Node("", new ComplexNumber(2, 0), null, null)));
+            } // quotient rule
+            case "^" -> {
+                // u^v * (v' * ln(u) + \frac{v*u'}{u})
+                Node firstPart = new Node("^", new ComplexNumber(), thisNode.left, thisNode.right);
+                Node secondPart = new Node("*", new ComplexNumber(), createDerivativeTree(thisNode.right), new Node("log", new ComplexNumber(), new Node("", new ComplexNumber(Math.E, 0), null, null), thisNode.left));
+                Node thirdPart = new Node("/", new ComplexNumber(), new Node("*", new ComplexNumber(), thisNode.right, createDerivativeTree(thisNode.left)), thisNode.left);
+                Node fourthPart = new Node("+", new ComplexNumber(), secondPart, thirdPart);
+                return new Node("*", new ComplexNumber(), firstPart, fourthPart);
+            } // generalized power rule
+            case "ln" -> {
+                // NOTE: ln should never be used in the code other than the derivative log function
+                return new Node("/", new ComplexNumber(), createDerivativeTree(thisNode.left), thisNode.left); // so elegant
+            }
+            case "log" -> {
+                // this one is really annoying
+                // \frac{d/dx(ln(g))ln(f)-d/dx(ln(f))ln(g)}{(ln(f))^2}
+                Node firstPart   = createDerivativeTree(new Node("ln", new ComplexNumber(), thisNode.right, null));
+                Node secondPart  = new Node("log", new ComplexNumber(), new Node("", new ComplexNumber(Math.E, 0), null, null), thisNode.left);
+                Node thirdPart   = createDerivativeTree(new Node("ln", new ComplexNumber(), thisNode.left, null));
+                Node fourthPart  = new Node("log", new ComplexNumber(), new Node("", new ComplexNumber(Math.E, 0), null, null), thisNode.right);
+                Node fifthPart   = new Node("^", new ComplexNumber(), new Node("log", new ComplexNumber(), new Node("", new ComplexNumber(Math.E, 0), null, null), thisNode.left), new Node("", new ComplexNumber(2, 0), null, null));
+                // the first five parts are from the equation, next four are from combining those parts into the final equation
+                Node sixthPart   = new Node("*" , new ComplexNumber(), firstPart, secondPart);
+                Node seventhPart = new Node("*" , new ComplexNumber(), thirdPart, fourthPart);
+                Node eighthPart  = new Node("-", new ComplexNumber(), sixthPart, seventhPart);
+                return new Node("/", new ComplexNumber(), eighthPart, fifthPart);
+            } // generalized log rule
+
+        }
+
+
+//        ddxTree.add(createDerivativeTree(thisNode));
+//        return createDerivativeTree(thisNode);
+        System.out.println("Error: was not able to parse function to calculate derivative");
+        return new Node("", new ComplexNumber(0,0), null, null); // something went wrong
     }
 
     public void printTree(){
