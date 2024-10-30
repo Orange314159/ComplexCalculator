@@ -533,7 +533,7 @@ public class Equation {
         return total;
     }
 
-    public Node createDerivativeTree(Node thisNode){
+    public Node createDerivativeNode(Node thisNode){
         if (thisNode.operator.isEmpty()){
             if(thisNode.data.isX){
                 return new Node("", new ComplexNumber(1,0), null, null); // return one if the data is "X"
@@ -546,35 +546,35 @@ public class Equation {
         }
         switch (thisNode.operator) {
             case "+" -> {
-                return new Node("+", createDerivativeTree(thisNode.left), createDerivativeTree(thisNode.right));
+                return new Node("+", createDerivativeNode(thisNode.left), createDerivativeNode(thisNode.right));
             } // sum rule
             case "-" -> {
-                return new Node("-", createDerivativeTree(thisNode.left), createDerivativeTree(thisNode.right));
+                return new Node("-", createDerivativeNode(thisNode.left), createDerivativeNode(thisNode.right));
             } // inverse sum rule
             case "*" -> {
-                return new Node("+", new Node("*", createDerivativeTree(thisNode.left), thisNode.right), new Node("*", createDerivativeTree(thisNode.right), thisNode.left));
+                return new Node("+", new Node("*", createDerivativeNode(thisNode.left), thisNode.right), new Node("*", createDerivativeNode(thisNode.right), thisNode.left));
             } // product rule
             case "/" -> {
-                return new Node("/", new Node("-", new Node("*", createDerivativeTree(thisNode.left), thisNode.right), new Node("*", createDerivativeTree(thisNode.right), thisNode.left)), new Node("^", thisNode.left, new Node(new ComplexNumber(2, 0))));
+                return new Node("/", new Node("-", new Node("*", createDerivativeNode(thisNode.left), thisNode.right), new Node("*", createDerivativeNode(thisNode.right), thisNode.left)), new Node("^", thisNode.left, new Node(new ComplexNumber(2, 0))));
             } // quotient rule
             case "^" -> {
                 // u^v * (v' * ln(u) + \frac{v*u'}{u})
                 Node firstPart =  new Node("^", thisNode.left, thisNode.right);
-                Node secondPart = new Node("*", createDerivativeTree(thisNode.right), new Node("log", new Node(new ComplexNumber(Math.E, 0)), thisNode.left));
-                Node thirdPart =  new Node("/", new Node("*", thisNode.right, createDerivativeTree(thisNode.left)), thisNode.left);
+                Node secondPart = new Node("*", createDerivativeNode(thisNode.right), new Node("log", new Node(new ComplexNumber(Math.E, 0)), thisNode.left));
+                Node thirdPart =  new Node("/", new Node("*", thisNode.right, createDerivativeNode(thisNode.left)), thisNode.left);
                 Node fourthPart = new Node("+", secondPart, thirdPart);
                 return            new Node("*", firstPart, fourthPart);
             } // generalized power rule
             case "ln" -> {
                 // NOTE: ln should never be used in the code other than the derivative log function
-                return new Node("/", createDerivativeTree(thisNode.left), thisNode.left); // so elegant
+                return new Node("/", createDerivativeNode(thisNode.left), thisNode.left); // so elegant
             }
             case "log" -> {
                 // this one is really annoying
                 // \frac{d/dx(ln(g))ln(f)-d/dx(ln(f))ln(g)}{(ln(f))^2}
-                Node firstPart   = createDerivativeTree(new Node("ln", thisNode.right, null));
+                Node firstPart   = createDerivativeNode(new Node("ln", thisNode.right, null));
                 Node secondPart  = new Node("log", new Node(new ComplexNumber(Math.E, 0)), thisNode.left);
-                Node thirdPart   = createDerivativeTree(new Node("ln", new ComplexNumber(), thisNode.left, null));
+                Node thirdPart   = createDerivativeNode(new Node("ln", new ComplexNumber(), thisNode.left, null));
                 Node fourthPart  = new Node("log", new Node("", new ComplexNumber(Math.E, 0), null, null), thisNode.right);
                 Node fifthPart   = new Node("^", new Node("log", new Node(new ComplexNumber(Math.E, 0)), thisNode.left), new Node(new ComplexNumber(2, 0)));
                 // the first five parts are from the equation, next four are from combining those parts into the final equation
@@ -585,31 +585,31 @@ public class Equation {
             } // generalized log rule
             case "sin" -> {
                 // cos
-                return new Node ("*", new Node("cos", thisNode.left, thisNode.right), createDerivativeTree(thisNode.left));
+                return new Node ("*", new Node("cos", thisNode.left, thisNode.right), createDerivativeNode(thisNode.left));
             }
             case "cos" -> {
                 // -sin
-                return new Node ("*", new Node("*", new Node("sin", thisNode.left, thisNode.right), new Node(new ComplexNumber(-1,0))), createDerivativeTree(thisNode.left));
+                return new Node ("*", new Node("*", new Node("sin", thisNode.left, thisNode.right), new Node(new ComplexNumber(-1,0))), createDerivativeNode(thisNode.left));
             }
             case "tan" -> {
                 // sec^2
                 Node baseNode = new Node("sec", thisNode.left, thisNode.right);
                 Node twoNode =  new Node(new ComplexNumber(2,0));
-                return          new Node ("*", new Node("^", baseNode, twoNode), createDerivativeTree(thisNode.left));
+                return          new Node ("*", new Node("^", baseNode, twoNode), createDerivativeNode(thisNode.left));
             }
             case "cot" -> {
                 // -csc^2
                 Node baseNode = new Node("csc", thisNode.left, thisNode.right);
                 Node twoNode =  new Node(new ComplexNumber(2,0));
                 Node mOneNode = new Node(new ComplexNumber(-1,0));
-                return          new Node("*", new Node("*", mOneNode, new Node("^", baseNode, twoNode)), createDerivativeTree(thisNode.left));
+                return          new Node("*", new Node("*", mOneNode, new Node("^", baseNode, twoNode)), createDerivativeNode(thisNode.left));
 
             }
             case "sec" -> {
                 // sec*tan
                 Node secNode = new Node("sec", thisNode.left, thisNode.right);
                 Node tanNode = new Node("tan", thisNode.left, thisNode.right);
-                return         new Node("*", new Node("*", secNode, tanNode), createDerivativeTree(thisNode.left));
+                return         new Node("*", new Node("*", secNode, tanNode), createDerivativeNode(thisNode.left));
 
             }
             case "csc" -> {
@@ -618,38 +618,38 @@ public class Equation {
                 Node tanNode  = new Node("cot", thisNode.left, thisNode.right);
                 Node stNode   = new Node("*",   secNode, tanNode);
                 Node mOneNode = new Node(new ComplexNumber(-1,0));
-                return          new Node("*", new Node("*", stNode, mOneNode), createDerivativeTree(thisNode.left));
+                return          new Node("*", new Node("*", stNode, mOneNode), createDerivativeNode(thisNode.left));
             }
             case "sinh" -> {
-                return new Node ("*", new Node("cosh", thisNode.left, thisNode.right), createDerivativeTree(thisNode.left));
+                return new Node ("*", new Node("cosh", thisNode.left, thisNode.right), createDerivativeNode(thisNode.left));
             }
             case "cosh" -> {
-                return new Node ("*", new Node("sinh", thisNode.left, thisNode.right), createDerivativeTree(thisNode.left));
+                return new Node ("*", new Node("sinh", thisNode.left, thisNode.right), createDerivativeNode(thisNode.left));
             }
             case "tanh" -> {
                 Node baseNode = new Node("sech", thisNode.left, thisNode.right);
                 Node twoNode = new Node(new ComplexNumber(2,0));
-                return new Node ("*", new Node("^", baseNode, twoNode), createDerivativeTree(thisNode.left));
+                return new Node ("*", new Node("^", baseNode, twoNode), createDerivativeNode(thisNode.left));
             }
             case "coth" -> {
                 Node baseNode = new Node("csch", thisNode.left, thisNode.right);
                 Node twoNode =  new Node(new ComplexNumber(2,0));
                 Node mOneNode = new Node(new ComplexNumber(-1,0));
-                return          new Node("*", new Node("*", mOneNode, new Node("^", baseNode, twoNode)), createDerivativeTree(thisNode.left));
+                return          new Node("*", new Node("*", mOneNode, new Node("^", baseNode, twoNode)), createDerivativeNode(thisNode.left));
             }
             case "sech" -> {
                 Node secNode  = new Node("sech", thisNode.left, thisNode.right);
                 Node tanNode  = new Node("tanh", thisNode.left, thisNode.right);
                 Node stNode   = new Node("*",     secNode, tanNode);
                 Node mOneNode = new Node(new ComplexNumber(-1,0));
-                return          new Node("*", new Node("*", stNode, mOneNode), createDerivativeTree(thisNode.left));
+                return          new Node("*", new Node("*", stNode, mOneNode), createDerivativeNode(thisNode.left));
             }
             case "csch" -> {
                 Node secNode  = new Node("csch", thisNode.left, thisNode.right);
                 Node tanNode  = new Node("coth", thisNode.left, thisNode.right);
                 Node stNode   = new Node("*", secNode, tanNode);
                 Node mOneNode = new Node(new ComplexNumber(-1,0));
-                return          new Node("*", new Node("*", stNode, mOneNode), createDerivativeTree(thisNode.left));
+                return          new Node("*", new Node("*", stNode, mOneNode), createDerivativeNode(thisNode.left));
             }
             case "asin" -> {
                 // \frac{1}{(1-x^2)^{1/2)}
@@ -664,7 +664,7 @@ public class Equation {
                 Node node51 =     new Node("+", firstNode, fifthNode);     // (..) + 1
                 Node node52 =     new Node("^", node51, node31);           // (..) sqrt(..)
                 Node sixthNode =  new Node("/", firstNode, node52);        // 1 / (..)
-                return            new Node("*", sixthNode, createDerivativeTree(thisNode.left)); // implement chain rule
+                return            new Node("*", sixthNode, createDerivativeNode(thisNode.left)); // implement chain rule
             }
             case "acos" -> {
                 // -\frac{1}{(1-x^2)^{1/2)}
@@ -680,7 +680,7 @@ public class Equation {
                 Node node52 =      new Node("^", node51, node31);            // sqrt(..)
                 Node sixthNode =   new Node("/", firstNode, node52);         //  1 / (..)
                 Node seventhNode = new Node("*", thirdNode, sixthNode);      // -1 * (..)
-                return             new Node("*", seventhNode, createDerivativeTree(thisNode.left)); // add in chain
+                return             new Node("*", seventhNode, createDerivativeNode(thisNode.left)); // add in chain
             }
             case "atan" -> {
                 // \frac{1}{(1+x^2)}
@@ -691,7 +691,7 @@ public class Equation {
                 Node thirdNode =  new Node("^", thisNode.left, secondNode); // x^2
                 Node fourthNode = new Node("+", firstNode, thirdNode);      // (..) + 1
                 Node fifthNode =  new Node("/", firstNode, fourthNode);     // 1 / (..)
-                return            new Node("*", fifthNode, createDerivativeTree(thisNode.left)); // and in chain
+                return            new Node("*", fifthNode, createDerivativeNode(thisNode.left)); // and in chain
             }
             case "acot" -> {
                 // \frac{1}{(1+x^2)}
@@ -704,7 +704,7 @@ public class Equation {
                 Node fourthNode =  new Node("+", firstNode, thirdNode);      // (..) + 1
                 Node fifthNode =   new Node("/", firstNode, fourthNode);     //  1 / (..)
                 Node seventhNode = new Node("*", sixthNode, fifthNode);      // -1 * (..)
-                return             new Node("*", seventhNode, createDerivativeTree(thisNode.left)); // add in chain
+                return             new Node("*", seventhNode, createDerivativeNode(thisNode.left)); // add in chain
             }
             case "acsc" -> {
                 // -\frac{1}{|x|(1-x^2)^{1/2)}
@@ -722,7 +722,69 @@ public class Equation {
                 Node node54 =      new Node("*",   node53, node52);            // (..) * (...)
                 Node sixthNode =   new Node("/",   firstNode, node54);         // 1 / (..)
                 Node seventhNode = new Node("*",   thirdNode, sixthNode);      // (..) * -1
-                return             new Node("*",   seventhNode, createDerivativeTree(thisNode.left));
+                return             new Node("*",   seventhNode, createDerivativeNode(thisNode.left));
+            }
+            case "asinh" -> {
+                // \frac{1}{(1+x^2)^{1/2)}
+                // numbers
+                Node firstNode =  new Node(new ComplexNumber(1,0));
+                Node secondNode = new Node(new ComplexNumber(2,0));
+                Node node31 =     new Node(new ComplexNumber(0.5,0));
+                // calculations
+                Node fourthNode = new Node("^",thisNode.left, secondNode); // x^2
+                Node node51 =     new Node("+", firstNode, fourthNode);    // (..) + 1
+                Node node52 =     new Node("^", node51, node31);           // sqrt(..)
+                Node sixthNode =  new Node("/", firstNode, node52);        // 1 / (..)
+                return            new Node("*", sixthNode, createDerivativeNode(thisNode.left)); // implement chain rule
+            }
+            case "acosh" -> {
+                // \frac{1}{(x^2 - 1)^{1/2}}
+                // numbers
+                Node firstNode =  new Node(new ComplexNumber(1,0));
+                Node secondNode = new Node(new ComplexNumber(2,0));
+                Node node31 =     new Node(new ComplexNumber(0.5,0));
+                // calculations
+                Node fourthNode = new Node("^",thisNode.left, secondNode); // x^2
+                Node node51 =     new Node("-", fourthNode, firstNode);    // (..) - 1
+                Node node52 =     new Node("^", node51, node31);           // sqrt(..)
+                Node sixthNode =  new Node("/", firstNode, node52);        // 1 / (..)
+                return            new Node("*", sixthNode, createDerivativeNode(thisNode.left)); // implement chain rule
+            }
+            case "atanh", "acoth" -> {
+                // \frac{1}{(1-x^2)}
+                // numbers
+                Node firstNode =  new Node(new ComplexNumber(1,0));
+                Node secondNode = new Node(new ComplexNumber(2,0));
+                // calculations
+                Node thirdNode =  new Node("^", thisNode.left, secondNode); // x^2
+                Node fourthNode = new Node("-", firstNode, thirdNode);      // 1 - (..)
+                Node fifthNode =  new Node("/", firstNode, fourthNode);     // 1 / (..)
+                return            new Node("*", fifthNode, createDerivativeNode(thisNode.left)); // and in chain
+            }
+            case "acsch" -> {
+                // \frac{1}{|x|(1+x^2)^{1/2}}
+                // numbers
+                Node firstNode =  new Node(new ComplexNumber(1,0));
+                Node secondNode = new Node(new ComplexNumber(2,0));
+                Node node31 =     new Node(new ComplexNumber(0.5,0));
+                // calculations
+                Node fourthNode = new Node("^",   thisNode.left, secondNode); // x^2
+                Node node51 =     new Node("+",   firstNode, fourthNode);    // (..) + 1
+                Node node52 =     new Node("^",   node51, node31);           // sqrt(..)
+                Node node53 =     new Node("abs", thisNode.left, null);  // abs(..)
+                Node node54 =     new Node("*",   node53, node52);           // (..) * (...)
+                Node sixthNode =  new Node("/",   firstNode, node54);        // 1 / (..)
+                return            new Node("*",   sixthNode, createDerivativeNode(thisNode.left)); // implement chain rule
+            }
+            case "asech" -> {
+                // this is so much easier, but I forgot about it until now...
+                // -\tanh(x)sech(x)
+                Node node1 = new Node("tanh", thisNode.left, null);
+                Node node2 = new Node("sech", thisNode.left, null);
+                Node node3 = new Node(new ComplexNumber(-1,0));
+                Node node4 = new Node("*", node1, node2);
+                Node node5 = new Node("*", node3, node4);
+                return       new Node("*", node5, createDerivativeNode(thisNode.left)); // implement chain rule
             }
         }
 

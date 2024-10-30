@@ -6,7 +6,7 @@ In addition, many functions make use of ArrayLists and Lists.
 The main function also uses scanner to take input from the user of the equation that they wish to graph.
 When inputting and equation to graph you should use the LATEX common format for equations.
 You may not include a `~` in your equation because it is a reserved character that I use to link nodes on the binary tree.
-The currently supported functions are as follows: `log_{b}{a}` `log{a}` `\frac{a}{b}`  `sin{a}` `cos{a}` `tan{a}` `sec{a}` `csc{a}` `cot{a}` `sinh{a}` `cosh{a}` `tanh{a}` `sech{a}` `csch{a}` `coth{a}` `asin{a}` `acos{a}` `atan{a}` `asec{a}` `acsc{a}` `acot{a}` `asinh{a}` `acosh{a}` `atanh{a}` `asech{a}` `acsch{a}` `acoth{a}` `gam{a}` `^` `^{a}` `*` `/` `+` `-`.
+The currently supported functions are as follows: `log_{b}{a}` `log{a}` `\frac{a}{b}`  `sin{a}` `cos{a}` `tan{a}` `sec{a}` `csc{a}` `cot{a}` `sinh{a}` `cosh{a}` `tanh{a}` `sech{a}` `csch{a}` `coth{a}` `asin{a}` `acos{a}` `atan{a}` `asec{a}` `acsc{a}` `acot{a}` `asinh{a}` `acosh{a}` `atanh{a}` `asech{a}` `acsch{a}` `acoth{a}` `gam{a}` `abs{a}` `^` `^{a}` `*` `/` `+` `-`.
 ## What you should know before reading the code
 You should be familiar with the concept of complex numbers (a number that includes both a real and imaginary part).
 You should also have some familiarity with the idea of how functions may act on numbers like these.
@@ -41,3 +41,5 @@ In addition, for trig functions you must use curly braces instead of regular par
 Wait for the program to print "Start Now" before you start to move the camera.
 Use `t` `f` `g` `h` to move and `z` and `x` to zoom in and out.
 Use the scroll wheel or scroll on the trackpad to move through different imaginary inputs for x.
+While `|x|` is often used for absolute value, you should not use that in my program.
+To conform to my format you must use `abs{x}`.
