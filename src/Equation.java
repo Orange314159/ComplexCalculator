@@ -179,7 +179,7 @@ public class Equation {
                         System.out.println("Error");
                     }
                     skip = findCloseBrace(i+5, input) - i;
-                } else if ((input.startsWith("sin", i+1) || input.startsWith("cos", i+1) || input.startsWith("tan", i+1)|| input.startsWith("cot", i+1)|| input.startsWith("sec", i+1)|| input.startsWith("csc", i+1) || input.startsWith("gam", i+1))&& skip <1) {
+                } else if ((input.startsWith("sin", i+1) || input.startsWith("cos", i+1) || input.startsWith("abs", i+1) || input.startsWith("tan", i+1)|| input.startsWith("cot", i+1)|| input.startsWith("sec", i+1)|| input.startsWith("csc", i+1) || input.startsWith("gam", i+1))&& skip <1) {
                     // any three letter function (I attempt to make all of my functions like this)
                     String functionName = input.substring(i+1,i+4);
 //                    System.out.println(input + "  " + input.substring(i+6,findCloseBrace(i+5, input)));
@@ -515,6 +515,8 @@ public class Equation {
                     this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).acot(myX);
             case "gam" ->
                     this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).gam(myX); // this might be slow because it has to solve a Riemann sum (especially for values of x that follow 0 + bi)
+            case "abs" ->
+                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).abs(myX);
             default -> new ComplexNumber();
         };
     }
