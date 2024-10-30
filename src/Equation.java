@@ -581,6 +581,85 @@ public class Equation {
                 Node eighthPart  = new Node("-", new ComplexNumber(), sixthPart, seventhPart);
                 return new Node("/", new ComplexNumber(), eighthPart, fifthPart);
             } // generalized log rule
+            case "sin" -> {
+                // cos
+                return new Node ("*", new ComplexNumber(), new Node("cos", new ComplexNumber(), thisNode.left, thisNode.right), createDerivativeTree(thisNode.left));
+            }
+            case "cos" -> {
+                // -sin
+                return new Node ("*", new ComplexNumber(), new Node("*", new ComplexNumber(), new Node("sin", new ComplexNumber(), thisNode.left, thisNode.right), new Node("", new ComplexNumber(-1,0),null,null)), createDerivativeTree(thisNode.left));
+            }
+            case "tan" -> {
+                // sec^2
+
+                Node baseNode = new Node("sec", new ComplexNumber(), thisNode.left, thisNode.right);
+                Node twoNode = new Node("", new ComplexNumber(2,0), null, null);
+                return new Node ("*", new ComplexNumber(), new Node("^", new ComplexNumber(), baseNode, twoNode), createDerivativeTree(thisNode.left));
+            }
+            case "cot" -> {
+                // -csc^2
+
+                Node baseNode = new Node("csc", new ComplexNumber(), thisNode.left, thisNode.right);
+                Node twoNode = new Node("", new ComplexNumber(2,0), null, null);
+                Node mOneNode = new Node("", new ComplexNumber(-1,0), null, null);
+
+                return new Node ("*", new ComplexNumber(), new Node("*", new ComplexNumber(), mOneNode, new Node("^", new ComplexNumber(), baseNode, twoNode)), createDerivativeTree(thisNode.left));
+
+            }
+            case "sec" -> {
+                // sec*tan
+                Node secNode = new Node("sec", new ComplexNumber(), thisNode.left, thisNode.right);
+                Node tanNode = new Node("tan", new ComplexNumber(), thisNode.left, thisNode.right);
+
+                return new Node ("*", new ComplexNumber(), new Node("*", new ComplexNumber(), secNode, tanNode), createDerivativeTree(thisNode.left));
+
+            }
+            case "csc" -> {
+                // -csc*cot
+                Node secNode  = new Node("csc", new ComplexNumber(), thisNode.left, thisNode.right);
+                Node tanNode  = new Node("cot", new ComplexNumber(), thisNode.left, thisNode.right);
+                Node stNode   = new Node("*", new ComplexNumber(), secNode, tanNode);
+                Node mOneNode = new Node("", new ComplexNumber(-1,0), null, null);
+                return new Node ("*", new ComplexNumber(), new Node("*", new ComplexNumber(), stNode, mOneNode), createDerivativeTree(thisNode.left));
+            }
+            case "sinh" -> {
+
+                return new Node ("*", new ComplexNumber(), new Node("cosh", new ComplexNumber(), thisNode.left, thisNode.right), createDerivativeTree(thisNode.left));
+
+            }
+            case "cosh" -> {
+
+                return new Node ("*", new ComplexNumber(), new Node("sinh", new ComplexNumber(), thisNode.left, thisNode.right), createDerivativeTree(thisNode.left));
+
+            }
+            case "tanh" -> {
+                Node baseNode = new Node("sech", new ComplexNumber(), thisNode.left, thisNode.right);
+                Node twoNode = new Node("", new ComplexNumber(2,0), null, null);
+                return new Node ("*", new ComplexNumber(), new Node("^", new ComplexNumber(), baseNode, twoNode), createDerivativeTree(thisNode.left));
+            }
+            case "coth" -> {
+                Node baseNode = new Node("csch", new ComplexNumber(), thisNode.left, thisNode.right);
+                Node twoNode = new Node("", new ComplexNumber(2,0), null, null);
+                Node mOneNode = new Node("", new ComplexNumber(-1,0), null, null);
+
+                return new Node ("*", new ComplexNumber(), new Node("*", new ComplexNumber(), mOneNode, new Node("^", new ComplexNumber(), baseNode, twoNode)), createDerivativeTree(thisNode.left));
+            }
+            case "sech" -> {
+                Node secNode  = new Node("sech", new ComplexNumber(), thisNode.left, thisNode.right);
+                Node tanNode  = new Node("tanh", new ComplexNumber(), thisNode.left, thisNode.right);
+                Node stNode   = new Node("*", new ComplexNumber(), secNode, tanNode);
+                Node mOneNode = new Node("", new ComplexNumber(-1,0), null, null);
+
+                return new Node ("*", new ComplexNumber(), new Node("*", new ComplexNumber(), stNode, mOneNode), createDerivativeTree(thisNode.left));
+            }
+            case "csch" -> {
+                Node secNode  = new Node("csch", new ComplexNumber(), thisNode.left, thisNode.right);
+                Node tanNode  = new Node("coth", new ComplexNumber(), thisNode.left, thisNode.right);
+                Node stNode   = new Node("*", new ComplexNumber(), secNode, tanNode);
+                Node mOneNode = new Node("", new ComplexNumber(-1,0), null, null);
+
+                return new Node ("*", new ComplexNumber(), new Node("*", new ComplexNumber(), stNode, mOneNode), createDerivativeTree(thisNode.left));
+            }
 
         }
 
