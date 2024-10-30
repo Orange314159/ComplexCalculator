@@ -9,16 +9,28 @@ public class Node {
     }
 
     public Node(String o, ComplexNumber complexNumber) {
-        data = complexNumber;
+        data     = complexNumber;
         operator = o;
-        left = null;
-        right = null;
+        left     = null;
+        right    = null;
     }
-    public Node (String o, ComplexNumber complexNumber, Node n1, Node n2){
-        data = complexNumber;
+    public Node(String o, ComplexNumber complexNumber, Node n1, Node n2){
+        data     = complexNumber;
         operator = o;
-        left = n1;
-        right = n2;
+        left     = n1;
+        right    = n2;
+    }
+    public Node(String o, Node n1, Node n2){
+        data     = new ComplexNumber();
+        operator = o;
+        left     = n1;
+        right    = n2;
+    }
+    public Node(ComplexNumber complexNumber){
+        data     = complexNumber;
+        operator = "";
+        left     =  null;
+        right    = null;
     }
 
     @Override

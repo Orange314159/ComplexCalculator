@@ -313,7 +313,7 @@ public class ComplexNumber {
         }
         return (new ComplexNumber(1,0).div(this,xValue)).asin(xValue);
     }
-
+    // factorials
     public Double gammaIntegral(double detail, ComplexNumber input, boolean real){
         // this is truly solving the Riemann sum of the gamma function over some small set
         double total = 0;
@@ -357,6 +357,15 @@ public class ComplexNumber {
         // imaginary part = integral from 0 to infinity {t^{a-1}*e^{-t}*sin(b*ln{t})dt}
         double imaginaryPart = gammaIntegral(0.2,this,false);
         return new ComplexNumber(realPart, imaginaryPart);
+    }
+    // absolute value
+    public ComplexNumber abs(ComplexNumber xValue){
+        if (this.isX){
+            this.a = xValue.a;
+            this.b = xValue.b;
+        }
+        // the absolute value of a complex number is just the distance from the origin, use pythagoras to solve sqrt(z.a^2 + z.b^2) = |z|
+        return new ComplexNumber(Math.sqrt(this.a*this.a + this.b*this.b), 0);
     }
 
     @Override

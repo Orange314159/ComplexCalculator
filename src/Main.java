@@ -47,7 +47,7 @@ public class Main {
         int grain = 100; // detail 2
         double minIm = 0.0;
         double maxIm = 10.0;
-        SweepXValues sweepXValues = new SweepXValues(-10.0, 10.0, minIm,maxIm,10000, grain,e1);
+        SweepXValues sweepXValues = new SweepXValues(-10.0, 10.0, minIm,maxIm,10_000, grain,e1);
         final Integer[] bValue = {0};
         int bMax = sweepXValues.imaginaryValues;
         // The initial array of points
