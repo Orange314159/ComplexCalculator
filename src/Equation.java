@@ -1,8 +1,7 @@
 import java.util.ArrayList;
 public class Equation {
-    // important notes:
-    // 1. When creating the binary tree I use "~" as a delimiter for pointers DO NOT USE "~" IN YOUR EQUATIONS
-    // 2. Spaces do not matter, I will remove all the spaces at the beginning so don't worry about that
+    // important note:
+    // When creating the binary tree I use "~" as a delimiter for pointers DO NOT USE "~" IN YOUR EQUATIONS
 
     public String eq;
     public int length = -1;
@@ -16,6 +15,10 @@ public class Equation {
         includeOmittedMultiplication();
 //        System.out.println(eq + "CLEAN");
         length = createTreeSpecialFunctions(eq);
+        ddxTree.add(createDerivativeNode(this.tree.get(this.length))); // include first derivative
+        ddxTree.add(createDerivativeNode(ddxTree.get(0))); // second derivative
+        ddxTree.add(createDerivativeNode(ddxTree.get(1))); // third
+        ddxTree.add(createDerivativeNode(ddxTree.get(2))); // fourth (I stop here but this is arbitrary, and you could implement further derivation)
     }
 
     public int findCloseParenthesis(int start, String input){
@@ -521,6 +524,94 @@ public class Equation {
         };
     }
 
+    public ComplexNumber evaluateNode(ComplexNumber myX, Node startNode){
+        // after reading this you may ask yourself why evaluate equation exists at all
+        // this is because evaluateNode is effectively the same but just better
+        // the reason that I use evaluateEquation is to show the equation in a more explicit way
+        // but yes, you could just use evaluate node on any node on the tree to solve it in a more efficient way
+        // the reason that this does not matter much is that solving these equations is so fast in the first place and is not a limiting factor of the code
+        if (startNode == null){
+            System.out.println("ERROR: start Node does not exist");
+            return new ComplexNumber();
+        }
+        if (startNode.left == null){ // base case
+            // there are no child nodes
+//            System.out.println(nodeData + "NODE " + startNode +"START" );
+            return startNode.data;
+        }
+//        System.out.println(this.evaluateNode(myX, startNode.left) + "  " + (this.evaluateNode(myX, startNode.right)) + "  " + myX);
+//        System.out.println(myX.pow(myX, (this.evaluateNode(myX, startNode.right))));
+//        System.out.println(nodeOperator);
+        // big switch statement to check for every possible operator (that I include in my code)
+        return switch (startNode.operator) {
+            case "*" ->
+                    this.evaluateNode(myX, startNode.left).mul(this.evaluateNode(myX, startNode.right), myX);
+            case "+" ->
+                    this.evaluateNode(myX, startNode.left).add(this.evaluateNode(myX, startNode.right), myX);
+            case "/" ->
+                    this.evaluateNode(myX, startNode.left).div(this.evaluateNode(myX, startNode.right), myX);
+            case "-" ->
+                    this.evaluateNode(myX, startNode.left).sub(this.evaluateNode(myX, startNode.right), myX);
+            case "^" ->
+                    this.evaluateNode(myX, startNode.left).pow(this.evaluateNode(myX, startNode.right), myX);
+            case "log" ->
+                    this.evaluateNode(myX, startNode.left).log(this.evaluateNode(myX, startNode.right), myX);
+            case "sinh" ->
+                    this.evaluateNode(myX, startNode.left).sinh(myX);
+            case "cosh" ->
+                    this.evaluateNode(myX, startNode.left).cosh(myX);
+            case "tanh" ->
+                    this.evaluateNode(myX, startNode.left).tanh(myX);
+            case "coth" ->
+                    this.evaluateNode(myX, startNode.left).coth(myX);
+            case "sech" ->
+                    this.evaluateNode(myX, startNode.left).sech(myX);
+            case "csch" ->
+                    this.evaluateNode(myX, startNode.left).csch(myX);
+            case "sin" ->
+                    this.evaluateNode(myX, startNode.left).sin(myX);
+            case "cos" ->
+                    this.evaluateNode(myX, startNode.left).cos(myX);
+            case "tan" ->
+                    this.evaluateNode(myX, startNode.left).tan(myX);
+            case "sec" ->
+                    this.evaluateNode(myX, startNode.left).sec(myX);
+            case "csc" ->
+                    this.evaluateNode(myX, startNode.left).csc(myX);
+            case "cot" ->
+                    this.evaluateNode(myX, startNode.left).cot(myX);
+            case "asinh" ->
+                    this.evaluateNode(myX, startNode.left).asinh(myX);
+            case "acosh" ->
+                    this.evaluateNode(myX, startNode.left).acosh(myX);
+            case "atanh" ->
+                    this.evaluateNode(myX, startNode.left).atanh(myX);
+            case "acoth" ->
+                    this.evaluateNode(myX, startNode.left).acoth(myX);
+            case "asech" ->
+                    this.evaluateNode(myX, startNode.left).asech(myX);
+            case "acsch" ->
+                    this.evaluateNode(myX, startNode.left).acsch(myX);
+            case "asin" ->
+                    this.evaluateNode(myX, startNode.left).asin(myX);
+            case "acos" ->
+                    this.evaluateNode(myX, startNode.left).acos(myX);
+            case "atan" ->
+                    this.evaluateNode(myX, startNode.left).atan(myX);
+            case "asec" ->
+                    this.evaluateNode(myX, startNode.left).asec(myX);
+            case "acsc" ->
+                    this.evaluateNode(myX, startNode.left).acsc(myX);
+            case "acot" ->
+                    this.evaluateNode(myX, startNode.left).acot(myX);
+            case "gam" ->
+                    this.evaluateNode(myX, startNode.left).gam(myX); // this might be slow because it has to solve a Riemann sum (especially for values of x that follow 0 + bi)
+            case "abs" ->
+                    this.evaluateNode(myX, startNode.left).abs(myX);
+            default -> new ComplexNumber();
+        };
+    }
+
     public ComplexNumber riemannSumOfDefiniteIntegral(double min, double max, double stepSize){
         // this will be a function to return the definite integral of a given function over some size
         ComplexNumber total = new ComplexNumber(0,0);
@@ -793,6 +884,112 @@ public class Equation {
 //        return createDerivativeTree(thisNode);
         System.out.println("Error: was not able to parse function to calculate derivative");
         return new Node("", new ComplexNumber(0,0), null, null); // something went wrong
+    }
+
+    public Node cleanNode(Node input){
+        // the function of this method is to take a node that may include easily simplified values and then simplify them
+        // for example if the node includes 0 * x + 4 it would simplify it to 4
+        // of something like 2 * 90 + 14 - x would become 166 - x
+
+        if (input.left == null){
+            return input; // base case
+        }
+        if (input.operator.equals("+")){
+            // cleaning in addition
+            if (input.left.left == null && input.right.left == null){
+                // the adding two numbers or x (not two expressions)
+                // ex 4 + 7
+                // not (4 * 2) + 18
+
+                // I must check to see if the nodes are equal to x because if they are they will have their vales both set to
+                if (input.left.data.equals(new ComplexNumber(0,0)) && !input.left.data.isX){
+                    return input.right; // zero is the additive identity
+                }
+                if (input.right.data.equals(new ComplexNumber(0,0)) && !input.right.data.isX){
+                    return input.left; // zero is the additive identity
+                }
+                if (input.right.data.isX && input.left.data.isX){
+                    // x + x = 2x
+                    return new Node("*", new Node(new ComplexNumber(2,0)), new Node(new ComplexNumber("x")));
+                }
+                if (!input.right.data.isX && !input.left.data.isX){
+                    // (some num) + (some other num) = some third num
+                    return new Node(input.right.data.add(input.left.data, null)); // I know that these both are real numbers, not x
+                    // here I am using the constructor of node that takes and input of a complex number
+                }
+            }
+            if(input.left.equals(input.right)){
+                // (some expression) + (some expression) = 2 * (some expression)
+                return new Node("*", new Node(new ComplexNumber(2.0)), input.left);
+            }
+        }
+        if (input.operator.equals("-")){
+            // cleaning in subtraction
+            if (input.left.left == null && input.right.left == null){
+                // the subtracting two numbers or x (not two expressions)
+                // ex 4 - 7
+                // not (4 * 2) - 18
+
+                if (input.right.data.equals(new ComplexNumber(0,0)) && !input.right.data.isX){
+                    return input.left; // zero is the additive identity
+                }
+                if (input.right.data.isX && input.left.data.isX){
+                    // x - x = 0
+                    return new Node(new ComplexNumber(0, 0));
+                }
+                if (!input.right.data.isX && !input.left.data.isX){
+                    // (some num) + (some other num) = some third num
+                    return new Node(input.right.data.sub(input.left.data, null)); // I know that these both are real numbers, not x
+                    // here I am using the constructor of node that takes and input of a complex number
+                }
+            }
+            if(input.left.equals(input.right)){
+                // (some expression) - (some expression) = 0
+                return new Node(new ComplexNumber(0,0));
+            }
+        }
+        if (input.operator.equals("*")){
+            // cleaning in mult
+            if (input.left.left == null && input.right.left == null){
+                // multiplying numbers like:
+                // 4 * 2
+                // or 8 * x
+                if (input.left.equals(input.right)){
+                    return new Node("^", input.left, new Node(2, 0));
+                }
+                if (input.left.data.equals(new ComplexNumber(0,0)) || input.right.data.equals(new ComplexNumber(0,0))){
+                    return new Node(0,0); // multiplying anything by zero results in zero
+                }
+                if (input.left.data.equals(new ComplexNumber(1,0))){
+                    return input.right; // multiplying anything by one results in itself (multiplicative identity)
+                }
+                if (input.right.data.equals(new ComplexNumber(1,0))){
+                    return input.left; // multiplying anything by one results in itself (multiplicative identity)
+                }
+                if (!input.left.data.isX && !input.right.data.isX){
+                    return new Node(input.left.data.mul(input.right.data, null)); // I am sure that neither of these values is "x" because I just checked in the above line
+                }
+                // TODO: add in more cleaning
+
+            }
+        }
+        if (input.operator.equals("/")){
+            // cleaning in division
+            // TODO: same here
+        }
+
+
+
+        // recursively call to clean
+        // this only happens if I have not hard coded a way to simplify the given expression
+        Node first = input;
+        Node second = cleanNode(first);
+        while(!first.equals(second)){ // the idea here is to check if there is any difference between the node and the cleaned node
+            // if there is something that can be cleaned in the node it will keep cleaning the node
+            first = second;
+            second = cleanNode(first);
+        }
+        return second;
     }
 
     public void printTree(){

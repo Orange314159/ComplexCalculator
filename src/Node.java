@@ -32,6 +32,12 @@ public class Node {
         left     =  null;
         right    = null;
     }
+    public Node(double a, double b){
+        data     = new ComplexNumber(a,b);
+        operator = "";
+        left     =  null;
+        right    = null;
+    }
 
     @Override
     public String toString() {

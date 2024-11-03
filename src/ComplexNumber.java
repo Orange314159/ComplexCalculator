@@ -16,6 +16,11 @@ public class ComplexNumber {
         this.b = b;
         this.isX = false;
     }
+    public ComplexNumber(double a){
+        this.a = a;
+        this.b = 0;
+        this.isX = false;
+    }
     public ComplexNumber(String str){
         // the expected input for "str" is some number such as 23.452 or i or x
         this.a = 0;
@@ -112,7 +117,8 @@ public class ComplexNumber {
         return new ComplexNumber(realPart, imaginaryPart);
     }
     public ComplexNumber pow(ComplexNumber c, ComplexNumber xValue){
-        if (isX){
+//        System.out.println(c + "debug");
+        if (this.isX){
             this.a = xValue.a;
             this.b = xValue.b;
         }
@@ -371,7 +377,13 @@ public class ComplexNumber {
     @Override
     public String toString() {
         if (isX){
-            return "(x.a) + (x.b)i";
+            return "x";
+        }
+        if (this.a == 0){
+            return this.b + "i";
+        }
+        if (this.b == 0){
+            return this.a + "";
         }
         return this.a + " + " + this.b + "i";
     }

@@ -26,6 +26,17 @@ public class Main {
 
         //------------------------------ Equation Stuff ------------------------------\\
         System.out.println("Hello world!"); // this is still here to make sure that the code actually runs and isn't broken
+        // Testing Derivative function
+        Equation e0 = new Equation("\\sin{x^2}");
+        System.out.println(e0.tree.get(e0.length));
+//        System.out.println(e0.evaluateNode(new ComplexNumber(0,0), e0.tree.get(e0.length)));
+//        System.out.println(e0.evaluateNode(new ComplexNumber(1,0), e0.tree.get(e0.length)));
+//        System.out.println(e0.evaluateNode(new ComplexNumber(2,0), e0.tree.get(e0.length)));
+        System.out.println(e0.createDerivativeNode(e0.tree.get(e0.length)));
+        System.out.println(e0.evaluateNode(new ComplexNumber(12,0), e0.createDerivativeNode(e0.tree.get(e0.length))));
+//        System.out.println(e0.ddxTree);
+
+
         // Testing of Complex Function
 //        Equation e0 = new Equation("x^{5.0}*(2.7182818)^{-x}");
 //        System.out.println(e0.riemannSumOfDefiniteIntegral(0,30,0.2));
