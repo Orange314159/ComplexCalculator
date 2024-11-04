@@ -1,5 +1,4 @@
-// TODO: add in d/dx (using power and chain rule) (and definitions for all the other functions)
-// ^ make sure to FIX the sin rules, they need to include chain
+// TODO: add in method to clean node
 // TODO: add in d/dx at a point (using slope formula)
 // TODO: add in indefinite integrals? This seems very very difficult
 //  ^something about u substitution could help (i don't know how to integral)

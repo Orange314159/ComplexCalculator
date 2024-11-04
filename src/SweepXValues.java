@@ -8,7 +8,6 @@ public class SweepXValues {
     public ArrayList<ComplexNumber> yValues = new ArrayList<>();
     public Equation equation;
 
-
     public SweepXValues(double minXReal, double maxXReal, double minXImaginary, double maxXImaginary, int detail){
         // x values will be calculated at min, max and detail number of times in between
         int counter = 0;

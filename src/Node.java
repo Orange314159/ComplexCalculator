@@ -3,11 +3,11 @@ public class Node {
     public String operator;
     public ComplexNumber data;
     public Node left, right; // if the node does not have left and right nodes then it will have data
+
     public Node(){
         data = new ComplexNumber();
         operator = "";
     }
-
     public Node(String o, ComplexNumber complexNumber) {
         data     = complexNumber;
         operator = o;
