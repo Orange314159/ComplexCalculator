@@ -950,15 +950,15 @@ public class Equation {
         }
         if (input.operator.equals("*")){
             // cleaning in mult
+            if ( (input.left.data.equals(new ComplexNumber(0,0)) && input.left.operator.isEmpty()) || (input.right.data.equals(new ComplexNumber(0,0)) && input.right.operator.isEmpty())){
+                return new Node(0,0); // multiplying anything by zero results in zero
+            }
             if (input.left.left == null && input.right.left == null){
                 // multiplying numbers like:
                 // 4 * 2
                 // or 8 * x
                 if (input.left.equals(input.right)){
                     return new Node("^", input.left, new Node(2, 0));
-                }
-                if (input.left.data.equals(new ComplexNumber(0,0)) || input.right.data.equals(new ComplexNumber(0,0))){
-                    return new Node(0,0); // multiplying anything by zero results in zero
                 }
                 if (input.left.data.equals(new ComplexNumber(1,0))){
                     return input.right; // multiplying anything by one results in itself (multiplicative identity)
@@ -969,16 +969,62 @@ public class Equation {
                 if (!input.left.data.isX && !input.right.data.isX){
                     return new Node(input.left.data.mul(input.right.data, null)); // I am sure that neither of these values is "x" because I just checked in the above line
                 }
-                // TODO: add in more cleaning
-
             }
+            if (input.left.operator.equals("+")){
+                // (a + b) * c = ab + bc
+                Node leftPart  = new Node("*", input.left.left,  input.right);
+                Node rightPart = new Node("*", input.left.right, input.right);
+                return new Node("+", leftPart, rightPart); // order here does not matter because addition is commutative (just convention)
+            }
+            if (input.right.operator.equals("+")){
+                // a * (b + c) = ab + ac
+                Node leftPart =  new Node("*", input.right.left,  input.left);
+                Node rightPart = new Node("*", input.right.right, input.left);
+                return new Node("+", leftPart, rightPart);
+            }
+            if (input.left.left != null && input.left.operator.equals("^") && input.right.operator.equals("^") && input.left.left.equals(input.right.left)){
+                // I include the not null part to stop the possible warnings
+                Node topPart = new Node("+", input.left.right, input.right.right);
+                return new Node("^", input.left.left, topPart);
+            }
+
         }
         if (input.operator.equals("/")){
             // cleaning in division
-            // TODO: same here
+            if (input.left.data.equals(new ComplexNumber(0,0)) && input.left.operator.isEmpty()){
+                return new Node(0,0); // dividing zero by anything results in zero
+            }
+
+            if (input.right.data.equals(new ComplexNumber(0,0)) && input.right.operator.isEmpty()){
+                System.out.println("Error: division by zero found in equation cleaning");
+                return new Node(0,0); // dividing anything by zero results in undefined
+            }
+            if (input.left.left == null && input.right.left == null){
+                // multiplying numbers like:
+                // 4 * 2
+                // or 8 * x
+                if (input.left.equals(input.right)){
+                    return new Node(1,1);
+                }
+                if (input.right.data.equals(new ComplexNumber(1,0))){
+                    return input.left; // dividing anything by one results in itself
+                }
+                if (!input.left.data.isX && !input.right.data.isX){
+                    return new Node(input.left.data.div(input.right.data, null)); // I am sure that neither of these values is "x" because I just checked in the above line
+                }
+            }
+            if (input.left.operator.equals("+")){
+                // (a + b) * c = ab + bc
+                Node leftPart  = new Node("/", input.left.left,  input.right);
+                Node rightPart = new Node("/", input.left.right, input.right);
+                return new Node("+", leftPart, rightPart); // order here does not matter because addition is commutative (just convention)
+            }
+            if (input.left.left != null && input.left.operator.equals("^") && input.right.operator.equals("^") && input.left.left.equals(input.right.left)){
+                // I include the not null part to stop the possible warnings
+                Node topPart = new Node("-", input.left.right, input.right.right);
+                return new Node("^", input.left.left, topPart);
+            }
         }
-
-
 
         // recursively call to clean
         // this only happens if I have not hard coded a way to simplify the given expression
