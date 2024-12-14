@@ -892,6 +892,7 @@ public class Equation {
         // of something like 2 * 90 + 14 - x would become 166 - x
 
         if (input.left == null){
+//            System.out.println("SKIP");
             return input; // base case
         }
         if (input.operator.equals("+")){
@@ -903,24 +904,24 @@ public class Equation {
 
                 // I must check to see if the nodes are equal to x because if they are they will have their vales both set to
                 if (input.left.data.equals(new ComplexNumber(0,0)) && !input.left.data.isX){
-                    return input.right; // zero is the additive identity
+                    return cleanNode(input.right); // zero is the additive identity
                 }
                 if (input.right.data.equals(new ComplexNumber(0,0)) && !input.right.data.isX){
-                    return input.left; // zero is the additive identity
+                    return cleanNode(input.left); // zero is the additive identity
                 }
                 if (input.right.data.isX && input.left.data.isX){
                     // x + x = 2x
-                    return new Node("*", new Node(new ComplexNumber(2,0)), new Node(new ComplexNumber("x")));
+                    return cleanNode(new Node("*", new Node(new ComplexNumber(2,0)), new Node(new ComplexNumber("x"))));
                 }
                 if (!input.right.data.isX && !input.left.data.isX){
                     // (some num) + (some other num) = some third num
-                    return new Node(input.right.data.add(input.left.data, null)); // I know that these both are real numbers, not x
+                    return cleanNode(new Node(input.right.data.add(input.left.data, null))); // I know that these both are real numbers, not x
                     // here I am using the constructor of node that takes and input of a complex number
                 }
             }
             if(input.left.equals(input.right)){
                 // (some expression) + (some expression) = 2 * (some expression)
-                return new Node("*", new Node(new ComplexNumber(2.0)), input.left);
+                return cleanNode(new Node("*", new Node(new ComplexNumber(2.0)), input.left));
             }
         }
         if (input.operator.equals("-")){
@@ -931,21 +932,21 @@ public class Equation {
                 // not (4 * 2) - 18
 
                 if (input.right.data.equals(new ComplexNumber(0,0)) && !input.right.data.isX){
-                    return input.left; // zero is the additive identity
+                    return cleanNode(input.left); // zero is the additive identity
                 }
                 if (input.right.data.isX && input.left.data.isX){
                     // x - x = 0
-                    return new Node(new ComplexNumber(0, 0));
+                    return cleanNode(new Node(new ComplexNumber(0, 0)));
                 }
                 if (!input.right.data.isX && !input.left.data.isX){
                     // (some num) + (some other num) = some third num
-                    return new Node(input.right.data.sub(input.left.data, null)); // I know that these both are real numbers, not x
+                    return cleanNode(new Node(input.right.data.sub(input.left.data, null))); // I know that these both are real numbers, not x
                     // here I am using the constructor of node that takes and input of a complex number
                 }
             }
             if(input.left.equals(input.right)){
                 // (some expression) - (some expression) = 0
-                return new Node(new ComplexNumber(0,0));
+                return cleanNode(new Node(new ComplexNumber(0,0)));
             }
         }
         if (input.operator.equals("*")){
@@ -958,34 +959,34 @@ public class Equation {
                 // 4 * 2
                 // or 8 * x
                 if (input.left.equals(input.right)){
-                    return new Node("^", input.left, new Node(2, 0));
+                    return cleanNode(new Node("^", input.left, new Node(2, 0)));
                 }
                 if (input.left.data.equals(new ComplexNumber(1,0))){
-                    return input.right; // multiplying anything by one results in itself (multiplicative identity)
+                    return cleanNode(input.right); // multiplying anything by one results in itself (multiplicative identity)
                 }
                 if (input.right.data.equals(new ComplexNumber(1,0))){
-                    return input.left; // multiplying anything by one results in itself (multiplicative identity)
+                    return cleanNode(input.left); // multiplying anything by one results in itself (multiplicative identity)
                 }
                 if (!input.left.data.isX && !input.right.data.isX){
-                    return new Node(input.left.data.mul(input.right.data, null)); // I am sure that neither of these values is "x" because I just checked in the above line
+                    return cleanNode(new Node(input.left.data.mul(input.right.data, null))); // I am sure that neither of these values is "x" because I just checked in the above line
                 }
             }
             if (input.left.operator.equals("+")){
                 // (a + b) * c = ab + bc
                 Node leftPart  = new Node("*", input.left.left,  input.right);
                 Node rightPart = new Node("*", input.left.right, input.right);
-                return new Node("+", leftPart, rightPart); // order here does not matter because addition is commutative (just convention)
+                return cleanNode(new Node("+", leftPart, rightPart)); // order here does not matter because addition is commutative (just convention)
             }
             if (input.right.operator.equals("+")){
                 // a * (b + c) = ab + ac
                 Node leftPart =  new Node("*", input.right.left,  input.left);
                 Node rightPart = new Node("*", input.right.right, input.left);
-                return new Node("+", leftPart, rightPart);
+                return cleanNode(new Node("+", leftPart, rightPart));
             }
             if (input.left.left != null && input.left.operator.equals("^") && input.right.operator.equals("^") && input.left.left.equals(input.right.left)){
                 // I include the not null part to stop the possible warnings
                 Node topPart = new Node("+", input.left.right, input.right.right);
-                return new Node("^", input.left.left, topPart);
+                return cleanNode(new Node("^", input.left.left, topPart));
             }
 
         }
@@ -1007,35 +1008,26 @@ public class Equation {
                     return new Node(1,1);
                 }
                 if (input.right.data.equals(new ComplexNumber(1,0))){
-                    return input.left; // dividing anything by one results in itself
+                    return cleanNode(input.left); // dividing anything by one results in itself
                 }
                 if (!input.left.data.isX && !input.right.data.isX){
-                    return new Node(input.left.data.div(input.right.data, null)); // I am sure that neither of these values is "x" because I just checked in the above line
+                    return cleanNode(new Node(input.left.data.div(input.right.data, null))); // I am sure that neither of these values is "x" because I just checked in the above line
                 }
             }
             if (input.left.operator.equals("+")){
                 // (a + b) * c = ab + bc
                 Node leftPart  = new Node("/", input.left.left,  input.right);
                 Node rightPart = new Node("/", input.left.right, input.right);
-                return new Node("+", leftPart, rightPart); // order here does not matter because addition is commutative (just convention)
+                return cleanNode(new Node("+", leftPart, rightPart)); // order here does not matter because addition is commutative (just convention)
             }
             if (input.left.left != null && input.left.operator.equals("^") && input.right.operator.equals("^") && input.left.left.equals(input.right.left)){
                 // I include the not null part to stop the possible warnings
                 Node topPart = new Node("-", input.left.right, input.right.right);
-                return new Node("^", input.left.left, topPart);
+                return cleanNode(new Node("^", input.left.left, topPart));
             }
         }
 
-        // recursively call to clean
-        // this only happens if I have not hard coded a way to simplify the given expression
-        Node first = input;
-        Node second = cleanNode(first);
-        while(!first.equals(second)){ // the idea here is to check if there is any difference between the node and the cleaned node
-            // if there is something that can be cleaned in the node it will keep cleaning the node
-            first = second;
-            second = cleanNode(first);
-        }
-        return second;
+        return new Node(input.operator, cleanNode(input.left), cleanNode(input.right));
     }
 
     public void printTree(){

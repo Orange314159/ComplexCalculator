@@ -2,6 +2,7 @@
 // An imaginary number is considered to be a number that is some real number times "i" the imaginary unit equal to sqrt(-1)
 // As a convention of my code I will use the form (a + bi) for all complex numbers unless otherwise stated
 public class ComplexNumber {
+    public final static double CLOSEENOUGH = 0.00000001;
     public double a;
     public double b;
     public boolean isX = false; // some people may want to use something like x or xi in their eq and this code supports that
@@ -105,7 +106,7 @@ public class ComplexNumber {
             c.a = xValue.a;
             c.b = xValue.b;
         }
-        // you may be saying, is it possible to take a complex log, well of course
+        // you may be saying, is it possible to take a complex log? well of course
         // this function is saying log_this(c)
         // log_b(a) = ln(a)/ln(b)
         double r1 = Math.log(Math.sqrt(c.a * c.a + c.b * c.b)); // these are the logs of the magnitudes it would be more technically correct to not call them "r" but I only ever use the log of the magnitudes
@@ -179,12 +180,12 @@ public class ComplexNumber {
     public ComplexNumber sech(ComplexNumber xValue){
         // \frac{1}{cosh}
         ComplexNumber denominator = cosh(xValue);
-        return new ComplexNumber(1/denominator.a, 1/denominator.b);
+        return new ComplexNumber(1, 0).div(denominator, new ComplexNumber());
     }
     public ComplexNumber csch(ComplexNumber xValue){
         // \frac{1}{sinh}
         ComplexNumber denominator = sinh(xValue);
-        return new ComplexNumber(1/denominator.a, 1/denominator.b);
+        return new ComplexNumber(1, 0).div(denominator, new ComplexNumber());
     }
     // regular trig
     public ComplexNumber sin(ComplexNumber xValue){
@@ -393,6 +394,12 @@ public class ComplexNumber {
         if (!(obj instanceof ComplexNumber)){
             return false;
         }
-        return ((ComplexNumber) obj).a == this.a && ((ComplexNumber) obj).b == this.b || this.isX == ((ComplexNumber) obj).isX;
+        if(((ComplexNumber) obj).a != this.a){
+            return Math.abs((Math.abs(((ComplexNumber) obj).a)) - Math.abs(this.a)) <= CLOSEENOUGH;
+        }
+        if(((ComplexNumber) obj).b != this.b){
+            return Math.abs((Math.abs(((ComplexNumber) obj).b)) - Math.abs(this.b)) <= CLOSEENOUGH;
+        }
+        return ((ComplexNumber) obj).isX == this.isX;
     }
 }
