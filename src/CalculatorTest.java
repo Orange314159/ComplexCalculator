@@ -463,7 +463,7 @@ public class CalculatorTest {
         Node n0 = new Node(0,0);
         Node n1 = new Node(new ComplexNumber("x"));
         Node n2 = new Node("/", n0, n1);
-        Node n2_1 = new Node("/", n1, n0);
+        Node n2_1 = new Node("/", n1, n0); // div by zero test
 
         assertEquals(n2.clean(), n0);
         assertEquals(n2_1.clean(), n0);
@@ -487,4 +487,65 @@ public class CalculatorTest {
 
         assertEquals(n9.clean(), n8);
     }
+    // I will only include regular trig for now because other trig never comes up (12/18/2024)
+    @Test
+    public void testCleanNodeLog(){
+        // less complicated
+        Node n0 = new Node(2,5);
+        Node n1 = new Node(5,0);
+        Node n2 = new Node("log", n0, n1);
+        Node n2_1 = new Node("log", n1, n0);
+
+        assertEquals(n2_1.clean(), new Node(1.0461092670837497, 0.7395687279929595));
+        assertEquals(n2.clean(), new Node(0.6373637500021940, -0.4505975739723639));
+    }
+    @Test
+    public void testCleanNodeSin(){
+        // less complicated
+        Node n0 = new Node(2.35, 4.51);
+        Node n2 = new Node("sin", n0, null);
+
+        assertEquals(n2.clean(), new Node(32.3481380844319588, -31.9421110347954738));
+    }
+    @Test
+    public void testCleanNodeCos(){
+        // less complicated
+        Node n0 = new Node(2.35, 4.51);
+        Node n2 = new Node("cos", n0, null);
+
+        assertEquals(n2.clean(), new Node(-31.9498397965854011, -32.3403129730951306));
+    }
+    @Test
+    public void testCleanNodeTan(){
+        // less complicated
+        Node n0 = new Node(2.35, 4.51);
+        Node n2 = new Node("tan", n0, null);
+
+        assertEquals(n2.clean(), new Node(-0.0002419144075377, 1.0000029679605014));
+    }
+    @Test
+    public void testCleanNodeSec(){
+        // less complicated
+        Node n0 = new Node(2.35, 4.51);
+        Node n2 = new Node("sec", n0, null);
+
+        assertEquals(n2.clean(), new Node(-0.0154594395256580, 0.0156483761994278));
+    }
+    @Test
+    public void testCleanNodeCsc(){
+        // less complicated
+        Node n0 = new Node(2.35, 4.51);
+        Node n2 = new Node("csc", n0, null);
+
+        assertEquals(n2.clean(), new Node(0.0156520686787634,  0.0154556071931052));
+    }
+    @Test
+    public void testCleanNodeCot(){
+        // less complicated
+        Node n0 = new Node(2.35, 4.51);
+        Node n2 = new Node("cot", n0, null);
+
+        assertEquals(n2.clean(), new Node(-0.0002419129574020,  -0.9999969735262514));
+    }
+
 }

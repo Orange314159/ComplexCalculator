@@ -184,7 +184,39 @@ public class Node {
                 return new Node(left.data.log(right.data, new ComplexNumber(0, 0)));
             }
         }
+        if (this.operator.equals("sin")){
+            if (this.left.left == null && this.left.data != null && this.right == null){
+                return new Node(left.data.sin(new ComplexNumber(0, 0)));
+            }
+        }
+        if (this.operator.equals("cos")){
+            if (this.left.left == null && this.left.data != null && this.right == null){
+                return new Node(left.data.cos(new ComplexNumber(0, 0)));
+            }
+        }
+        if (this.operator.equals("tan")){
+            if (this.left.left == null && this.left.data != null && this.right == null){
+                return new Node(left.data.tan());
+            }
+        }
+        if (this.operator.equals("sec")){
+            if (this.left.left == null && this.left.data != null && this.right == null){
+                return new Node(left.data.sec());
+            }
+        }
+        if (this.operator.equals("csc")){
+            if (this.left.left == null && this.left.data != null && this.right == null){
+                return new Node(left.data.csc());
+            }
+        }
+        if (this.operator.equals("cot")){
+            if (this.left.left == null && this.left.data != null && this.right == null){
+                return new Node(left.data.cot());
+            }
+        }
 
+        if (this.right == null) // for functions like trig, it is required to only clean the left node and leave the right node as null
+            return new Node(this.operator, this.left.clean(), null);
         return new Node(this.operator, this.left.clean(), this.right.clean());
     }
 

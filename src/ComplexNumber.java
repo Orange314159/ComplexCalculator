@@ -56,6 +56,9 @@ public class ComplexNumber {
         // this equation is derived by solving (a + bi) * (c + di) using the FOIL method
         return new ComplexNumber((this.a*c.a - this.b*c.b), (this.a*c.b + this.b*c.a));
     }
+    public ComplexNumber mul(ComplexNumber c){
+        return mul(c, new ComplexNumber(0,0));
+    }
     public ComplexNumber div(ComplexNumber c, ComplexNumber xValue){
         if (isX){
             this.a = xValue.a;
@@ -71,6 +74,9 @@ public class ComplexNumber {
         double imaginaryPart = (this.b*c.a - this.a*c.b)/(c.a*c.a + c.b*c.b);
         return new ComplexNumber(realPart, imaginaryPart); // this one is kinda complicated, so I split it up (there is no real reason to do this other than readability)
     }
+    public ComplexNumber div(ComplexNumber c){
+        return div(c, new ComplexNumber(0,0));
+    }
     // addition and subtraction
     public ComplexNumber add(ComplexNumber c, ComplexNumber xValue){
         if (isX){
@@ -84,6 +90,9 @@ public class ComplexNumber {
         // this is quite trivial, it is just adding like terms
         return new ComplexNumber((this.a + c.a), (this.b + c.b));
     }
+    public ComplexNumber add(ComplexNumber c){
+        return add(c, new ComplexNumber(0,0));
+    }
     public ComplexNumber sub(ComplexNumber c, ComplexNumber xValue){
         if (isX){
             this.a = xValue.a;
@@ -95,6 +104,9 @@ public class ComplexNumber {
         }
         // same as addition
         return new ComplexNumber((this.a - c.a), (this.b - c.b));
+    }
+    public ComplexNumber sub(ComplexNumber c){
+        return sub(c, new ComplexNumber(0,0));
     }
     // exponents and logarithms
     public ComplexNumber log(ComplexNumber c, ComplexNumber xValue){
@@ -117,6 +129,9 @@ public class ComplexNumber {
         double imaginaryPart = (r2*t1 - r1*t2)/(r2*r2 + t2*t2);
         return new ComplexNumber(realPart, imaginaryPart);
     }
+    public ComplexNumber log(ComplexNumber c){
+        return log(c, new ComplexNumber(0,0));
+    }
     public ComplexNumber pow(ComplexNumber c, ComplexNumber xValue){
 //        System.out.println(c + "debug");
         if (this.isX){
@@ -138,6 +153,9 @@ public class ComplexNumber {
         double imaginaryPart = Math.pow(r, c.a) / (Math.pow(Math.E, (c.b*t))) * Math.sin(c.b*Math.log(r) + c.a*t);
         return new ComplexNumber(realPart, imaginaryPart);
     }
+    public ComplexNumber pow(ComplexNumber c){
+        return pow(c, new ComplexNumber(0,0));
+    }
     // hyperbolic trig
     public ComplexNumber sinh(ComplexNumber xValue){
         // \frac{e^x-e^{-x}}{2}
@@ -153,6 +171,9 @@ public class ComplexNumber {
         double imaginaryPart = numerator.b / 2;
         return new ComplexNumber(realPart, imaginaryPart);
     }
+    public ComplexNumber sinh(){
+        return sinh(new ComplexNumber(0,0));
+    }
     public ComplexNumber cosh(ComplexNumber xValue){
         // trig functions become very repetitive so just assume that they all follow similar rules
         // \frac{e^+e^{-x}}{2}
@@ -165,11 +186,17 @@ public class ComplexNumber {
         double imaginaryPart = numerator.b/2;
         return new ComplexNumber(realPart, imaginaryPart);
     }
+    public ComplexNumber cosh(){
+        return cosh(new ComplexNumber(0,0));
+    }
     public ComplexNumber tanh(ComplexNumber xValue){
         // \frac{sinh}{cosh]
         ComplexNumber numerator = sinh(xValue);
         ComplexNumber denominator = cosh(xValue);
         return numerator.div(denominator, xValue);
+    }
+    public ComplexNumber tanh(){
+        return tanh(new ComplexNumber(0,0));
     }
     public ComplexNumber coth(ComplexNumber xValue){
         // \frac{cosh}{sinh]
@@ -177,15 +204,24 @@ public class ComplexNumber {
         ComplexNumber denominator = sinh(xValue);
         return numerator.div(denominator, xValue);
     }
+    public ComplexNumber coth(){
+        return coth(new ComplexNumber(0,0));
+    }
     public ComplexNumber sech(ComplexNumber xValue){
         // \frac{1}{cosh}
         ComplexNumber denominator = cosh(xValue);
         return new ComplexNumber(1, 0).div(denominator, new ComplexNumber());
     }
+    public ComplexNumber sech(){
+        return sech(new ComplexNumber(0,0));
+    }
     public ComplexNumber csch(ComplexNumber xValue){
         // \frac{1}{sinh}
         ComplexNumber denominator = sinh(xValue);
         return new ComplexNumber(1, 0).div(denominator, new ComplexNumber());
+    }
+    public ComplexNumber csch(){
+        return csch(new ComplexNumber(0,0));
     }
     // regular trig
     public ComplexNumber sin(ComplexNumber xValue){
@@ -196,31 +232,49 @@ public class ComplexNumber {
         ComplexNumber secondPart = (new ComplexNumber(Math.cos(a), 0)).mul((new ComplexNumber(bValue, 0).sinh(xValue)), xValue);
         return new ComplexNumber(firstPart.a, secondPart.a);
     }
+    public ComplexNumber sin(){
+        return sin(new ComplexNumber(0,0));
+    }
     public ComplexNumber cos(ComplexNumber xValue){
         double bValue = this.b;
         ComplexNumber firstPart = (new ComplexNumber(Math.cos(a), 0)).mul((new ComplexNumber(bValue, 0).cosh(xValue)), xValue);
         ComplexNumber secondPart = (new ComplexNumber(Math.sin(a), 0)).mul((new ComplexNumber(bValue, 0).sinh(xValue)), xValue);
         return new ComplexNumber(firstPart.a, -1*secondPart.a);
     }
+    public ComplexNumber cos(){
+        return cos(new ComplexNumber(0,0));
+    }
     public ComplexNumber tan(ComplexNumber xValue){
         ComplexNumber numerator = sin(xValue);
         ComplexNumber denominator = cos(xValue);
         return numerator.div(denominator, xValue);
+    }
+    public ComplexNumber tan(){
+        return tan(new ComplexNumber(0,0));
     }
     public ComplexNumber cot(ComplexNumber xValue){
         ComplexNumber numerator = cos(xValue);
         ComplexNumber denominator = sin(xValue);
         return numerator.div(denominator, xValue);
     }
+    public ComplexNumber cot(){
+        return cot(new ComplexNumber(0,0));
+    }
     public ComplexNumber sec(ComplexNumber xValue){
         ComplexNumber numerator = new ComplexNumber(1,0);
         ComplexNumber denominator = cos(xValue);
         return numerator.div(denominator, xValue);
     }
+    public ComplexNumber sec(){
+        return sec(new ComplexNumber(0,0));
+    }
     public ComplexNumber csc(ComplexNumber xValue){
         ComplexNumber numerator = new ComplexNumber(1,0);
         ComplexNumber denominator = sin(xValue);
         return numerator.div(denominator, xValue);
+    }
+    public ComplexNumber csc(){
+        return csc(new ComplexNumber(0,0));
     }
     // inverse hyperbolic trig
     public ComplexNumber asinh(ComplexNumber xValue){
@@ -231,6 +285,9 @@ public class ComplexNumber {
         }
         return new ComplexNumber(Math.E ,0).log(((((this.pow(new ComplexNumber(2,0),xValue)).add(new ComplexNumber(1,0), xValue)).pow(new ComplexNumber(0.5,0),xValue)).add(this, xValue)),xValue);
     }
+    public ComplexNumber asinh(){
+        return asinh(new ComplexNumber(0,0));
+    }
     public ComplexNumber acosh(ComplexNumber xValue){
         // \log{x + (x^2 - 1)^{1/2} }
         if (this.isX){
@@ -238,6 +295,9 @@ public class ComplexNumber {
             this.b = xValue.b;
         }
         return new ComplexNumber(Math.E ,0).log(((((this.pow(new ComplexNumber(2,0),xValue)).sub(new ComplexNumber(1,0), xValue)).pow(new ComplexNumber(0.5,0),xValue)).add(this, xValue)),xValue);
+    }
+    public ComplexNumber acosh(){
+        return acosh(new ComplexNumber(0,0));
     }
     public ComplexNumber atanh(ComplexNumber xValue){
         // 1/2 * \log{\frac{1+x}{1-x}}
@@ -247,6 +307,9 @@ public class ComplexNumber {
         }
         return (new ComplexNumber(Math.E ,0).log( (this.add(new ComplexNumber(1,0),xValue)).div((new ComplexNumber(1,0).sub(this,xValue)),xValue),xValue)).mul(new ComplexNumber(0.5,0),xValue);
     }
+    public ComplexNumber atanh(){
+        return atanh(new ComplexNumber(0,0));
+    }
     public ComplexNumber acoth(ComplexNumber xValue){
         // 1/2 * \log{\frac{1+x}{1-x}}
         if (this.isX){
@@ -254,6 +317,9 @@ public class ComplexNumber {
             this.b = xValue.b;
         }
         return (new ComplexNumber(Math.E ,0).log( (this.add(new ComplexNumber(1,0),xValue)).div((this.sub(new ComplexNumber(1,0),xValue)),xValue),xValue)).mul(new ComplexNumber(0.5,0),xValue);
+    }
+    public ComplexNumber acoth(){
+        return acoth(new ComplexNumber(0,0));
     }
     public ComplexNumber asech(ComplexNumber xValue){
         // 1/2 * \log{\frac{1+x}{1-x}}
@@ -263,6 +329,9 @@ public class ComplexNumber {
         }
         return new ComplexNumber(Math.E, 0).log((new ComplexNumber(1,0).add((new ComplexNumber(1,0).sub(this.pow(new ComplexNumber(2,0),xValue),xValue)).pow(new ComplexNumber(0.5,0),xValue), xValue)).div(this,xValue), xValue);
     }
+    public ComplexNumber asech(){
+        return asech(new ComplexNumber(0,0));
+    }
     public ComplexNumber acsch(ComplexNumber xValue){
         // 1/2 * \log{\frac{1+x}{1-x}}
         if (this.isX){
@@ -270,6 +339,9 @@ public class ComplexNumber {
             this.b = xValue.b;
         }
         return new ComplexNumber(Math.E, 0).log((new ComplexNumber(1,0).add((new ComplexNumber(1,0).add(this.pow(new ComplexNumber(2,0),xValue),xValue)).pow(new ComplexNumber(0.5,0),xValue), xValue)).div(this,xValue), xValue);
+    }
+    public ComplexNumber acsch(){
+        return acsch(new ComplexNumber(0,0));
     }
     // inverse regular trig
     public ComplexNumber asin(ComplexNumber xValue){
@@ -280,6 +352,9 @@ public class ComplexNumber {
         }
         return (new ComplexNumber(Math.E, 0).log((((new ComplexNumber(1,0).sub(this.pow(new ComplexNumber(2,0),xValue),xValue)).pow(new ComplexNumber(0.5,0),xValue)).add(this.mul(new ComplexNumber(0,1),xValue),xValue)),xValue)).mul(new ComplexNumber(0,-1),xValue);
     }
+    public ComplexNumber asin(){
+        return asin(new ComplexNumber(0,0));
+    }
     public ComplexNumber acos(ComplexNumber xValue){
         // -i * \log{(1-x^2)^{1/2}i + x}
         if (this.isX){
@@ -287,6 +362,9 @@ public class ComplexNumber {
             this.b = xValue.b;
         }
         return (new ComplexNumber(Math.E, 0).log((((new ComplexNumber(1,0).sub(this.pow(new ComplexNumber(2,0),xValue),xValue)).pow(new ComplexNumber(0.5,0),xValue)).mul(new ComplexNumber(0,1),xValue).add(this,xValue)),xValue)).mul(new ComplexNumber(0,-1),xValue);
+    }
+    public ComplexNumber acos(){
+        return acos(new ComplexNumber(0,0));
     }
     public ComplexNumber atan(ComplexNumber xValue){
         // -i/2 * \log{\frac{i-x}{1+x}}
@@ -296,6 +374,9 @@ public class ComplexNumber {
         }
         return ((new ComplexNumber(Math.E, 0).log(((new ComplexNumber(0,1)).sub(this,xValue)).div(((new ComplexNumber(0,1)).add(this,xValue)),xValue),xValue)).mul(new ComplexNumber(0,-1),xValue)).div(new ComplexNumber(2,0),xValue);
     }
+    public ComplexNumber atan(){
+        return atan(new ComplexNumber(0,0));
+    }
     public ComplexNumber acot(ComplexNumber xValue){
         // \atan(1/x)
         if (this.isX){
@@ -303,6 +384,9 @@ public class ComplexNumber {
             this.b = xValue.b;
         }
         return (new ComplexNumber(1,0).div(this,xValue)).atan(xValue);
+    }
+    public ComplexNumber acot(){
+        return acot(new ComplexNumber(0,0));
     }
     public ComplexNumber asec(ComplexNumber xValue){
         // \acos(1/x)
@@ -312,6 +396,9 @@ public class ComplexNumber {
         }
         return (new ComplexNumber(1,0).div(this,xValue)).acos(xValue);
     }
+    public ComplexNumber asec(){
+        return asec(new ComplexNumber(0,0));
+    }
     public ComplexNumber acsc(ComplexNumber xValue){
         // \asin(1/x)
         if (this.isX){
@@ -319,6 +406,9 @@ public class ComplexNumber {
             this.b = xValue.b;
         }
         return (new ComplexNumber(1,0).div(this,xValue)).asin(xValue);
+    }
+    public ComplexNumber acsc(){
+        return acsc(new ComplexNumber(0,0));
     }
     // factorials
     public Double gammaIntegral(double detail, ComplexNumber input, boolean real){
@@ -373,6 +463,9 @@ public class ComplexNumber {
         }
         // the absolute value of a complex number is just the distance from the origin, use pythagoras to solve sqrt(z.a^2 + z.b^2) = |z|
         return new ComplexNumber(Math.sqrt(this.a*this.a + this.b*this.b), 0);
+    }
+    public ComplexNumber abs(){
+        return abs(new ComplexNumber(0,0));
     }
 
     @Override
