@@ -38,6 +38,24 @@ public class Node {
         left     =  null;
         right    = null;
     }
+    public boolean isNumber(){
+        if (this.left != null || this.right != null){
+            return false;
+        }
+        if (this.data == null || this.data.isX)
+            return false;
+
+        return this.operator.isEmpty();
+    }
+    public boolean isX(){
+        if (this.left != null || this.right != null){
+            return false;
+        }
+        if (this.data == null)
+            return false;
+
+        return this.data.isX;
+    }
 
     public Node clean(){
         // the function of this method is to take a node that may include easily simplified values and then simplify them
@@ -177,6 +195,17 @@ public class Node {
                 // I include the not null part to stop the possible warnings
                 Node topPart = new Node("-", this.left.right, this.right.right);
                 return new Node("^", this.left.left, topPart).clean();
+            }
+        }
+        if (this.operator.equals("^")){
+            if (this.right.equals(new Node(0,0))){
+                return new Node(1,0); // anything to the zero is 1
+            }
+            if (this.right.equals(new Node(1,0))){
+                return this.left.clean(); // anything to the 1 is itself
+            }
+            if (this.right.isNumber() && this.left.isNumber()){
+                return new Node(this.left.data.pow(this.right.data)); // do the exponent if they are both numbers
             }
         }
         if (this.operator.equals("log")){

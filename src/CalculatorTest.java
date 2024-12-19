@@ -1,5 +1,5 @@
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CalculatorTest {
     // addition subtraction
@@ -385,6 +385,42 @@ public class CalculatorTest {
     }
     // node functions
     @Test
+    public void testIsNumber(){
+        Node n0 = new Node(0,4);
+
+        assertTrue(n0.isNumber());
+
+        Node n1 = new Node("+", new Node(0,2), new Node(3,9));
+
+        assertFalse(n1.isNumber());
+
+        Node n2 = new Node("something", new ComplexNumber(2,4), n0, n1);
+
+        assertFalse(n2.isNumber());
+
+        Node n3 = new Node(new ComplexNumber(0,0));
+
+        assertTrue(n3.isNumber());
+
+        Node n4 = new Node(new ComplexNumber("x"));
+
+        assertFalse(n4.isNumber());
+    }
+    @Test
+    public void testIsX(){
+        Node n0 = new Node(new ComplexNumber("x"));
+
+        assertTrue(n0.isX());
+
+        Node n1 = new Node(3, 5);
+
+        assertFalse(n1.isX());
+
+        Node n2 = new Node("something", n0, n1);
+
+        assertFalse(n2.isX());
+    }
+    @Test
     public void testCleanNodeMultiplication(){
         // less complicated
         // x * 0 = 0
@@ -404,9 +440,8 @@ public class CalculatorTest {
 
         // more complicated
         // x * x = x^2
-        Node n6 = new Node("*", n3, n3);
-
-        assertEquals(n6.clean(), new Node("^", n3, new Node(2, 0)));
+        Node n6 = new Node("*", n1, n1);
+        assertEquals(n6.clean(), new Node("^", n1, new Node(2, 0)));
 
         // less complicated
         // 1 * x = x
@@ -486,6 +521,25 @@ public class CalculatorTest {
         Node n9 = new Node("/", n8, n7);
 
         assertEquals(n9.clean(), n8);
+    }
+    @Test
+    public void testCleanNodeExponents(){
+        Node n0 = new Node(new ComplexNumber("x"));
+        Node n1 = new Node(0,0);
+        Node n2 = new Node("^", n0 ,n1);
+
+        assertEquals(n2.clean(), new Node(1,0));
+
+        Node n3 = new Node(1, 0);
+        Node n4 = new Node("^", n0, n3);
+
+        assertEquals(n4.clean(), n0);
+
+        Node n5 = new Node(3,7);
+        Node n6 = new Node(5,-1);
+        Node n7 = new Node("^", n5, n6);
+
+        assertEquals(n7.clean(), new Node(-65059.2783879893977428, -50254.3717688181932317)); // exponents grow fast
     }
     // I will only include regular trig for now because other trig never comes up (12/18/2024)
     @Test
