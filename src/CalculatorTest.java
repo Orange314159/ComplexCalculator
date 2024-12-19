@@ -418,7 +418,6 @@ public class CalculatorTest {
     @Test
     public void testCleanNodeAddition(){
         // less complicated
-        // x * 0 = 0
         Node n0 = new Node(0,0);
         Node n1 = new Node(new ComplexNumber("x"));
         Node n2 = new Node("+", n0, n1);
@@ -426,7 +425,6 @@ public class CalculatorTest {
         assertEquals(n2.clean(), n1);
 
         // more complicated
-        // a * b = c where a b and c are all numbers
         Node n3 = new Node(2,3);
         Node n4 = new Node(3,5);
         Node n5 = new Node("+", n3, n4);
@@ -434,9 +432,59 @@ public class CalculatorTest {
         assertEquals(n5.clean(), new Node(5, 8));
 
         // more complicated
-        // x * x = x^2
         Node n6 = new Node("+", n3, n3);
 
         assertEquals(n6.clean(), (new Node("*", n3, new Node(2, 0))).clean());
+    }
+    @Test
+    public void testCleanNodeSubtraction(){
+        // less complicated
+        Node n0 = new Node(0,0);
+        Node n1 = new Node(new ComplexNumber("x"));
+        Node n2 = new Node("-", n1, n0);
+
+        assertEquals(n2.clean(), n1);
+
+        // more complicated
+        Node n3 = new Node(2,3);
+        Node n4 = new Node(3,5);
+        Node n5 = new Node("-", n3, n4);
+
+        assertEquals(n5.clean(), new Node(-1, -2));
+
+        // more complicated
+        Node n6 = new Node("-", n3, n3);
+
+        assertEquals(n6.clean(), n0);
+    }
+    @Test
+    public void testCleanNodeDivision(){
+        // less complicated
+        Node n0 = new Node(0,0);
+        Node n1 = new Node(new ComplexNumber("x"));
+        Node n2 = new Node("/", n0, n1);
+        Node n2_1 = new Node("/", n1, n0);
+
+        assertEquals(n2.clean(), n0);
+        assertEquals(n2_1.clean(), n0);
+
+        // more complicated
+        Node n3 = new Node(2,3);
+        Node n4 = new Node(3,5);
+        Node n5 = new Node("/", n3, n4);
+
+        assertEquals(n5.clean(), new Node(0.6176470588235294, -0.0294117647058824));
+
+        // less complicated
+        Node n6 = new Node("/", n3, n3);
+
+        assertEquals(n6.clean(), new Node(1, 0));
+
+        // more complicated
+        Node n7 = new Node(1, 0);
+        Node n8 = new Node(new ComplexNumber("x"));
+        Node n9 = new Node("/", n8, n7);
+
+        assertEquals(n9.clean(), n8);
     }
 }

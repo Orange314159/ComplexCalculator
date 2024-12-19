@@ -158,7 +158,7 @@ public class Node {
                 // 4 * 2
                 // or 8 * x
                 if (this.left.equals(this.right)){
-                    return new Node(1,1);
+                    return new Node(1,0);
                 }
                 if (this.right.data.equals(new ComplexNumber(1,0))){
                     return this.left.clean(); // dividing anything by one results in itself
@@ -177,6 +177,11 @@ public class Node {
                 // I include the not null part to stop the possible warnings
                 Node topPart = new Node("-", this.left.right, this.right.right);
                 return new Node("^", this.left.left, topPart).clean();
+            }
+        }
+        if (this.operator.equals("log")){
+            if (this.left.left == null && this.left.data != null && this.right.data != null){
+                return new Node(left.data.log(right.data, new ComplexNumber(0, 0)));
             }
         }
 
