@@ -383,4 +383,60 @@ public class CalculatorTest {
         result = c1.acot(new ComplexNumber());
         assertEquals(result, new ComplexNumber(0.2347675788286723, 0.2417206196650745));
     }
+    // node functions
+    @Test
+    public void testCleanNodeMultiplication(){
+        // less complicated
+        // x * 0 = 0
+        Node n0 = new Node(0,0);
+        Node n1 = new Node(new ComplexNumber("x"));
+        Node n2 = new Node("*", n0, n1);
+
+        assertEquals(n2.clean(), n0);
+
+        // more complicated
+        // a * b = c where a b and c are all numbers
+        Node n3 = new Node(2,3);
+        Node n4 = new Node(3,5);
+        Node n5 = new Node("*", n3, n4);
+
+        assertEquals(n5.clean(), new Node(-9, 19));
+
+        // more complicated
+        // x * x = x^2
+        Node n6 = new Node("*", n3, n3);
+
+        assertEquals(n6.clean(), new Node("^", n3, new Node(2, 0)));
+
+        // less complicated
+        // 1 * x = x
+        Node n7 = new Node(1, 0);
+        Node n8 = new Node("*", n7, n3);
+
+        assertEquals(n8.clean(), n3);
+    }
+    @Test
+    public void testCleanNodeAddition(){
+        // less complicated
+        // x * 0 = 0
+        Node n0 = new Node(0,0);
+        Node n1 = new Node(new ComplexNumber("x"));
+        Node n2 = new Node("+", n0, n1);
+
+        assertEquals(n2.clean(), n1);
+
+        // more complicated
+        // a * b = c where a b and c are all numbers
+        Node n3 = new Node(2,3);
+        Node n4 = new Node(3,5);
+        Node n5 = new Node("+", n3, n4);
+
+        assertEquals(n5.clean(), new Node(5, 8));
+
+        // more complicated
+        // x * x = x^2
+        Node n6 = new Node("+", n3, n3);
+
+        assertEquals(n6.clean(), (new Node("*", n3, new Node(2, 0))).clean());
+    }
 }
