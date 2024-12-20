@@ -35,14 +35,6 @@ public class Main {
 //        System.out.println(e0.evaluateNode(new ComplexNumber(12,0), e0.createDerivativeNode(e0.tree.get(e0.length))));
 //        System.out.println(e0.ddxTree);
         // Testing of Cleaning Function
-        Node n01 = new Node("+", new Node(1,10), new Node(6, 10));
-        Node n02 = new Node("+", new Node(5,0), new Node(8, 0));
-        Node n0 = new Node("*", n01, n02);
-        Node n1 = new Node("*", new Node(0,0), new Node(new ComplexNumber("x")));
-
-        System.out.println(n1 + "\tNot Clean");
-        System.out.println(n1.clean() + "\tClean");
-
 
         // Testing of Complex Function
 //        Equation e0 = new Equation("x^{5.0}*(2.7182818)^{-x}");

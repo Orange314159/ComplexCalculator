@@ -56,34 +56,76 @@ public class Node {
 
         return this.data.isX;
     }
+    public int nodeType(){
+        // Here is a list for the types of nodes
+        // -1   unknown
+        // 0    regular number
+        // 1    x
+        // 2    addition
+        // 3    subtraction
+        // 4    multiplication
+        // 5    division
+        // 6    exponent
+        // 7    trig
+        // 8    inverse trig
+        // 9    hyperbolic trig
+        // 10   hyperbolic inverse trig
+        // 11   factorial (gamma function)
+        if (this.isNumber()){
+            return 0;
+        }
+        if (this.isX()){
+            return 1;
+        }
+        if (this.left == null){
+            return -1; // there should be no functions that have no left input
+        }
+        if (this.operator.isEmpty()){
+            return -1; // all functions should have an operator
+        }
+        return switch (this.operator) {
+            case "+" -> 2;
+            case "-" -> 3;
+            case "*" -> 4;
+            case "/" -> 5;
+            case "^" -> 6;
+            case "sin", "cos", "tan", "sec", "csc", "cot" -> 7;
+            case "asin", "acos", "atan", "asec", "acsc", "acot" -> 8;
+            case "sinh", "cosh", "tanh", "sech", "csch", "coth" -> 9;
+            case "asinh", "acosh", "atanh", "asech", "acsch", "acoth" -> 10;
+            case "gam" -> 11;
+            default -> -1;
+        };
+
+    }
 
     public Node clean(){
         // the function of this method is to take a node that may include easily simplified values and then simplify them
         // for example if the node includes 0 * x + 4 it would simplify it to 4
         // of something like 2 * 90 + 14 - x would become 166 - x
 
-        if (this.left == null){
-//            System.out.println("SKIP");
+                if (this.left == null){
             return this; // base case
         }
         if (this.operator.equals("+")){
             // cleaning in addition
-            if (this.left.left == null && this.right.left == null){
-                // the adding two numbers or x (not two expressions)
-                // ex 4 + 7
-                // not (4 * 2) + 18
+            if (this.left.equals(new Node(0,0))){
+                return this.right.clean(); // zero is the additive identity
+            }
+            if (this.right.equals(new Node(0,0))){
+                return this.left.clean(); // zero is the additive identity
+            }
 
-                // I must check to see if the nodes are equal to x because if they are they will have their vales both set to
-                if (this.left.data.equals(new ComplexNumber(0,0)) && !this.left.data.isX){
-                    return this.right.clean(); // zero is the additive identity
+            if (this.left.nodeType() < 2 && this.right.nodeType() < 2){
+
+                if (this.left.isNumber() && this.right.isNumber()){
+                    return new Node(this.left.data.add(this.right.data)).clean();
                 }
-                if (this.right.data.equals(new ComplexNumber(0,0)) && !this.right.data.isX){
-                    return this.left.clean(); // zero is the additive identity
+
+                if (this.right.equals(this.left)){
+                    return new Node("*", this.left.clean(), new Node(2,0)).clean(); // adding anything to itself results in 2 time itself
                 }
-                if (this.right.data.isX && this.left.data.isX){
-                    // x + x = 2x
-                    return new Node("*", new Node(new ComplexNumber(2,0)), new Node(new ComplexNumber("x"))).clean();
-                }
+
                 if (!this.right.data.isX && !this.left.data.isX){
                     // (some num) + (some other num) = some third num
                     return new Node(this.right.data.add(this.left.data, null)).clean(); // I know that these both are real numbers, not x
@@ -122,8 +164,14 @@ public class Node {
         }
         if (this.operator.equals("*")){
             // cleaning in mult
-            if ( (this.left.data.equals(new ComplexNumber(0,0)) && this.left.operator.isEmpty()) || (this.right.data.equals(new ComplexNumber(0,0)) && this.right.operator.isEmpty())){
+            if ( this.left.equals(new Node(0,0)) || this.right.equals(new Node(0,0))){
                 return new Node(0,0); // multiplying anything by zero results in zero
+            }
+            if ( this.left.equals(new Node(1,0))){
+                return this.right.clean(); // multiplying anything by 1 results in itself
+            }
+            if ( this.right.equals(new Node(1,0))){
+                return this.left.clean(); // multiplying anything by 1 results in itself
             }
             if (this.left.left == null && this.right.left == null){
                 // multiplying numbers like:
@@ -142,13 +190,13 @@ public class Node {
                     return new Node(this.left.data.mul(this.right.data, null)).clean(); // I am sure that neither of these values is "x" because I just checked in the above line
                 }
             }
-            if (this.left.operator.equals("+")){
+            if (this.left.nodeType() == 2 && this.right.nodeType() < 2){ // if this.left is addition and this.right is either "x" or some number
                 // (a + b) * c = ab + bc
                 Node leftPart  = new Node("*", this.left.left,  this.right);
                 Node rightPart = new Node("*", this.left.right, this.right);
-                return new Node("+", leftPart, rightPart).clean(); // order here does not matter because addition is commutative (just convention)
+                return new Node("+", leftPart.clean(), rightPart.clean()).clean(); // order here does not matter because addition is commutative (just convention)
             }
-            if (this.right.operator.equals("+")){
+            if (this.right.nodeType() == 2 && this.left.nodeType() < 2){
                 // a * (b + c) = ab + ac
                 Node leftPart =  new Node("*", this.right.left,  this.left);
                 Node rightPart = new Node("*", this.right.right, this.left);
@@ -159,6 +207,7 @@ public class Node {
                 Node topPart = new Node("+", this.left.right, this.right.right);
                 return new Node("^", this.left.left, topPart).clean();
             }
+
 
         }
         if (this.operator.equals("/")){
@@ -246,7 +295,14 @@ public class Node {
 
         if (this.right == null) // for functions like trig, it is required to only clean the left node and leave the right node as null
             return new Node(this.operator, this.left.clean(), null);
-        return new Node(this.operator, this.left.clean(), this.right.clean());
+
+        Node clean = new Node(this.operator, this.left.clean(), this.right.clean());
+
+        if (this.equals(clean)){
+            return clean;
+        } else {
+            return clean.clean();
+        }
     }
 
     @Override
@@ -273,6 +329,10 @@ public class Node {
 
         if (this.right != null && this.left == null && object.left == null && object.right != null) {
 
+            if (!this.right.equals(object.right)){
+                return false;
+            }
+
             if(this.data != null && object.data != null) {
                 // just a complex number
                 return this.operator.equals(object.operator) && this.data.equals(object.data);
@@ -289,6 +349,10 @@ public class Node {
 
         if (this.right == null && this.left != null && object.left != null && object.right == null) {
 
+            if (!this.left.equals(object.left)){
+                return false;
+            }
+
             if(this.data != null && object.data != null) {
                 // just a complex number
                 return this.operator.equals(object.operator) && this.data.equals(object.data);
@@ -304,6 +368,14 @@ public class Node {
         }
 
         if (this.right != null && this.left != null && object.left != null && object.right != null) {
+
+            if (!this.left.equals(object.left)){
+                return false;
+            }
+
+            if (!this.right.equals(object.right)){
+                return false;
+            }
 
             if(this.data != null && object.data != null) {
                 // just a complex number

@@ -421,6 +421,24 @@ public class CalculatorTest {
         assertFalse(n2.isX());
     }
     @Test
+    public void testNodeType(){
+        Node n0 = new Node(1,0);
+        assertEquals(n0.nodeType(), 0);
+        Node n1 = new Node(new ComplexNumber("x"));
+        assertEquals(n1.nodeType(), 1);
+        Node n2 = new Node("+", n0, n1);
+        assertEquals(n2.nodeType(), 2);
+        Node n3 = new Node("-", n0, n1);
+        assertEquals(n3.nodeType(), 3);
+        Node n4 = new Node("*", n0, n1);
+        assertEquals(n4.nodeType(), 4);
+        Node n5 = new Node("/", n0, n1);
+        assertEquals(n5.nodeType(), 5);
+        Node n6 = new Node("^", n0, n1);
+        assertEquals(n6.nodeType(), 6);
+        // not testing trig here because it is exactly the same
+    }
+    @Test
     public void testCleanNodeMultiplication(){
         // less complicated
         // x * 0 = 0
@@ -601,5 +619,43 @@ public class CalculatorTest {
 
         assertEquals(n2.clean(), new Node(-0.0002419129574020,  -0.9999969735262514));
     }
+    @Test
+    public void testCleanNodeComplicatedCombinations(){
+        // init some useful nodes to start with
+        Node n0 = new Node(0, 0);
+        Node n1 = new Node(1, 0);
+        Node n2 = new Node(3, 4);
+        Node n3 = new Node(1,1);
+        Node n4 = new Node(-2,18.2); // this one is just complicated to attempt to catch edge cases
+        Node x  = new Node(new ComplexNumber("x"));
 
+        Node n5 = new Node("+", x, n3);
+
+        // test nodes
+        Node n6   = new Node("*", n5, n0);
+        Node n6_ans = new Node(0,0);
+
+        Node n6_1 = new Node("*", n5, n1);
+
+        Node n6_2 = new Node("*", n5, n2);
+        Node n6_2_ans = new Node("+", new Node("*", x, n2), new Node(-1.0000000000000000, 7.0000000000000000));
+
+        assertEquals(n6.clean(), n6_ans);
+        assertEquals(n6_1.clean(), n5); // no n61 ans because redundant
+        assertEquals(n6_2.clean(), n6_2_ans);
+
+        Node n7 = new Node("+", n0, n1);
+        Node n8 = new Node("+", n7, n2);
+        Node n9 = new Node("+", n8, n3);
+        Node n10 = new Node("+", n9, n4);
+
+        assertEquals(n10.clean(), new Node(3, 23.2));
+
+        Node n11 = new Node("^", x, new Node(3,0));
+        Node n12 = new Node("^", x, new Node(2,0));
+        Node n13 = new Node("*", n11, n12);
+
+        assertEquals(n13.clean(), new Node("^", x, new Node(5,0)));
+
+    }
 }
