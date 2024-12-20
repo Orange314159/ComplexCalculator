@@ -656,6 +656,6 @@ public class CalculatorTest {
         Node n13 = new Node("*", n11, n12);
 
         assertEquals(n13.clean(), new Node("^", x, new Node(5,0)));
-
     }
+
 }

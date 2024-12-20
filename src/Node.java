@@ -139,27 +139,19 @@ public class Node {
         }
         if (this.operator.equals("-")){
             // cleaning in subtraction
-            if (this.left.left == null && this.right.left == null){
-                // the subtracting two numbers or x (not two expressions)
-                // ex 4 - 7
-                // not (4 * 2) - 18
 
-                if (this.right.data.equals(new ComplexNumber(0,0)) && !this.right.data.isX){
-                    return this.left.clean(); // zero is the additive identity
-                }
-                if (this.right.data.isX && this.left.data.isX){
-                    // x - x = 0
-                    return new Node(new ComplexNumber(0, 0)).clean();
-                }
-                if (!this.right.data.isX && !this.left.data.isX){
-                    // (some num) + (some other num) = some third num
-                    return new Node(this.right.data.sub(this.left.data, null)).clean(); // I know that these both are real numbers, not x
-                    // here I am using the constructor of node that takes and input of a complex number
-                }
+            if (this.right.equals(new Node(0,0))){
+                return this.left.clean(); // zero is the additive identity
             }
-            if(this.left.equals(this.right)){
-                // (some expression) - (some expression) = 0
-                return new Node(new ComplexNumber(0,0)).clean();
+
+            if(this.right.equals(this.left)){
+                return new Node(0,0); // a - a = 0 given any a
+            }
+
+            if (this.right.isNumber() && this.left.isNumber()){
+                // (some num) + (some other num) = some third num
+                return new Node(this.right.data.sub(this.left.data, null)).clean(); // I know that these both are real numbers, not x
+                // here I am using the constructor of node that takes and input of a complex number
             }
         }
         if (this.operator.equals("*")){
@@ -173,22 +165,11 @@ public class Node {
             if ( this.right.equals(new Node(1,0))){
                 return this.left.clean(); // multiplying anything by 1 results in itself
             }
-            if (this.left.left == null && this.right.left == null){
-                // multiplying numbers like:
-                // 4 * 2
-                // or 8 * x
-                if (this.left.equals(this.right)){
-                    return new Node("^", this.left, new Node(2, 0)).clean();
-                }
-                if (this.left.equals(new Node(1,0))){
-                    return this.right.clean(); // multiplying anything by one results in itself (multiplicative identity)
-                }
-                if (this.right.equals(new Node(1,0))){
-                    return this.left.clean(); // multiplying anything by one results in itself (multiplicative identity)
-                }
-                if (!this.left.data.isX && !this.right.data.isX){
-                    return new Node(this.left.data.mul(this.right.data, null)).clean(); // I am sure that neither of these values is "x" because I just checked in the above line
-                }
+            if (this.left.equals(this.right)){
+                return new Node("^", this.left, new Node(2, 0)).clean();
+            }
+            if (this.left.isNumber() && this.right.isNumber()){
+                return new Node(this.left.data.mul(this.right.data, null)).clean(); // I am sure that neither of these values is "x" because I just checked in the above line
             }
             if (this.left.nodeType() == 2 && this.right.nodeType() < 2){ // if this.left is addition and this.right is either "x" or some number
                 // (a + b) * c = ab + bc
@@ -207,8 +188,6 @@ public class Node {
                 Node topPart = new Node("+", this.left.right, this.right.right);
                 return new Node("^", this.left.left, topPart).clean();
             }
-
-
         }
         if (this.operator.equals("/")){
             // cleaning in division
@@ -220,19 +199,14 @@ public class Node {
                 System.out.println("Error: division by zero found in equation cleaning");
                 return new Node(0,0); // dividing anything by zero results in undefined
             }
-            if (this.left.left == null && this.right.left == null){
-                // multiplying numbers like:
-                // 4 * 2
-                // or 8 * x
-                if (this.left.equals(this.right)){
-                    return new Node(1,0);
-                }
-                if (this.right.data.equals(new ComplexNumber(1,0))){
-                    return this.left.clean(); // dividing anything by one results in itself
-                }
-                if (!this.left.data.isX && !this.right.data.isX){
-                    return new Node(this.left.data.div(this.right.data, null)).clean(); // I am sure that neither of these values is "x" because I just checked in the above line
-                }
+            if (this.left.equals(this.right)){
+                return new Node(1,0); // (some expression) / (the same expression) = 1
+            }
+            if (this.right.data.equals(new ComplexNumber(1,0))){
+                return this.left.clean(); // dividing anything by one results in itself
+            }
+            if (this.left.isNumber() && this.right.isNumber()){
+                return new Node(this.left.data.div(this.right.data, null)).clean(); // I am sure that neither of these values is "x" because I just checked in the above line
             }
             if (this.left.operator.equals("+")){
                 // (a + b) * c = ab + bc
