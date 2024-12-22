@@ -41,15 +41,12 @@ public class CalculatorTest {
         ComplexNumber c1 = new ComplexNumber(1,5);
         ComplexNumber c2 = new ComplexNumber(-3, -4);
         // add zero to positive
-//        System.out.println("0 plus 1+5i");
         ComplexNumber result = c0.sub(c1, new ComplexNumber());
         assertEquals(result, new ComplexNumber(-1, -5));
         // add zero to negative
-//        System.out.println("0 plus -3+-4i");
         result = c0.sub(c2, new ComplexNumber());
-        assertEquals(result, new ComplexNumber(-3, 4));
+        assertEquals(result, new ComplexNumber(3, 4));
         // add pos and neg numbers
-//        System.out.println("-3+-4i plus 1+5i");
         result = c1.sub(c2, new ComplexNumber());
         assertEquals(result, new ComplexNumber(4, 9));
     }
@@ -502,7 +499,6 @@ public class CalculatorTest {
         Node n3 = new Node(2,3);
         Node n4 = new Node(3,5);
         Node n5 = new Node("-", n3, n4);
-
         assertEquals(n5.clean(), new Node(-1, -2));
 
         // more complicated
@@ -657,5 +653,16 @@ public class CalculatorTest {
 
         assertEquals(n13.clean(), new Node("^", x, new Node(5,0)));
     }
+    @Test
+    public void testCleanNodeDerivative(){
+        Node x = new Node(new ComplexNumber("x"));
+        Node n0 = new Node(2,0);
 
+        Node n1 = new Node("^", x, n0);
+
+        Equation e0 = new Equation("x^2");
+        Node n2 = e0.createDerivativeNode(n1);
+
+        assertEquals(n2.clean(), new Node("*", x, n0));
+    }
 }

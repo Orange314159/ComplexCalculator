@@ -488,10 +488,10 @@ public class ComplexNumber {
             return false;
         }
         if(((ComplexNumber) obj).a != this.a){
-            return Math.abs((Math.abs(((ComplexNumber) obj).a)) - Math.abs(this.a)) <= CLOSEENOUGH;
+            return Math.abs(((((ComplexNumber) obj).a)) - (this.a)) <= CLOSEENOUGH;
         }
         if(((ComplexNumber) obj).b != this.b){
-            return Math.abs((Math.abs(((ComplexNumber) obj).b)) - Math.abs(this.b)) <= CLOSEENOUGH;
+            return Math.abs(((((ComplexNumber) obj).b)) - (this.b)) <= CLOSEENOUGH;
         }
         return ((ComplexNumber) obj).isX == this.isX;
     }

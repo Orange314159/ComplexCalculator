@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 public class Equation {
     // important note:
-    // When creating the binary tree I use "~" as a delimiter for pointers DO NOT USE "~" IN YOUR EQUATIONS
+    // When creating the tree I use "~" as a delimiter for pointers DO NOT USE "~" IN YOUR EQUATIONS
 
     public String eq;
     public int length = -1;
@@ -625,15 +625,22 @@ public class Equation {
     }
 
     public Node createDerivativeNode(Node thisNode){
-        if (thisNode.operator.isEmpty()){
-            if(thisNode.data.isX){
-                return new Node("", new ComplexNumber(1,0), null, null); // return one if the data is "X"
+
+        if (thisNode.nodeType() < 2 && thisNode.nodeType() > -1){
+            if (thisNode.isNumber()){
+                return new Node(0,0);
             }
-            return new Node("", new ComplexNumber(0,0), null, null); // return zero if the data is just a random number
+            else if (thisNode.isX()){
+                return new Node(1,0);
+            }
+            else {
+                System.out.println("Error: Derivative found an impossible node");
+                return new Node(0,0); // how did we get here?
+            }
         }
         if (thisNode.left == null){ // in case of errors
-            System.out.println("Error: nodes require either data or operator");
-            return new Node("", new ComplexNumber(0,0), null, null);
+            System.out.println("Error: Nodes require either data or operator");
+            return new Node(0,0);
         }
         switch (thisNode.operator) {
             case "+" -> {

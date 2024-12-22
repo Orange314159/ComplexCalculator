@@ -104,9 +104,10 @@ public class Node {
         // for example if the node includes 0 * x + 4 it would simplify it to 4
         // of something like 2 * 90 + 14 - x would become 166 - x
 
-                if (this.left == null){
+        if (this.left == null){
             return this; // base case
         }
+
         if (this.operator.equals("+")){
             // cleaning in addition
             if (this.left.equals(new Node(0,0))){
@@ -139,7 +140,6 @@ public class Node {
         }
         if (this.operator.equals("-")){
             // cleaning in subtraction
-
             if (this.right.equals(new Node(0,0))){
                 return this.left.clean(); // zero is the additive identity
             }
@@ -150,7 +150,7 @@ public class Node {
 
             if (this.right.isNumber() && this.left.isNumber()){
                 // (some num) + (some other num) = some third num
-                return new Node(this.right.data.sub(this.left.data, null)).clean(); // I know that these both are real numbers, not x
+                return new Node(this.left.data.sub(this.right.data)); // I know that these both are real numbers, not x
                 // here I am using the constructor of node that takes and input of a complex number
             }
         }
@@ -169,7 +169,7 @@ public class Node {
                 return new Node("^", this.left, new Node(2, 0)).clean();
             }
             if (this.left.isNumber() && this.right.isNumber()){
-                return new Node(this.left.data.mul(this.right.data, null)).clean(); // I am sure that neither of these values is "x" because I just checked in the above line
+                return new Node(this.left.data.mul(this.right.data, null)).clean();
             }
             if (this.left.nodeType() == 2 && this.right.nodeType() < 2){ // if this.left is addition and this.right is either "x" or some number
                 // (a + b) * c = ab + bc
@@ -182,6 +182,10 @@ public class Node {
                 Node leftPart =  new Node("*", this.right.left,  this.left);
                 Node rightPart = new Node("*", this.right.right, this.left);
                 return new Node("+", leftPart, rightPart).clean();
+            }
+            if (this.right.isX() || this.right.isNumber() && this.left.nodeType() == 4){
+                // (some number or x) * (something * something)
+                // this is a short look ahead to see if I can combine like terms
             }
             if (this.left.left != null && this.left.operator.equals("^") && this.right.operator.equals("^") && this.left.left.equals(this.right.left)){
                 // I include the not null part to stop the possible warnings
@@ -219,6 +223,7 @@ public class Node {
                 Node topPart = new Node("-", this.left.right, this.right.right);
                 return new Node("^", this.left.left, topPart).clean();
             }
+            return new Node("*", this.left.clean(), new Node("^", this.right.clean(), new Node(-1,0)).clean());
         }
         if (this.operator.equals("^")){
             if (this.right.equals(new Node(0,0))){
@@ -267,9 +272,14 @@ public class Node {
             }
         }
 
-        if (this.right == null) // for functions like trig, it is required to only clean the left node and leave the right node as null
-            return new Node(this.operator, this.left.clean(), null);
-
+        if (this.right == null) { // for functions like trig, it is required to only clean the left node and leave the right node as null
+            Node clean =  new Node(this.operator, this.left.clean(), null);
+            if (this.equals(clean)){
+                return clean;
+            } else {
+                return clean.clean();
+            }
+        }
         Node clean = new Node(this.operator, this.left.clean(), this.right.clean());
 
         if (this.equals(clean)){
