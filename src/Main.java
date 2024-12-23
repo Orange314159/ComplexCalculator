@@ -46,9 +46,9 @@ public class Main {
 //        Equation e1 = new Equation("x^2");
             Equation e1 = new Equation("x*\\sin{x}");
         // Print out three values of the equation for you to check and make sure that the function seems approximately right
-        System.out.println(e1.evaluateEquation(new ComplexNumber(0,0), e1.length) + " @x=" + new ComplexNumber(0,0));
-        System.out.println(e1.evaluateEquation(new ComplexNumber(1,0), e1.length) + " @x=" + new ComplexNumber(1,0));
-        System.out.println(e1.evaluateEquation(new ComplexNumber(0,1), e1.length) + " @x=" + new ComplexNumber(0,1));
+        System.out.println(e1.evaluateNode(new ComplexNumber(0,0), e1.tree.get(e1.length)) + " @x=" + new ComplexNumber(0,0));
+        System.out.println(e1.evaluateNode(new ComplexNumber(1,0), e1.tree.get(e1.length)) + " @x=" + new ComplexNumber(1,0));
+        System.out.println(e1.evaluateNode(new ComplexNumber(0,1), e1.tree.get(e1.length)) + " @x=" + new ComplexNumber(0,1));
         //------------------------------ Equation Stuff ------------------------------\\
 
         //------------------------------ Sweep Stuff ------------------------------\\

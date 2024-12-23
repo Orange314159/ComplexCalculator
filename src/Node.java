@@ -76,6 +76,7 @@ public class Node {
         // 9    hyperbolic trig
         // 10   hyperbolic inverse trig
         // 11   factorial (gamma function)
+        // 12   log
         if (this.isNumber()){
             return 0;
         }
@@ -99,6 +100,7 @@ public class Node {
             case "sinh", "cosh", "tanh", "sech", "csch", "coth" -> 9;
             case "asinh", "acosh", "atanh", "asech", "acsch", "acoth" -> 10;
             case "gam" -> 11;
+            case "log" -> 12;
             default -> -1;
         };
 

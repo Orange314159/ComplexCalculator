@@ -435,189 +435,208 @@ public class Equation {
         return true;
     }
 
-    public ComplexNumber evaluateEquation(ComplexNumber myX, int startNode){
-        if (startNode == -1){
-            System.out.println("ERROR: Tree Has Not Been Created Properly Yet or There is a Problem With The Start Node");
-            return new ComplexNumber();
+    public ComplexNumber evaluateNode(ComplexNumber myX, Node head) {
+        if (head.isNumber()) { // node type = 0
+            return head.data; // simple base case saying that given a number return that number
         }
-        if(startNode == 0){ // there is only one node (this would look like 2.4 or x or 10
-            if(tree.get(0).data.isX){
-                return myX;
+        if (head.isX()) { // node type == 1
+            return head.data.mul(myX); // head data might include some value because 2x can be stored as (2,0) with "isX" flagged as true
+        }
+        // trig its sub categories are fast, so I will do those first
+        if (head.nodeType() == 7) {
+            // I split it up like this to save time (for the computer (not very important))
+            // trig
+            if (head.sub.size() > 1) {
+                System.out.println("Error: Wrong number of inputs found in evaluate node for trig");
+                return new ComplexNumber(0, 0);
             }
-            return tree.get(0).data;
-        }
-        String nodeOperator = tree.get(startNode).operator;
-        ComplexNumber nodeData = tree.get(startNode).data;
-        if (tree.get(startNode).left == null){ // base case
-            // there are no child nodes
-//            System.out.println(nodeData + "NODE " + startNode +"START" );
-            return nodeData;
+            switch (head.operator) {
+                case "sin" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).sin(myX); // this same method is used for each of the single input functions
+                }
+                case "cos" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).cos(myX);
+                }
+                case "tan" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).tan(myX);
+                }
+                case "sec" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).sec(myX);
+                }
+                case "csc" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).csc(myX);
+                }
+                case "cot" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).cot(myX);
+                }
+            }
 
         }
-        // big switch statement to check for every possible operator (that I include in my code)
-        return switch (nodeOperator) {
-            case "*" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).mul(this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).right)), myX);
-            case "+" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).add(this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).right)), myX);
-            case "/" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).div(this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).right)), myX);
-            case "-" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).sub(this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).right)), myX);
-            case "^" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).pow(this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).right)), myX);
-            case "log" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).log(this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).right)), myX);
-            case "sinh" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).sinh(myX);
-            case "cosh" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).cosh(myX);
-            case "tanh" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).tanh(myX);
-            case "coth" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).coth(myX);
-            case "sech" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).sech(myX);
-            case "csch" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).csch(myX);
-            case "sin" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).sin(myX);
-            case "cos" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).cos(myX);
-            case "tan" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).tan(myX);
-            case "sec" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).sec(myX);
-            case "csc" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).csc(myX);
-            case "cot" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).cot(myX);
-            case "asinh" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).asinh(myX);
-            case "acosh" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).acosh(myX);
-            case "atanh" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).atanh(myX);
-            case "acoth" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).acoth(myX);
-            case "asech" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).asech(myX);
-            case "acsch" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).acsch(myX);
-            case "asin" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).asin(myX);
-            case "acos" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).acos(myX);
-            case "atan" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).atan(myX);
-            case "asec" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).asec(myX);
-            case "acsc" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).acsc(myX);
-            case "acot" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).acot(myX);
-            case "gam" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).gam(myX); // this might be slow because it has to solve a Riemann sum (especially for values of x that follow 0 + bi)
-            case "abs" ->
-                    this.evaluateEquation(myX, tree.indexOf(tree.get(startNode).left)).abs(myX);
-            default -> new ComplexNumber();
-        };
-    }
+        if (head.nodeType() == 8) {
+            // inverse trig
+            if (head.sub.size() > 1) {
+                System.out.println("Error: Wrong number of inputs found in evaluate node for inverse trig");
+                return new ComplexNumber(0, 0);
+            }
+            switch (head.operator) {
+                case "asin" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).asin(myX); // this same method is used for each of the single input functions
+                }
+                case "acos" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).acos(myX);
+                }
+                case "atan" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).atan(myX);
+                }
+                case "asec" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).asec(myX);
+                }
+                case "acsc" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).acsc(myX);
+                }
+                case "acot" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).acot(myX);
+                }
+            }
+        }
+        if (head.nodeType() == 9) {
+            // hyperbolic trig
+            if (head.sub.size() > 1){
+                System.out.println("Error: Wrong number of inputs found in evaluate node for hyperbolic trig");
+                return new ComplexNumber(0,0);
+            }
+            switch (head.operator) {
+                case "sinh" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).sinh(myX); // this same method is used for each of the single input functions
+                }
+                case "cosh" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).cosh(myX);
+                }
+                case "tanh" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).tanh(myX);
+                }
+                case "sech" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).sech(myX);
+                }
+                case "csch" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).csch(myX);
+                }
+                case "coth" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).coth(myX);
+                }
+            }
+        }
+        if (head.nodeType() == 10) {
+            // inverse hyperbolic trig
+            if (head.sub.size() > 1){
+                System.out.println("Error: Wrong number of inputs found in evaluate node for inverse hyperbolic trig");
+                return new ComplexNumber(0,0);
+            }
+            switch (head.operator) {
+                case "asinh" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).asinh(myX); // this same method is used for each of the single input functions
+                }
+                case "acosh" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).acosh(myX);
+                }
+                case "atanh" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).atanh(myX);
+                }
+                case "asech" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).asech(myX);
+                }
+                case "acsch" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).acsch(myX);
+                }
+                case "acoth" -> {
+                    return this.evaluateNode(myX, head.sub.get(0)).acoth(myX);
+                }
+            }
+        }
+        // addition subtraction multiplication and division all require looping to combine all the sub-nodes
+        if (head.nodeType() == 2){
+            // addition
+            ComplexNumber sum = new ComplexNumber(0,0);
+            for (Node subNode : head.sub){
+                sum = this.evaluateNode(myX, subNode).add(sum, myX);
+            }
+            return sum;
+        }
+        if (head.nodeType() == 3){
+            // subtraction
+            ComplexNumber sum = new ComplexNumber(0,0);
+            int counter = 0;
+            for (Node subNode : head.sub){
+                if (counter == 0) {
+                    sum = this.evaluateNode(myX, subNode).add(sum, myX);
+                } else {
+                    sum = this.evaluateNode(myX, subNode).sub(sum, myX);
+                }
+                counter++;
+            }
+            return sum;
+        }
+        if (head.nodeType() == 4){
+            // multiplication
+            ComplexNumber sum = new ComplexNumber(1,0);
+            for (Node subNode : head.sub){
+                sum = this.evaluateNode(myX, subNode).mul(sum, myX);
+            }
+            return sum;
+        }
+        if (head.nodeType() == 5){
+            // subtraction
+            ComplexNumber sum = new ComplexNumber(1,0);
+            int counter = 0;
+            for (Node subNode : head.sub){
+                if (counter == 0) {
+                    sum = this.evaluateNode(myX, subNode).mul(sum, myX);
+                } else {
+                    sum = this.evaluateNode(myX, subNode).div(sum, myX);
+                }
+                counter++;
+            }
+            return sum;
+        }
+        // exponentiation and logarithms
+        if (head.nodeType() == 6){
+            if (head.sub.size() != 2) {
+                System.out.println("Error: Wrong number of inputs found in evaluate node for exponentiation");
+                return new ComplexNumber(0, 0);
+            }
 
-    public ComplexNumber evaluateNode(ComplexNumber myX, Node startNode){
-        // after reading this you may ask yourself why evaluate equation exists at all
-        // this is because evaluateNode is effectively the same but just better
-        // the reason that I use evaluateEquation is to show the equation in a more explicit way
-        // but yes, you could just use evaluate node on any node on the tree to solve it in a more efficient way
-        // the reason that this does not matter much is that solving these equations is so fast in the first place and is not a limiting factor of the code
-        if (startNode == null){
-            System.out.println("ERROR: start Node does not exist");
-            return new ComplexNumber();
+            return this.evaluateNode(myX, head.sub.get(0)).pow(this.evaluateNode(myX, head.sub.get(1)), myX);
         }
-        if (startNode.left == null){ // base case
-            // there are no child nodes
-//            System.out.println(nodeData + "NODE " + startNode +"START" );
-            return startNode.data;
+        if (head.nodeType() == 12){
+            if (head.sub.size() != 2) {
+                System.out.println("Error: Wrong number of inputs found in evaluate node for logarithms");
+                return new ComplexNumber(0, 0);
+            }
+
+            return this.evaluateNode(myX, head.sub.get(0)).log(this.evaluateNode(myX, head.sub.get(1)), myX);
         }
-//        System.out.println(this.evaluateNode(myX, startNode.left) + "  " + (this.evaluateNode(myX, startNode.right)) + "  " + myX);
-//        System.out.println(myX.pow(myX, (this.evaluateNode(myX, startNode.right))));
-//        System.out.println(nodeOperator);
-        // big switch statement to check for every possible operator (that I include in my code)
-        return switch (startNode.operator) {
-            case "*" ->
-                    this.evaluateNode(myX, startNode.left).mul(this.evaluateNode(myX, startNode.right), myX);
-            case "+" ->
-                    this.evaluateNode(myX, startNode.left).add(this.evaluateNode(myX, startNode.right), myX);
-            case "/" ->
-                    this.evaluateNode(myX, startNode.left).div(this.evaluateNode(myX, startNode.right), myX);
-            case "-" ->
-                    this.evaluateNode(myX, startNode.left).sub(this.evaluateNode(myX, startNode.right), myX);
-            case "^" ->
-                    this.evaluateNode(myX, startNode.left).pow(this.evaluateNode(myX, startNode.right), myX);
-            case "log" ->
-                    this.evaluateNode(myX, startNode.left).log(this.evaluateNode(myX, startNode.right), myX);
-            case "sinh" ->
-                    this.evaluateNode(myX, startNode.left).sinh(myX);
-            case "cosh" ->
-                    this.evaluateNode(myX, startNode.left).cosh(myX);
-            case "tanh" ->
-                    this.evaluateNode(myX, startNode.left).tanh(myX);
-            case "coth" ->
-                    this.evaluateNode(myX, startNode.left).coth(myX);
-            case "sech" ->
-                    this.evaluateNode(myX, startNode.left).sech(myX);
-            case "csch" ->
-                    this.evaluateNode(myX, startNode.left).csch(myX);
-            case "sin" ->
-                    this.evaluateNode(myX, startNode.left).sin(myX);
-            case "cos" ->
-                    this.evaluateNode(myX, startNode.left).cos(myX);
-            case "tan" ->
-                    this.evaluateNode(myX, startNode.left).tan(myX);
-            case "sec" ->
-                    this.evaluateNode(myX, startNode.left).sec(myX);
-            case "csc" ->
-                    this.evaluateNode(myX, startNode.left).csc(myX);
-            case "cot" ->
-                    this.evaluateNode(myX, startNode.left).cot(myX);
-            case "asinh" ->
-                    this.evaluateNode(myX, startNode.left).asinh(myX);
-            case "acosh" ->
-                    this.evaluateNode(myX, startNode.left).acosh(myX);
-            case "atanh" ->
-                    this.evaluateNode(myX, startNode.left).atanh(myX);
-            case "acoth" ->
-                    this.evaluateNode(myX, startNode.left).acoth(myX);
-            case "asech" ->
-                    this.evaluateNode(myX, startNode.left).asech(myX);
-            case "acsch" ->
-                    this.evaluateNode(myX, startNode.left).acsch(myX);
-            case "asin" ->
-                    this.evaluateNode(myX, startNode.left).asin(myX);
-            case "acos" ->
-                    this.evaluateNode(myX, startNode.left).acos(myX);
-            case "atan" ->
-                    this.evaluateNode(myX, startNode.left).atan(myX);
-            case "asec" ->
-                    this.evaluateNode(myX, startNode.left).asec(myX);
-            case "acsc" ->
-                    this.evaluateNode(myX, startNode.left).acsc(myX);
-            case "acot" ->
-                    this.evaluateNode(myX, startNode.left).acot(myX);
-            case "gam" ->
-                    this.evaluateNode(myX, startNode.left).gam(myX); // this might be slow because it has to solve a Riemann sum (especially for values of x that follow 0 + bi)
-            case "abs" ->
-                    this.evaluateNode(myX, startNode.left).abs(myX);
-            default -> new ComplexNumber();
-        };
+        // factorial
+        if (head.nodeType() == 11){
+            if (head.sub.size() != 1) {
+                System.out.println("Error: Wrong number of inputs found in evaluate node for the gamma function");
+                return new ComplexNumber(0, 0);
+            }
+            return evaluateNode(myX, head.sub.get(0)).gam(myX);
+        }
+
+        // something went wrong
+        System.out.println("Error: Evaluate node was unable to find operator");
+        return null;
+
     }
 
     public ComplexNumber riemannSumOfDefiniteIntegral(double min, double max, double stepSize){
+        // pretty sure this is a left riemann sum but did not check recently (check for yourself)
         // this will be a function to return the definite integral of a given function over some size
         ComplexNumber total = new ComplexNumber(0,0);
         // step through the entire thing
         for (double i = min; i < max; i += stepSize){
-            total = total.add(this.evaluateEquation(new ComplexNumber(i,0), this.length), new ComplexNumber(i,0));
+            total = total.add(this.evaluateNode(new ComplexNumber(i,0), tree.get(length)), new ComplexNumber(i,0));
         }
         total = total.mul(new ComplexNumber(stepSize,0),new ComplexNumber());
 
@@ -638,43 +657,75 @@ public class Equation {
                 return new Node(0,0); // how did we get here?
             }
         }
-        if (thisNode.left == null){ // in case of errors
+        if (thisNode.sub == null){ // in case of errors
             System.out.println("Error: Nodes require either data or operator");
             return new Node(0,0);
         }
         switch (thisNode.operator) {
             case "+" -> {
-                return new Node("+", createDerivativeNode(thisNode.left), createDerivativeNode(thisNode.right));
+                Node returnNode = new Node("+");
+
+                for (Node subNode : thisNode.sub){
+                    returnNode.sub.add(createDerivativeNode(subNode));
+                }
+
+                return returnNode;
             } // sum rule
             case "-" -> {
-                return new Node("-", createDerivativeNode(thisNode.left), createDerivativeNode(thisNode.right));
-            } // inverse sum rule
+                Node returnNode = new Node("-");
+
+                for (Node subNode : thisNode.sub){
+                    returnNode.sub.add(createDerivativeNode(subNode));
+                }
+
+                return returnNode;            } // inverse sum rule
             case "*" -> {
-                return new Node("+", new Node("*", createDerivativeNode(thisNode.left), thisNode.right), new Node("*", createDerivativeNode(thisNode.right), thisNode.left));
+                // product rule is complicated ish, so it may seem very difficult for an arbitrary number of nodes
+                // this is not true, there is a simple formula that you can use to solve it:
+                // d/dx (abcdef) =
+                // a'bcdef + ab'cdef + abc'def + abcd'ef + abcde'f + abcdef'
+                Node returnNode = new Node("+");
+                Node product = new Node("*");
+                for (int i = 0; i < thisNode.sub.size(); i++){ // loop through each of the nodes because each sub node gets to be the derivative once
+                    product.sub.clear();
+                    int counter = 0;
+                    for (Node subNode : thisNode.sub){ // nested loop to add all the nodes into the specific sub node
+                        if (counter == i){
+                            product.sub.add(createDerivativeNode(subNode)); // only one node gets to have its derivative included in the product
+                        } else {
+                            product.sub.add(subNode); // the rest of the nodes are just multiplied in
+                        }
+                    }
+                    returnNode.sub.add(product);
+                }
+                return returnNode;
             } // product rule
             case "/" -> {
-                return new Node("/", new Node("-", new Node("*", createDerivativeNode(thisNode.left), thisNode.right), new Node("*", createDerivativeNode(thisNode.right), thisNode.left)), new Node("^", thisNode.left, new Node(new ComplexNumber(2, 0))));
+                // the generalized quotient rule is too complicated to code here and I have a better solution:
+                // run clean node, it will remove all the division in the node
+                System.out.println("Error: code does not accept division in derivative functions please use .clean() to remove it from the node");
+                return new Node(0,0);
             } // quotient rule
             case "^" -> {
                 // u^v * (v' * ln(u) + \frac{v*u'}{u})
-                Node firstPart =  new Node("^", thisNode.left, thisNode.right);
-                Node secondPart = new Node("*", createDerivativeNode(thisNode.right), new Node("log", new Node(new ComplexNumber(Math.E, 0)), thisNode.left));
-                Node thirdPart =  new Node("/", new Node("*", thisNode.right, createDerivativeNode(thisNode.left)), thisNode.left);
+                Node firstPart =  new Node("^", thisNode.sub.get(0), thisNode.sub.get(1));
+                Node secondPart = new Node("*", createDerivativeNode(thisNode.sub.get(1)), new Node("log", new Node(new ComplexNumber(Math.E, 0)), thisNode.sub.get(0)));
+                Node thirdPart =  new Node("/", new Node("*", thisNode.sub.get(1), createDerivativeNode(thisNode.sub.get(0))), thisNode.sub.get(0));
                 Node fourthPart = new Node("+", secondPart, thirdPart);
                 return            new Node("*", firstPart, fourthPart);
             } // generalized power rule
             case "ln" -> {
                 // NOTE: ln should never be used in the code other than the derivative log function
-                return new Node("/", createDerivativeNode(thisNode.left), thisNode.left); // so elegant
+                return new Node("/", createDerivativeNode(thisNode.sub.get(0)), thisNode.sub.get(0)); // so elegant
             }
             case "log" -> {
                 // this one is really annoying
                 // \frac{d/dx(ln(g))ln(f)-d/dx(ln(f))ln(g)}{(ln(f))^2}
-                Node firstPart   = createDerivativeNode(new Node("ln", thisNode.right, null));
-                Node secondPart  = new Node("log", new Node(new ComplexNumber(Math.E, 0)), thisNode.left);
-                Node thirdPart   = createDerivativeNode(new Node("ln", new ComplexNumber(), thisNode.left, null));
-                Node fourthPart  = new Node("log", new Node("", new ComplexNumber(Math.E, 0), null, null), thisNode.right);
-                Node fifthPart   = new Node("^", new Node("log", new Node(new ComplexNumber(Math.E, 0)), thisNode.left), new Node(new ComplexNumber(2, 0)));
+                Node firstPart   = createDerivativeNode(new Node("ln", thisNode.sub.get(1), null));
+                Node secondPart  = new Node("log", new Node(new ComplexNumber(Math.E, 0)), thisNode.sub.get(0));
+                Node thirdPart   = createDerivativeNode(new Node("ln", thisNode.sub.get(0)));
+                Node fourthPart  = new Node("log", new Node("", new ComplexNumber(Math.E, 0)), thisNode.sub.get(1));
+                Node fifthPart   = new Node("^", new Node("log", new Node(new ComplexNumber(Math.E, 0)), thisNode.sub.get(0)), new Node(new ComplexNumber(2, 0)));
                 // the first five parts are from the equation, next four are from combining those parts into the final equation
                 Node sixthPart   = new Node("*", firstPart, secondPart);
                 Node seventhPart = new Node("*", thirdPart, fourthPart);
@@ -683,71 +734,71 @@ public class Equation {
             } // generalized log rule
             case "sin" -> {
                 // cos
-                return new Node ("*", new Node("cos", thisNode.left, thisNode.right), createDerivativeNode(thisNode.left));
+                return new Node ("*", new Node("cos", thisNode.sub.get(0), thisNode.sub.get(1)), createDerivativeNode(thisNode.sub.get(0)));
             }
             case "cos" -> {
                 // -sin
-                return new Node ("*", new Node("*", new Node("sin", thisNode.left, thisNode.right), new Node(new ComplexNumber(-1,0))), createDerivativeNode(thisNode.left));
+                return new Node ("*", new Node("*", new Node("sin", thisNode.sub.get(0), thisNode.sub.get(1)), new Node(new ComplexNumber(-1,0))), createDerivativeNode(thisNode.sub.get(0)));
             }
             case "tan" -> {
                 // sec^2
-                Node baseNode = new Node("sec", thisNode.left, thisNode.right);
+                Node baseNode = new Node("sec", thisNode.sub.get(0), thisNode.sub.get(1));
                 Node twoNode =  new Node(new ComplexNumber(2,0));
-                return          new Node ("*", new Node("^", baseNode, twoNode), createDerivativeNode(thisNode.left));
+                return          new Node ("*", new Node("^", baseNode, twoNode), createDerivativeNode(thisNode.sub.get(0)));
             }
             case "cot" -> {
                 // -csc^2
-                Node baseNode = new Node("csc", thisNode.left, thisNode.right);
+                Node baseNode = new Node("csc", thisNode.sub.get(0), thisNode.sub.get(1));
                 Node twoNode =  new Node(new ComplexNumber(2,0));
                 Node mOneNode = new Node(new ComplexNumber(-1,0));
-                return          new Node("*", new Node("*", mOneNode, new Node("^", baseNode, twoNode)), createDerivativeNode(thisNode.left));
+                return          new Node("*", new Node("*", mOneNode, new Node("^", baseNode, twoNode)), createDerivativeNode(thisNode.sub.get(0)));
 
             }
             case "sec" -> {
                 // sec*tan
-                Node secNode = new Node("sec", thisNode.left, thisNode.right);
-                Node tanNode = new Node("tan", thisNode.left, thisNode.right);
-                return         new Node("*", new Node("*", secNode, tanNode), createDerivativeNode(thisNode.left));
+                Node secNode = new Node("sec", thisNode.sub.get(0), thisNode.sub.get(1));
+                Node tanNode = new Node("tan", thisNode.sub.get(0), thisNode.sub.get(1));
+                return         new Node("*", new Node("*", secNode, tanNode), createDerivativeNode(thisNode.sub.get(0)));
 
             }
             case "csc" -> {
                 // -csc*cot
-                Node secNode  = new Node("csc", thisNode.left, thisNode.right);
-                Node tanNode  = new Node("cot", thisNode.left, thisNode.right);
+                Node secNode  = new Node("csc", thisNode.sub.get(0), thisNode.sub.get(1));
+                Node tanNode  = new Node("cot", thisNode.sub.get(0), thisNode.sub.get(1));
                 Node stNode   = new Node("*",   secNode, tanNode);
                 Node mOneNode = new Node(new ComplexNumber(-1,0));
-                return          new Node("*", new Node("*", stNode, mOneNode), createDerivativeNode(thisNode.left));
+                return          new Node("*", new Node("*", stNode, mOneNode), createDerivativeNode(thisNode.sub.get(0)));
             }
             case "sinh" -> {
-                return new Node ("*", new Node("cosh", thisNode.left, thisNode.right), createDerivativeNode(thisNode.left));
+                return new Node ("*", new Node("cosh", thisNode.sub.get(0), thisNode.sub.get(1)), createDerivativeNode(thisNode.sub.get(0)));
             }
             case "cosh" -> {
-                return new Node ("*", new Node("sinh", thisNode.left, thisNode.right), createDerivativeNode(thisNode.left));
+                return new Node ("*", new Node("sinh", thisNode.sub.get(0), thisNode.sub.get(1)), createDerivativeNode(thisNode.sub.get(0)));
             }
             case "tanh" -> {
-                Node baseNode = new Node("sech", thisNode.left, thisNode.right);
+                Node baseNode = new Node("sech", thisNode.sub.get(0), thisNode.sub.get(1));
                 Node twoNode = new Node(new ComplexNumber(2,0));
-                return new Node ("*", new Node("^", baseNode, twoNode), createDerivativeNode(thisNode.left));
+                return new Node ("*", new Node("^", baseNode, twoNode), createDerivativeNode(thisNode.sub.get(0)));
             }
             case "coth" -> {
-                Node baseNode = new Node("csch", thisNode.left, thisNode.right);
+                Node baseNode = new Node("csch", thisNode.sub.get(0), thisNode.sub.get(1));
                 Node twoNode =  new Node(new ComplexNumber(2,0));
                 Node mOneNode = new Node(new ComplexNumber(-1,0));
-                return          new Node("*", new Node("*", mOneNode, new Node("^", baseNode, twoNode)), createDerivativeNode(thisNode.left));
+                return          new Node("*", new Node("*", mOneNode, new Node("^", baseNode, twoNode)), createDerivativeNode(thisNode.sub.get(0)));
             }
             case "sech" -> {
-                Node secNode  = new Node("sech", thisNode.left, thisNode.right);
-                Node tanNode  = new Node("tanh", thisNode.left, thisNode.right);
+                Node secNode  = new Node("sech", thisNode.sub.get(0), thisNode.sub.get(1));
+                Node tanNode  = new Node("tanh", thisNode.sub.get(0), thisNode.sub.get(1));
                 Node stNode   = new Node("*",     secNode, tanNode);
                 Node mOneNode = new Node(new ComplexNumber(-1,0));
-                return          new Node("*", new Node("*", stNode, mOneNode), createDerivativeNode(thisNode.left));
+                return          new Node("*", new Node("*", stNode, mOneNode), createDerivativeNode(thisNode.sub.get(0)));
             }
             case "csch" -> {
-                Node secNode  = new Node("csch", thisNode.left, thisNode.right);
-                Node tanNode  = new Node("coth", thisNode.left, thisNode.right);
+                Node secNode  = new Node("csch", thisNode.sub.get(0), thisNode.sub.get(1));
+                Node tanNode  = new Node("coth", thisNode.sub.get(0), thisNode.sub.get(1));
                 Node stNode   = new Node("*", secNode, tanNode);
                 Node mOneNode = new Node(new ComplexNumber(-1,0));
-                return          new Node("*", new Node("*", stNode, mOneNode), createDerivativeNode(thisNode.left));
+                return          new Node("*", new Node("*", stNode, mOneNode), createDerivativeNode(thisNode.sub.get(0)));
             }
             case "asin" -> {
                 // \frac{1}{(1-x^2)^{1/2)}
@@ -757,12 +808,12 @@ public class Equation {
                 Node thirdNode =  new Node(new ComplexNumber(-1,0));
                 Node node31 =     new Node(new ComplexNumber(0.5,0));
                 // calculations
-                Node fourthNode = new Node("^",thisNode.left, secondNode); // x^2
+                Node fourthNode = new Node("^",thisNode.sub.get(0), secondNode); // x^2
                 Node fifthNode =  new Node("*", fourthNode, thirdNode);    // (..) * -1
                 Node node51 =     new Node("+", firstNode, fifthNode);     // (..) + 1
                 Node node52 =     new Node("^", node51, node31);           // (..) sqrt(..)
                 Node sixthNode =  new Node("/", firstNode, node52);        // 1 / (..)
-                return            new Node("*", sixthNode, createDerivativeNode(thisNode.left)); // implement chain rule
+                return            new Node("*", sixthNode, createDerivativeNode(thisNode.sub.get(0))); // implement chain rule
             }
             case "acos" -> {
                 // -\frac{1}{(1-x^2)^{1/2)}
@@ -772,13 +823,13 @@ public class Equation {
                 Node thirdNode =   new Node(new ComplexNumber(-1,0));
                 Node node31 =      new Node(new ComplexNumber(0.5,0));
                 // calculations
-                Node fourthNode =  new Node("^", thisNode.left, secondNode); // x^2
+                Node fourthNode =  new Node("^", thisNode.sub.get(0), secondNode); // x^2
                 Node fifthNode =   new Node("*", fourthNode, thirdNode);     // (..) * -1
                 Node node51 =      new Node("+", firstNode, fifthNode);      // (..) + 1
                 Node node52 =      new Node("^", node51, node31);            // sqrt(..)
                 Node sixthNode =   new Node("/", firstNode, node52);         //  1 / (..)
                 Node seventhNode = new Node("*", thirdNode, sixthNode);      // -1 * (..)
-                return             new Node("*", seventhNode, createDerivativeNode(thisNode.left)); // add in chain
+                return             new Node("*", seventhNode, createDerivativeNode(thisNode.sub.get(0))); // add in chain
             }
             case "atan" -> {
                 // \frac{1}{(1+x^2)}
@@ -786,10 +837,10 @@ public class Equation {
                 Node firstNode =  new Node(new ComplexNumber(1,0));
                 Node secondNode = new Node(new ComplexNumber(2,0));
                 // calculations
-                Node thirdNode =  new Node("^", thisNode.left, secondNode); // x^2
+                Node thirdNode =  new Node("^", thisNode.sub.get(0), secondNode); // x^2
                 Node fourthNode = new Node("+", firstNode, thirdNode);      // (..) + 1
                 Node fifthNode =  new Node("/", firstNode, fourthNode);     // 1 / (..)
-                return            new Node("*", fifthNode, createDerivativeNode(thisNode.left)); // and in chain
+                return            new Node("*", fifthNode, createDerivativeNode(thisNode.sub.get(0))); // and in chain
             }
             case "acot" -> {
                 // \frac{1}{(1+x^2)}
@@ -798,11 +849,11 @@ public class Equation {
                 Node secondNode =  new Node(new ComplexNumber(2,0));
                 Node sixthNode =   new Node(new ComplexNumber(-1,0));
                 // calculations
-                Node thirdNode =   new Node("^", thisNode.left, secondNode); // x^2
+                Node thirdNode =   new Node("^", thisNode.sub.get(0), secondNode); // x^2
                 Node fourthNode =  new Node("+", firstNode, thirdNode);      // (..) + 1
                 Node fifthNode =   new Node("/", firstNode, fourthNode);     //  1 / (..)
                 Node seventhNode = new Node("*", sixthNode, fifthNode);      // -1 * (..)
-                return             new Node("*", seventhNode, createDerivativeNode(thisNode.left)); // add in chain
+                return             new Node("*", seventhNode, createDerivativeNode(thisNode.sub.get(0))); // add in chain
             }
             case "acsc" -> {
                 // -\frac{1}{|x|(1-x^2)^{1/2)}
@@ -812,15 +863,15 @@ public class Equation {
                 Node thirdNode =   new Node(new ComplexNumber(-1,0));
                 Node node31 =      new Node(new ComplexNumber(0.5,0 ));
                 // calculations
-                Node fourthNode =  new Node("^",   thisNode.left, secondNode); // x^2
+                Node fourthNode =  new Node("^",   thisNode.sub.get(0), secondNode); // x^2
                 Node fifthNode =   new Node("*",   fourthNode, thirdNode);     // (..) * -1
                 Node node51 =      new Node("+",   firstNode, fifthNode);      // (..) + 1
                 Node node52 =      new Node("^",   node51, node31);            // sqrt(..)
-                Node node53 =      new Node("abs", thisNode.left, null);   // |x|
+                Node node53 =      new Node("abs", thisNode.sub.get(0), null);   // |x|
                 Node node54 =      new Node("*",   node53, node52);            // (..) * (...)
                 Node sixthNode =   new Node("/",   firstNode, node54);         // 1 / (..)
                 Node seventhNode = new Node("*",   thirdNode, sixthNode);      // (..) * -1
-                return             new Node("*",   seventhNode, createDerivativeNode(thisNode.left));
+                return             new Node("*",   seventhNode, createDerivativeNode(thisNode.sub.get(0)));
             }
             case "asinh" -> {
                 // \frac{1}{(1+x^2)^{1/2)}
@@ -829,11 +880,11 @@ public class Equation {
                 Node secondNode = new Node(new ComplexNumber(2,0));
                 Node node31 =     new Node(new ComplexNumber(0.5,0));
                 // calculations
-                Node fourthNode = new Node("^",thisNode.left, secondNode); // x^2
+                Node fourthNode = new Node("^",thisNode.sub.get(0), secondNode); // x^2
                 Node node51 =     new Node("+", firstNode, fourthNode);    // (..) + 1
                 Node node52 =     new Node("^", node51, node31);           // sqrt(..)
                 Node sixthNode =  new Node("/", firstNode, node52);        // 1 / (..)
-                return            new Node("*", sixthNode, createDerivativeNode(thisNode.left)); // implement chain rule
+                return            new Node("*", sixthNode, createDerivativeNode(thisNode.sub.get(0))); // implement chain rule
             }
             case "acosh" -> {
                 // \frac{1}{(x^2 - 1)^{1/2}}
@@ -842,11 +893,11 @@ public class Equation {
                 Node secondNode = new Node(new ComplexNumber(2,0));
                 Node node31 =     new Node(new ComplexNumber(0.5,0));
                 // calculations
-                Node fourthNode = new Node("^",thisNode.left, secondNode); // x^2
+                Node fourthNode = new Node("^",thisNode.sub.get(0), secondNode); // x^2
                 Node node51 =     new Node("-", fourthNode, firstNode);    // (..) - 1
                 Node node52 =     new Node("^", node51, node31);           // sqrt(..)
                 Node sixthNode =  new Node("/", firstNode, node52);        // 1 / (..)
-                return            new Node("*", sixthNode, createDerivativeNode(thisNode.left)); // implement chain rule
+                return            new Node("*", sixthNode, createDerivativeNode(thisNode.sub.get(0))); // implement chain rule
             }
             case "atanh", "acoth" -> {
                 // \frac{1}{(1-x^2)}
@@ -854,10 +905,10 @@ public class Equation {
                 Node firstNode =  new Node(new ComplexNumber(1,0));
                 Node secondNode = new Node(new ComplexNumber(2,0));
                 // calculations
-                Node thirdNode =  new Node("^", thisNode.left, secondNode); // x^2
+                Node thirdNode =  new Node("^", thisNode.sub.get(0), secondNode); // x^2
                 Node fourthNode = new Node("-", firstNode, thirdNode);      // 1 - (..)
                 Node fifthNode =  new Node("/", firstNode, fourthNode);     // 1 / (..)
-                return            new Node("*", fifthNode, createDerivativeNode(thisNode.left)); // and in chain
+                return            new Node("*", fifthNode, createDerivativeNode(thisNode.sub.get(0))); // and in chain
             }
             case "acsch" -> {
                 // \frac{1}{|x|(1+x^2)^{1/2}}
@@ -866,23 +917,23 @@ public class Equation {
                 Node secondNode = new Node(new ComplexNumber(2,0));
                 Node node31 =     new Node(new ComplexNumber(0.5,0));
                 // calculations
-                Node fourthNode = new Node("^",   thisNode.left, secondNode); // x^2
+                Node fourthNode = new Node("^",   thisNode.sub.get(0), secondNode); // x^2
                 Node node51 =     new Node("+",   firstNode, fourthNode);    // (..) + 1
                 Node node52 =     new Node("^",   node51, node31);           // sqrt(..)
-                Node node53 =     new Node("abs", thisNode.left, null);  // abs(..)
+                Node node53 =     new Node("abs", thisNode.sub.get(0), null);  // abs(..)
                 Node node54 =     new Node("*",   node53, node52);           // (..) * (...)
                 Node sixthNode =  new Node("/",   firstNode, node54);        // 1 / (..)
-                return            new Node("*",   sixthNode, createDerivativeNode(thisNode.left)); // implement chain rule
+                return            new Node("*",   sixthNode, createDerivativeNode(thisNode.sub.get(0))); // implement chain rule
             }
             case "asech" -> {
                 // this is so much easier, but I forgot about it until now...
                 // -\tanh(x)sech(x)
-                Node node1 = new Node("tanh", thisNode.left, null);
-                Node node2 = new Node("sech", thisNode.left, null);
+                Node node1 = new Node("tanh", thisNode.sub.get(0), null);
+                Node node2 = new Node("sech", thisNode.sub.get(0), null);
                 Node node3 = new Node(new ComplexNumber(-1,0));
                 Node node4 = new Node("*", node1, node2);
                 Node node5 = new Node("*", node3, node4);
-                return       new Node("*", node5, createDerivativeNode(thisNode.left)); // implement chain rule
+                return       new Node("*", node5, createDerivativeNode(thisNode.sub.get(0))); // implement chain rule
             }
         }
 

@@ -39,7 +39,7 @@ public class SweepXValues {
         yValues.clear();
         // loop through all the x-values and calculate the corresponding y-values
         for (ComplexNumber complexNumber : xValues.get(whichBValue)){
-            yValues.add(equation.evaluateEquation(complexNumber, equation.length));
+            yValues.add(equation.evaluateNode(complexNumber, equation.tree.get(equation.length)));
         }
         return yValues;
     }
