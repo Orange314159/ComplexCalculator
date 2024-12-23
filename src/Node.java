@@ -1,8 +1,10 @@
+import java.util.ArrayList;
+
 public class Node {
     // each node includes EITHER an operator or data, NOT both
     public String operator;
     public ComplexNumber data;
-    public Node left, right; // if the node does not have left and right nodes then it will have data
+    public ArrayList<Node> sub;
 
     public Node(){
         data = new ComplexNumber();
@@ -11,35 +13,38 @@ public class Node {
     public Node(String o, ComplexNumber complexNumber) {
         data     = complexNumber;
         operator = o;
-        left     = null;
-        right    = null;
-    }
-    public Node(String o, ComplexNumber complexNumber, Node n1, Node n2){
-        data     = complexNumber;
-        operator = o;
-        left     = n1;
-        right    = n2;
+        sub = null;
     }
     public Node(String o, Node n1, Node n2){
         data     = new ComplexNumber();
         operator = o;
-        left     = n1;
-        right    = n2;
+        sub = new ArrayList<Node>();
+        sub.add(n1);
+        sub.add(n2);
+    }
+    public Node(String o, Node n1){
+        data     = new ComplexNumber();
+        operator = o;
+        sub = new ArrayList<Node>();
+        sub.add(n1);
+    }
+    public Node(String o){
+        data     = new ComplexNumber();
+        operator = o;
+        sub = new ArrayList<Node>();
     }
     public Node(ComplexNumber complexNumber){
         data     = complexNumber;
         operator = "";
-        left     =  null;
-        right    = null;
+        sub = null;
     }
     public Node(double a, double b){
         data     = new ComplexNumber(a,b);
         operator = "";
-        left     =  null;
-        right    = null;
+        sub = null;
     }
     public boolean isNumber(){
-        if (this.left != null || this.right != null){
+        if (this.sub != null){
             return false;
         }
         if (this.data == null || this.data.isX)
@@ -48,7 +53,7 @@ public class Node {
         return this.operator.isEmpty();
     }
     public boolean isX(){
-        if (this.left != null || this.right != null){
+        if (this.sub != null){
             return false;
         }
         if (this.data == null)
@@ -77,7 +82,7 @@ public class Node {
         if (this.isX()){
             return 1;
         }
-        if (this.left == null){
+        if (this.sub == null){
             return -1; // there should be no functions that have no left input
         }
         if (this.operator.isEmpty()){
@@ -104,183 +109,272 @@ public class Node {
         // for example if the node includes 0 * x + 4 it would simplify it to 4
         // of something like 2 * 90 + 14 - x would become 166 - x
 
-        if (this.left == null){
+        if (this.sub == null){
             return this; // base case
         }
 
         if (this.operator.equals("+")){
-            // cleaning in addition
-            if (this.left.equals(new Node(0,0))){
-                return this.right.clean(); // zero is the additive identity
-            }
-            if (this.right.equals(new Node(0,0))){
-                return this.left.clean(); // zero is the additive identity
+            // we first want to clean all the smaller parts before combining
+            for (Node subNode: sub){
+                subNode.clean(); // this should leave no subtraction left, so our next step does not have to worry about that
             }
 
-            if (this.left.nodeType() < 2 && this.right.nodeType() < 2){
-
-                if (this.left.isNumber() && this.right.isNumber()){
-                    return new Node(this.left.data.add(this.right.data)).clean();
+            // collapse all addition into one if possible
+            int counter = 0;
+            for (Node subNode : sub){ // loop through all the sub nodes
+                if (subNode.nodeType() == 2){ // if the node is addition
+                    this.sub.addAll(subNode.sub); // add all the nodes into our current "main" node
+                    this.sub.remove(counter); // remove the sub node
+                    counter--; // this exists to fix the weird counting problem of removing a part of a list that you are still editing
                 }
-
-                if (this.right.equals(this.left)){
-                    return new Node("*", this.left.clean(), new Node(2,0)).clean(); // adding anything to itself results in 2 time itself
-                }
-
-                if (!this.right.data.isX && !this.left.data.isX){
-                    // (some num) + (some other num) = some third num
-                    return new Node(this.right.data.add(this.left.data, null)).clean(); // I know that these both are real numbers, not x
-                    // here I am using the constructor of node that takes and input of a complex number
-                }
+                counter++; // iterate through all nodes and keep track of their number
             }
-            if(this.left.equals(this.right)){
-                // (some expression) + (some expression) = 2 * (some expression)
-                return new Node("*", new Node(new ComplexNumber(2.0)), this.left).clean();
+
+            // remove all nodes that are zeros
+            counter = 0;
+            Node zero = new Node(0,0); // instantiate a zero node at the start that will be reused
+            for (Node subNode : sub){ // loop through all the sub nodes
+                if (subNode.equals(zero)){ // check equality with zero
+                    this.sub.remove(counter); // remove the node if zero
+                    counter--; // fix counting (see above)
+                }
+                counter++;
             }
+
+            // combine like number and x terms
+            counter = 0;
+            Node numberSum = new Node(0,0); // this will be the sum of all the numbers found in the sub node list
+            Node xSum      = new Node(0,0); // like above this represents the number of "x"s found in the list
+            for (Node subNode : sub){ // loop through all the sub nodes
+                if (subNode.nodeType() == 0){ // check for the node being a number
+                    numberSum.data = numberSum.data.add(subNode.data); // add the number to the sum
+                    sub.remove(counter); // remove it from the list of sub nodes
+                    counter--;
+                } else if (subNode.nodeType() == 1){ // check for the node being x
+                    xSum.data = xSum.data.add(subNode.data); // add it to the xSum
+                    sub.remove(counter); // remove it from the list
+                    counter--;
+                }
+                counter++;
+            }
+            this.sub.add(numberSum); // add in the number and x sum finally
+            this.sub.add(xSum);
+            // Todo: combine other like terms
+            //  ex: (2x+1) + (2x+1) + 2 + 5 + 8 + x = 2(2x+1) + 15 + x
+            //  we should be able to combine the terms like (2x+1)
+            return this;
         }
         if (this.operator.equals("-")){
-            // cleaning in subtraction
-            if (this.right.equals(new Node(0,0))){
-                return this.left.clean(); // zero is the additive identity
+            // I hate subtraction
+            // not really, subtraction is just adding a negative number, so I will simplify it as such
+
+            // we treat subtraction as: a - b - c - d - e - f - g...
+            //                          - (a,b,c,d,e,f,g)
+            // simplified this becomes: a + -b + -c + -d + -e + -f + -g... (it doesn't look simplified, but it is)
+            //                          + (a,-b,-c,-d,-e,-f,-g)
+
+            // we first want to clean all the smaller parts before combining
+            for (Node subNode: sub){
+                subNode.clean();
             }
 
-            if(this.right.equals(this.left)){
-                return new Node(0,0); // a - a = 0 given any a
+            ArrayList<Node> newSubList = new ArrayList<Node>(); // this will be our new list of sub nodes once we are finished
+            int counter = 0;
+            for (Node subNode : sub){
+                if (counter == 0){ // skip first node
+                    newSubList.add(subNode);
+                } else if (subNode.nodeType() == 0 || subNode.nodeType() == 1){ // check if the node is a number or x
+                    Node correctedNode = new Node(subNode.data.mul(new ComplexNumber(-1,0))); // multiply the node by -1
+                    newSubList.add(correctedNode); // add to the list
+                } else {
+                    Node correctedNode = new Node("*", new Node(-1,0), subNode); // multiply the node by -1
+                    newSubList.add(correctedNode); // add to the list
+                }
+                counter++;
             }
+            sub = newSubList; // replace old list with new list
+            this.operator = "+"; // change the sign
 
-            if (this.right.isNumber() && this.left.isNumber()){
-                // (some num) + (some other num) = some third num
-                return new Node(this.left.data.sub(this.right.data)); // I know that these both are real numbers, not x
-                // here I am using the constructor of node that takes and input of a complex number
-            }
+            return this.clean();
         }
         if (this.operator.equals("*")){
-            // cleaning in mult
-            if ( this.left.equals(new Node(0,0)) || this.right.equals(new Node(0,0))){
-                return new Node(0,0); // multiplying anything by zero results in zero
-            }
-            if ( this.left.equals(new Node(1,0))){
-                return this.right.clean(); // multiplying anything by 1 results in itself
-            }
-            if ( this.right.equals(new Node(1,0))){
-                return this.left.clean(); // multiplying anything by 1 results in itself
-            }
-            if (this.left.equals(this.right)){
-                return new Node("^", this.left, new Node(2, 0)).clean();
-            }
-            if (this.left.isNumber() && this.right.isNumber()){
-                return new Node(this.left.data.mul(this.right.data, null)).clean();
-            }
-            if (this.left.nodeType() == 2 && this.right.nodeType() < 2){ // if this.left is addition and this.right is either "x" or some number
-                // (a + b) * c = ab + bc
-                Node leftPart  = new Node("*", this.left.left,  this.right);
-                Node rightPart = new Node("*", this.left.right, this.right);
-                return new Node("+", leftPart.clean(), rightPart.clean()).clean(); // order here does not matter because addition is commutative (just convention)
-            }
-            if (this.right.nodeType() == 2 && this.left.nodeType() < 2){
-                // a * (b + c) = ab + ac
-                Node leftPart =  new Node("*", this.right.left,  this.left);
-                Node rightPart = new Node("*", this.right.right, this.left);
-                return new Node("+", leftPart, rightPart).clean();
-            }
-            if (this.right.isX() || this.right.isNumber() && this.left.nodeType() == 4){
-                // (some number or x) * (something * something)
-                // this is a short look ahead to see if I can combine like terms
-            }
-            if (this.left.left != null && this.left.operator.equals("^") && this.right.operator.equals("^") && this.left.left.equals(this.right.left)){
-                // I include the not null part to stop the possible warnings
-                Node topPart = new Node("+", this.left.right, this.right.right);
-                return new Node("^", this.left.left, topPart).clean();
-            }
-        }
-        if (this.operator.equals("/")){
-            // cleaning in division
-            if (this.left.data.equals(new ComplexNumber(0,0)) && this.left.operator.isEmpty()){
-                return new Node(0,0); // dividing zero by anything results in zero
+            // we first want to clean all the smaller parts before combining
+            for (Node subNode: sub){
+                subNode.clean();
             }
 
-            if (this.right.data.equals(new ComplexNumber(0,0)) && this.right.operator.isEmpty()){
-                System.out.println("Error: division by zero found in equation cleaning");
-                return new Node(0,0); // dividing anything by zero results in undefined
+            // clean up all numbers and stuff
+            int counter = 0;
+            Node zero        = new Node(0,0); // some reused vars for the loop
+            Node one         = new Node(1,0);
+            Node productNode = new Node(1,0);
+            Node xs          = new Node(0,0);
+            for (Node subNode : sub){ // loop through each node
+                if (subNode.equals(zero)){ // check if the node is zero
+                    return zero; // if the node is zero it does not matter what anything else is, so it returns zero
+                } else if (subNode.nodeType() == 0){ // if the node is a number it multiplies it to the product
+                    productNode.data = productNode.data.mul(subNode.data);
+                    sub.remove(counter);
+                    counter--;
+                } else if (subNode.nodeType() == 1){ // if the number is an x then it multiplies it and keeps track of the number of x's found
+                    xs.data = xs.data.add(one.data);
+                    productNode.data =productNode.data.mul(subNode.data);
+                    sub.remove(counter);
+                    counter--;
+                }
+                counter++;
             }
-            if (this.left.equals(this.right)){
-                return new Node(1,0); // (some expression) / (the same expression) = 1
+
+            this.sub.add(productNode);
+            if (!xs.equals(zero)){
+                this.sub.add(new Node("^", new Node(new ComplexNumber("x")), xs));
             }
-            if (this.right.data.equals(new ComplexNumber(1,0))){
-                return this.left.clean(); // dividing anything by one results in itself
+
+            // TODO: similar to addition, need to add in a better combination of like terms
+
+            return this;
+        }
+        if (this.operator.equals("/")){
+            // we first want to clean all the smaller parts before combining
+            for (Node subNode: sub){
+                subNode.clean();
             }
-            if (this.left.isNumber() && this.right.isNumber()){
-                return new Node(this.left.data.div(this.right.data, null)).clean(); // I am sure that neither of these values is "x" because I just checked in the above line
+
+            int counter = 0;
+            Node zero = new Node(0,0);
+            Node one  = new Node(1,0);
+            Node returnNode = new Node("*");
+            for (Node subNode : sub){
+                if (counter == 0){
+                    if (subNode.equals(zero)){
+                        return zero; // if the first node is zero that means the entire thing will evaluate to zero
+                    } else {
+                        returnNode.sub.add(subNode);
+                    }
+                } else {
+                    if (subNode.equals(zero)){
+                        System.out.println("Error: Found divide by zero while cleaning node");
+                        return zero;
+                    } else if (subNode.equals(one)){
+                        // 1/1 = 1 so skip
+                        continue;
+                    } else {
+                        returnNode.sub.add(subNode);
+                    }
+                }
+                counter++;
             }
-            if (this.left.operator.equals("+")){
-                // (a + b) * c = ab + bc
-                Node leftPart  = new Node("/", this.left.left,  this.right);
-                Node rightPart = new Node("/", this.left.right, this.right);
-                return new Node("+", leftPart, rightPart).clean(); // order here does not matter because addition is commutative (just convention)
-            }
-            if (this.left.left != null && this.left.operator.equals("^") && this.right.operator.equals("^") && this.left.left.equals(this.right.left)){
-                // I include the not null part to stop the possible warnings
-                Node topPart = new Node("-", this.left.right, this.right.right);
-                return new Node("^", this.left.left, topPart).clean();
-            }
-            return new Node("*", this.left.clean(), new Node("^", this.right.clean(), new Node(-1,0)).clean());
+
+            this.operator = returnNode.operator;
+            this.sub      = returnNode.sub;
+            this.data     = returnNode.data;
+
+            // Todo : there might be more exceptions to look at here (to speed it up)
+
+            return this;
         }
         if (this.operator.equals("^")){
-            if (this.right.equals(new Node(0,0))){
+
+            // as of (12/23/2024) I will only allow two node exponents, in the future I plan on allowing more, but not for now
+            if (sub.size() != 2){
+                System.out.println("Error: Found incorrect number of sub-nodes in an exponent while cleaning");
+                return new Node(0,0);
+            }
+
+            if (this.sub.get(1).equals(new Node(0,0))){
                 return new Node(1,0); // anything to the zero is 1
             }
-            if (this.right.equals(new Node(1,0))){
-                return this.left.clean(); // anything to the 1 is itself
+            if (this.sub.get(1).equals(new Node(1,0))){
+                return this.sub.get(0).clean(); // anything to the 1 is itself
             }
-            if (this.right.isNumber() && this.left.isNumber()){
-                return new Node(this.left.data.pow(this.right.data)); // do the exponent if they are both numbers
+            if (this.sub.get(1).isNumber() && this.sub.get(0).isNumber()){
+                return new Node(this.sub.get(0).data.pow(this.sub.get(1).data)); // do the exponent if they are both numbers
             }
         }
         if (this.operator.equals("log")){
-            if (this.left.left == null && this.left.data != null && this.right.data != null){
-                return new Node(left.data.log(right.data, new ComplexNumber(0, 0)));
+            if (sub.size() != 2){
+                System.out.println("Error: Found incorrect number of sub-nodes in log while cleaning");
+                return new Node(0,0);
+            }
+
+            if (this.sub.get(0).sub.get(0) == null && this.sub.get(0).data != null && this.sub.get(1).data != null){
+                return new Node(sub.get(0).data.log(sub.get(1).data, new ComplexNumber(0, 0)));
             }
         }
         if (this.operator.equals("sin")){
-            if (this.left.left == null && this.left.data != null && this.right == null){
-                return new Node(left.data.sin(new ComplexNumber(0, 0)));
+            if (sub.size() != 1){
+                System.out.println("Error: Found incorrect number of sub-nodes in sin while cleaning");
+                return new Node(0,0);
+            }
+
+            if (this.sub.get(0).isNumber()){
+                return new Node(sub.get(0).data.sin());
             }
         }
         if (this.operator.equals("cos")){
-            if (this.left.left == null && this.left.data != null && this.right == null){
-                return new Node(left.data.cos(new ComplexNumber(0, 0)));
+            if (sub.size() != 1){
+                System.out.println("Error: Found incorrect number of sub-nodes in cos while cleaning");
+                return new Node(0,0);
+            }
+
+            if (this.sub.get(0).isNumber()){
+                return new Node(sub.get(0).data.cos());
             }
         }
         if (this.operator.equals("tan")){
-            if (this.left.left == null && this.left.data != null && this.right == null){
-                return new Node(left.data.tan());
+            if (sub.size() != 1){
+                System.out.println("Error: Found incorrect number of sub-nodes in tan while cleaning");
+                return new Node(0,0);
+            }
+
+            if (this.sub.get(0).isNumber()){
+                return new Node(sub.get(0).data.tan());
             }
         }
         if (this.operator.equals("sec")){
-            if (this.left.left == null && this.left.data != null && this.right == null){
-                return new Node(left.data.sec());
+            if (sub.size() != 1){
+                System.out.println("Error: Found incorrect number of sub-nodes in sec while cleaning");
+                return new Node(0,0);
+            }
+
+            if (this.sub.get(0).isNumber()){
+                return new Node(sub.get(0).data.sec());
             }
         }
         if (this.operator.equals("csc")){
-            if (this.left.left == null && this.left.data != null && this.right == null){
-                return new Node(left.data.csc());
+            if (sub.size() != 1){
+                System.out.println("Error: Found incorrect number of sub-nodes in csc while cleaning");
+                return new Node(0,0);
+            }
+
+            if (this.sub.get(0).isNumber()){
+                return new Node(sub.get(0).data.csc());
             }
         }
         if (this.operator.equals("cot")){
-            if (this.left.left == null && this.left.data != null && this.right == null){
-                return new Node(left.data.cot());
+            if (sub.size() != 1){
+                System.out.println("Error: Found incorrect number of sub-nodes in cot while cleaning");
+                return new Node(0,0);
+            }
+
+            if (this.sub.get(0).isNumber()){
+                return new Node(sub.get(0).data.cot());
             }
         }
 
-        if (this.right == null) { // for functions like trig, it is required to only clean the left node and leave the right node as null
-            Node clean =  new Node(this.operator, this.left.clean(), null);
+        if (this.sub.size() < 2) { // for functions like trig, it is required to only clean the left node and leave the right node as null
+            Node clean =  new Node(this.operator, this.sub.get(0).clean());
             if (this.equals(clean)){
                 return clean;
             } else {
                 return clean.clean();
             }
         }
-        Node clean = new Node(this.operator, this.left.clean(), this.right.clean());
+
+        Node clean = new Node(this.operator);
+        for (Node subNode : sub){
+            clean.sub.add(subNode.clean());
+        }
 
         if (this.equals(clean)){
             return clean;
@@ -295,104 +389,63 @@ public class Node {
             return false;
         }
 
-        if (this.right == null && this.left == null && object.left == null && object.right == null) {
-
-            if(this.data != null && object.data != null) {
-                // just a complex number
-                return this.operator.equals(object.operator) && this.data.equals(object.data);
-            }
-
-            if((this.data == null && object.data == null)){
-                // just an operator (this should not exist, but idk)
-                return this.operator.equals(object.operator);
-            }
-
-            // this.data does not equal object.data
+        if (this.sub.size() != object.sub.size()){
+            // different length node lists
             return false;
         }
 
-        if (this.right != null && this.left == null && object.left == null && object.right != null) {
-
-            if (!this.right.equals(object.right)){
+        for (int i = 0; i < sub.size(); i++){
+            if (!this.sub.get(i).equals(object.sub.get(i))){
                 return false;
             }
+        }
 
-            if(this.data != null && object.data != null) {
-                // just a complex number
-                return this.operator.equals(object.operator) && this.data.equals(object.data);
-            }
-
-            if((this.data == null && object.data == null)){
-                // just an operator (this should not exist, but idk)
-                return this.operator.equals(object.operator);
-            }
-
-            // this.data does not equal object.data
+        if (!this.operator.equals(object.operator)){
             return false;
         }
 
-        if (this.right == null && this.left != null && object.left != null && object.right == null) {
-
-            if (!this.left.equals(object.left)){
-                return false;
-            }
-
-            if(this.data != null && object.data != null) {
-                // just a complex number
-                return this.operator.equals(object.operator) && this.data.equals(object.data);
-            }
-
-            if((this.data == null && object.data == null)){
-                // just an operator (this should not exist, but idk)
-                return this.operator.equals(object.operator);
-            }
-
-            // this.data does not equal object.data
-            return false;
-        }
-
-        if (this.right != null && this.left != null && object.left != null && object.right != null) {
-
-            if (!this.left.equals(object.left)){
-                return false;
-            }
-
-            if (!this.right.equals(object.right)){
-                return false;
-            }
-
-            if(this.data != null && object.data != null) {
-                // just a complex number
-                return this.operator.equals(object.operator) && this.data.equals(object.data);
-            }
-
-            if((this.data == null && object.data == null)){
-                // just an operator (this should not exist, but idk)
-                return this.operator.equals(object.operator);
-            }
-
-            // this.data does not equal object.data
-            return false;
-        }
-
-        // this.right does not equal object.right or this.left does not equal object.left
-        return false;
+        return this.data.equals(object.data);
     }
 
     @Override
     public String toString() {
-        if (left == null){
+        if (this.sub == null){
             return data.toString();
         }
         if (operator.equals("/") || operator.equals("\\frac")){
-            return "\\frac{" + left + "}{" + right + "}";
+            StringBuilder ret = new StringBuilder();
+            ret.append("\\frac{");
+            ret.append(sub.get(0));
+            ret.append("}{");
+            int counter = 0;
+            for (Node subNode : sub){
+                if (counter > 0){
+                    ret.append(" * ");
+                    ret.append(subNode);
+                }
+                counter++;
+            }
+            ret.append("}");
+            return ret.toString();
         }
         if (operator.isEmpty()){
             return operator;
         }
         if (operator.contains("sin") ||operator.contains("cos") || operator.contains("tan") || operator.contains("sec") || operator.contains("csc") || operator.contains("cot")){
-            return "\\" + operator + "{" + left + "}";
+            return "\\" + operator + "{" + this.sub.get(0) + "}";
         }
-        return "(" + left + ")" + operator + "(" + right + ")";
+
+        StringBuilder ret = new StringBuilder();
+        ret.append(sub.get(0));
+        int counter = 0;
+        for (Node subNode : sub){
+            if (counter > 0){
+                ret.append(operator);
+                ret.append(subNode);
+            }
+            counter++;
+        }
+
+        return ret.toString();
     }
 }

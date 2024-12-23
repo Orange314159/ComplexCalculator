@@ -164,7 +164,7 @@ public class Equation {
 //                    System.out.println(input + "  " + input.substring(i+6,findCloseBrace(i+5, input)));
                     if (input.charAt(i+6) == '{'){
                         int subTree = createTreeSpecialFunctions(input.substring(i+7,findCloseBrace(i+6, input)));
-                        tree.add(new Node(functionName, new ComplexNumber(), tree.get(subTree), new Node()));
+                        tree.add(new Node(functionName, tree.get(subTree), new Node()));
                         partialEqSP.append("~").append(tree.size() - 1).append("~");
                     } else {
                         System.out.println("Error");
@@ -176,7 +176,7 @@ public class Equation {
                     String functionName = input.substring(i+1,i+5);
                     if (input.charAt(i+5) == '{'){
                         int subTree = createTreeSpecialFunctions(input.substring(i+6,findCloseBrace(i+5, input)));
-                        tree.add(new Node(functionName, new ComplexNumber(), tree.get(subTree), new Node()));
+                        tree.add(new Node(functionName, tree.get(subTree), new Node()));
                         partialEqSP.append("~").append(tree.size() - 1).append("~");
                     } else {
                         System.out.println("Error");
@@ -188,7 +188,7 @@ public class Equation {
 //                    System.out.println(input + "  " + input.substring(i+6,findCloseBrace(i+5, input)));
                     if (input.charAt(i+4) == '{'){
                         int subTree = createTreeSpecialFunctions(input.substring(i+5,findCloseBrace(i+4, input)));
-                        tree.add(new Node(functionName, new ComplexNumber(), tree.get(subTree), new Node()));
+                        tree.add(new Node(functionName, tree.get(subTree), new Node()));
                         partialEqSP.append("~").append(tree.size() - 1).append("~");
                     } else {
                         System.out.println("Error");
@@ -409,17 +409,17 @@ public class Equation {
     public void addNodes(String leftStr, String rightStr, String operation){
         // I check for each left and right to be a reference and then create new nodes accordingly and repurpose the nodes that have already been created to be child nodes of the new node that I create
         if (leftStr.contains("~") && rightStr.contains("~")){ // both nodes have already been created
-            tree.add(new Node(operation, new ComplexNumber(), tree.get(Integer.parseInt(leftStr.substring(1,leftStr.length()-1))), tree.get(Integer.parseInt(rightStr.substring(1,rightStr.length()-1))) ));
+            tree.add(new Node(operation, tree.get(Integer.parseInt(leftStr.substring(1,leftStr.length()-1))), tree.get(Integer.parseInt(rightStr.substring(1,rightStr.length()-1))) ));
         } else if (leftStr.contains("~")){ // left node exists
             tree.add(new Node("", new ComplexNumber(rightStr)));
-            tree.add(new Node(operation, new ComplexNumber(), tree.get(Integer.parseInt(leftStr.substring(1,leftStr.length()-1))), tree.get(tree.size()-1)));
+            tree.add(new Node(operation, tree.get(Integer.parseInt(leftStr.substring(1,leftStr.length()-1))), tree.get(tree.size()-1)));
         } else if (rightStr.contains("~")){ // right node exists
             tree.add(new Node("", new ComplexNumber(leftStr)));
-            tree.add(new Node(operation, new ComplexNumber(), tree.get(tree.size()-1), tree.get(Integer.parseInt(rightStr.substring(1,rightStr.length()-1)))));
+            tree.add(new Node(operation, tree.get(tree.size()-1), tree.get(Integer.parseInt(rightStr.substring(1,rightStr.length()-1)))));
         } else { // neither node exists
             tree.add(new Node("", new ComplexNumber(leftStr)));
             tree.add(new Node("", new ComplexNumber(rightStr)));
-            tree.add(new Node(operation, new ComplexNumber(), tree.get(tree.size()-2), tree.get(tree.size()-1)));
+            tree.add(new Node(operation, tree.get(tree.size()-2), tree.get(tree.size()-1)));
         }
     }
 
@@ -890,7 +890,7 @@ public class Equation {
 //        ddxTree.add(createDerivativeTree(thisNode));
 //        return createDerivativeTree(thisNode);
         System.out.println("Error: was not able to parse function to calculate derivative");
-        return new Node("", new ComplexNumber(0,0), null, null); // something went wrong
+        return new Node(0,0); // something went wrong
     }
 
     public void printTree(){
