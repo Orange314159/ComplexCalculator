@@ -24,10 +24,11 @@ public class ComplexNumber {
     }
     public ComplexNumber(String str){
         // the expected input for "str" is some number such as 23.452 or i or x
-        this.a = 0;
+        this.a = 1;
         this.b = 0;
 
         if (str.isEmpty()){
+            this.a = 0;
             return;
         }
         if (str.contains("x")){

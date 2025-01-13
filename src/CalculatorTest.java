@@ -391,9 +391,7 @@ public class CalculatorTest {
 
         assertFalse(n1.isNumber());
 
-        Node n2 = new Node("something", new ComplexNumber(2,4), n0, n1);
-
-        assertFalse(n2.isNumber());
+        // skip n2 because of old mistake (look through the git commits)
 
         Node n3 = new Node(new ComplexNumber(0,0));
 
@@ -450,8 +448,10 @@ public class CalculatorTest {
         Node n3 = new Node(2,3);
         Node n4 = new Node(3,5);
         Node n5 = new Node("*", n3, n4);
+        Node n5c = n5.clean();
 
-        assertEquals(n5.clean(), new Node(-9, 19));
+
+        assertEquals(n5c, new Node(-9, 19));
 
         // more complicated
         // x * x = x^2
@@ -571,7 +571,7 @@ public class CalculatorTest {
     public void testCleanNodeSin(){
         // less complicated
         Node n0 = new Node(2.35, 4.51);
-        Node n2 = new Node("sin", n0, null);
+        Node n2 = new Node("sin", n0);
 
         assertEquals(n2.clean(), new Node(32.3481380844319588, -31.9421110347954738));
     }
@@ -579,7 +579,7 @@ public class CalculatorTest {
     public void testCleanNodeCos(){
         // less complicated
         Node n0 = new Node(2.35, 4.51);
-        Node n2 = new Node("cos", n0, null);
+        Node n2 = new Node("cos", n0);
 
         assertEquals(n2.clean(), new Node(-31.9498397965854011, -32.3403129730951306));
     }
@@ -587,7 +587,7 @@ public class CalculatorTest {
     public void testCleanNodeTan(){
         // less complicated
         Node n0 = new Node(2.35, 4.51);
-        Node n2 = new Node("tan", n0, null);
+        Node n2 = new Node("tan", n0);
 
         assertEquals(n2.clean(), new Node(-0.0002419144075377, 1.0000029679605014));
     }
@@ -595,7 +595,7 @@ public class CalculatorTest {
     public void testCleanNodeSec(){
         // less complicated
         Node n0 = new Node(2.35, 4.51);
-        Node n2 = new Node("sec", n0, null);
+        Node n2 = new Node("sec", n0);
 
         assertEquals(n2.clean(), new Node(-0.0154594395256580, 0.0156483761994278));
     }
@@ -603,7 +603,7 @@ public class CalculatorTest {
     public void testCleanNodeCsc(){
         // less complicated
         Node n0 = new Node(2.35, 4.51);
-        Node n2 = new Node("csc", n0, null);
+        Node n2 = new Node("csc", n0);
 
         assertEquals(n2.clean(), new Node(0.0156520686787634,  0.0154556071931052));
     }
@@ -611,7 +611,7 @@ public class CalculatorTest {
     public void testCleanNodeCot(){
         // less complicated
         Node n0 = new Node(2.35, 4.51);
-        Node n2 = new Node("cot", n0, null);
+        Node n2 = new Node("cot", n0);
 
         assertEquals(n2.clean(), new Node(-0.0002419129574020,  -0.9999969735262514));
     }

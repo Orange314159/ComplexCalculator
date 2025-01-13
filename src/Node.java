@@ -117,9 +117,11 @@ public class Node {
 
         if (this.operator.equals("+")){
             // we first want to clean all the smaller parts before combining
+            ArrayList<Node> newSubNodes = new ArrayList<>();
             for (Node subNode: sub){
-                subNode.clean(); // this should leave no subtraction left, so our next step does not have to worry about that
+                newSubNodes.add(subNode.clean()); // this should leave no subtraction left, so our next step does not have to worry about that
             }
+            this.sub = newSubNodes;
 
             // collapse all addition into one if possible
             int counter = 0;
@@ -176,9 +178,12 @@ public class Node {
             //                          + (a,-b,-c,-d,-e,-f,-g)
 
             // we first want to clean all the smaller parts before combining
+            // we first want to clean all the smaller parts before combining
+            ArrayList<Node> newSubNodes = new ArrayList<>();
             for (Node subNode: sub){
-                subNode.clean();
+                newSubNodes.add(subNode.clean()); // this should leave no subtraction left, so our next step does not have to worry about that
             }
+            this.sub = newSubNodes;
 
             ArrayList<Node> newSubList = new ArrayList<Node>(); // this will be our new list of sub nodes once we are finished
             int counter = 0;
@@ -201,46 +206,66 @@ public class Node {
         }
         if (this.operator.equals("*")){
             // we first want to clean all the smaller parts before combining
+            // we first want to clean all the smaller parts before combining
+            ArrayList<Node> newSubNodes = new ArrayList<>();
             for (Node subNode: sub){
-                subNode.clean();
+                newSubNodes.add(subNode.clean()); // this should leave no subtraction left, so our next step does not have to worry about that
             }
+            this.sub = newSubNodes;
 
             // clean up all numbers and stuff
-            int counter = 0;
             Node zero        = new Node(0,0); // some reused vars for the loop
             Node one         = new Node(1,0);
             Node productNode = new Node(1,0);
             Node xs          = new Node(0,0);
+            ArrayList<Node> newNodes = new ArrayList<>();
+
             for (Node subNode : sub){ // loop through each node
                 if (subNode.equals(zero)){ // check if the node is zero
                     return zero; // if the node is zero it does not matter what anything else is, so it returns zero
                 } else if (subNode.nodeType() == 0){ // if the node is a number it multiplies it to the product
                     productNode.data = productNode.data.mul(subNode.data);
-                    sub.remove(counter);
-                    counter--;
                 } else if (subNode.nodeType() == 1){ // if the number is an x then it multiplies it and keeps track of the number of x's found
                     xs.data = xs.data.add(one.data);
-                    productNode.data =productNode.data.mul(subNode.data);
-                    sub.remove(counter);
-                    counter--;
+                    productNode.data =productNode.data.mul(subNode.data, new ComplexNumber(1,0)); // include the 1,0 complex number because it would break otherwise
+                } else {
+                    newNodes.add(subNode);
                 }
-                counter++;
             }
 
-            this.sub.add(productNode);
+
+            sub = newNodes;
+            if (!productNode.equals(one)){
+                this.sub.add(productNode);
+            }
+
+
             if (!xs.equals(zero)){
                 this.sub.add(new Node("^", new Node(new ComplexNumber("x")), xs));
             }
 
             // TODO: similar to addition, need to add in a better combination of like terms
 
+            if (this.sub.size() == 1){ // if there is only one node in the multiply then I just replace myself with that node
+                this.data     = sub.get(0).data;
+                this.operator = sub.get(0).operator;
+                if (this.sub.get(0).sub == null){
+                    this.sub = null;
+                } else {
+                    this.sub      = sub.get(0).sub;
+                }
+            }
+
             return this;
         }
         if (this.operator.equals("/")){
             // we first want to clean all the smaller parts before combining
+            // we first want to clean all the smaller parts before combining
+            ArrayList<Node> newSubNodes = new ArrayList<>();
             for (Node subNode: sub){
-                subNode.clean();
+                newSubNodes.add(subNode.clean()); // this should leave no subtraction left, so our next step does not have to worry about that
             }
+            this.sub = newSubNodes;
 
             int counter = 0;
             Node zero = new Node(0,0);
@@ -276,7 +301,6 @@ public class Node {
             return this;
         }
         if (this.operator.equals("^")){
-
             // as of (12/23/2024) I will only allow two node exponents, in the future I plan on allowing more, but not for now
             if (sub.size() != 2){
                 System.out.println("Error: Found incorrect number of sub-nodes in an exponent while cleaning");
@@ -386,23 +410,34 @@ public class Node {
     }
 
     @Override
-    public boolean equals(Object obj){
-        if (!(obj instanceof Node object)){
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Node object)) {
             return false;
         }
 
-        if (this.sub.size() != object.sub.size()){
-            // different length node lists
+        if (this.sub == null && object.sub != null) {
             return false;
         }
 
-        for (int i = 0; i < sub.size(); i++){
-            if (!this.sub.get(i).equals(object.sub.get(i))){
+        if (this.sub != null && object.sub == null) {
+            return false;
+        }
+
+        if (this.sub != null){
+            if (this.sub.size() != object.sub.size()) {
+                // different length node lists
                 return false;
+            }
+            for (int i = 0; i < sub.size(); i++){
+                if (!this.sub.get(i).equals(object.sub.get(i))){
+                    return false;
+                }
             }
         }
 
+
         if (!this.operator.equals(object.operator)){
+
             return false;
         }
 
