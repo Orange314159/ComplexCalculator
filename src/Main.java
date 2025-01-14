@@ -44,7 +44,7 @@ public class Main {
         // Other options for e1 that can be interesting
 //        Equation e1 = new Equation("\\log_{23.2}{7*x-3}");
 //        Equation e1 = new Equation("x^2");
-            Equation e1 = new Equation("x*\\sin{x}");
+        Equation e1 = new Equation("x*\\sin{x}");
         // Print out three values of the equation for you to check and make sure that the function seems approximately right
         System.out.println(e1.evaluateNode(new ComplexNumber(0,0), e1.tree.get(e1.length)) + " @x=" + new ComplexNumber(0,0));
         System.out.println(e1.evaluateNode(new ComplexNumber(1,0), e1.tree.get(e1.length)) + " @x=" + new ComplexNumber(1,0));

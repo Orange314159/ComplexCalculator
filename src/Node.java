@@ -118,6 +118,7 @@ public class Node {
         if (this.operator.equals("+")){
             // we first want to clean all the smaller parts before combining
             ArrayList<Node> newSubNodes = new ArrayList<>();
+
             for (Node subNode: sub){
                 newSubNodes.add(subNode.clean()); // this should leave no subtraction left, so our next step does not have to worry about that
             }
@@ -135,37 +136,56 @@ public class Node {
             }
 
             // remove all nodes that are zeros
-            counter = 0;
+
             Node zero = new Node(0,0); // instantiate a zero node at the start that will be reused
+            newSubNodes = new ArrayList<>();
             for (Node subNode : sub){ // loop through all the sub nodes
-                if (subNode.equals(zero)){ // check equality with zero
-                    this.sub.remove(counter); // remove the node if zero
-                    counter--; // fix counting (see above)
+                if (!subNode.equals(zero)){ // check equality with zero
+                    newSubNodes.add(subNode);
                 }
-                counter++;
             }
+            this.sub = newSubNodes;
 
             // combine like number and x terms
-            counter = 0;
             Node numberSum = new Node(0,0); // this will be the sum of all the numbers found in the sub node list
             Node xSum      = new Node(0,0); // like above this represents the number of "x"s found in the list
+            newSubNodes = new ArrayList<>();
             for (Node subNode : sub){ // loop through all the sub nodes
                 if (subNode.nodeType() == 0){ // check for the node being a number
                     numberSum.data = numberSum.data.add(subNode.data); // add the number to the sum
-                    sub.remove(counter); // remove it from the list of sub nodes
-                    counter--;
                 } else if (subNode.nodeType() == 1){ // check for the node being x
-                    xSum.data = xSum.data.add(subNode.data); // add it to the xSum
-                    sub.remove(counter); // remove it from the list
-                    counter--;
+                    xSum.data = xSum.data.add(subNode.data, subNode.data); // add it to the xSum
+                } else {
+                    newSubNodes.add(subNode);
                 }
-                counter++;
             }
-            this.sub.add(numberSum); // add in the number and x sum finally
-            this.sub.add(xSum);
+            this.sub = newSubNodes;
+
+            if(!numberSum.equals(zero)){
+                this.sub.add(numberSum); // add in the number and x sum finally
+            }
+            if (!xSum.equals(zero)){
+                xSum.data.isX = true;
+                this.sub.add(xSum);
+            }
             // Todo: combine other like terms
             //  ex: (2x+1) + (2x+1) + 2 + 5 + 8 + x = 2(2x+1) + 15 + x
             //  we should be able to combine the terms like (2x+1)
+            if (this.sub.isEmpty()){
+                this.data = zero.data;
+                this.operator = "";
+                this.sub = null;
+            } else if ( this.sub.size() == 1){ // if there is only one node in the multiply then I just replace myself with that node
+                this.data     = sub.get(0).data;
+                this.operator = sub.get(0).operator;
+                if (this.sub.get(0).sub == null){
+                    this.sub = null;
+                } else {
+                    this.sub      = sub.get(0).sub;
+                }
+
+            }
+
             return this;
         }
         if (this.operator.equals("-")){
@@ -201,6 +221,7 @@ public class Node {
             }
             sub = newSubList; // replace old list with new list
             this.operator = "+"; // change the sign
+
 
             return this.clean();
         }
@@ -246,7 +267,11 @@ public class Node {
 
             // TODO: similar to addition, need to add in a better combination of like terms
 
-            if (this.sub.size() == 1){ // if there is only one node in the multiply then I just replace myself with that node
+            if (this.sub.isEmpty()){
+                this.data = zero.data;
+                this.operator = "";
+                this.sub = null;
+            } else if (this.sub.size() == 1){ // if there is only one node in the multiply then I just replace myself with that node
                 this.data     = sub.get(0).data;
                 this.operator = sub.get(0).operator;
                 if (this.sub.get(0).sub == null){
@@ -292,13 +317,38 @@ public class Node {
                 counter++;
             }
 
+            boolean allNumbers = true;
+            for (Node sn : sub){
+                if(!sn.isNumber()){
+                    allNumbers=false;
+                    break;
+                }
+            }
+
+            if (allNumbers){
+                Node quotient = new Node(1,0);
+                counter = 0;
+                for (Node subNode : sub){
+                    if (counter == 0){
+                        quotient.data = quotient.data.mul(subNode.data);
+                    } else {
+                        quotient.data = quotient.data.div(subNode.data);
+                    }
+                    counter++;
+                }
+                this.sub = null;
+                this.data = quotient.data;
+                this.operator = "";
+                return this;
+            }
+
             this.operator = returnNode.operator;
             this.sub      = returnNode.sub;
             this.data     = returnNode.data;
 
             // Todo : there might be more exceptions to look at here (to speed it up)
 
-            return this;
+            return this.clean();
         }
         if (this.operator.equals("^")){
             // as of (12/23/2024) I will only allow two node exponents, in the future I plan on allowing more, but not for now

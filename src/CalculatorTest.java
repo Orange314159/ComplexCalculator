@@ -665,4 +665,17 @@ public class CalculatorTest {
 
         assertEquals(n2.clean(), new Node("*", x, n0));
     }
+    @Test
+    void basicTrigEquationTest(){
+
+        Equation e1 = new Equation("x*\\sin{x}");
+        System.out.println(e1.tree.get(e1.length));
+
+        System.out.println(e1.tree.get(e1.length).sub.get(1).sub);
+
+        System.out.println(e1.evaluateNode(new ComplexNumber(0,0), e1.tree.get(e1.length)) + " @x=" + new ComplexNumber(0,0));
+        System.out.println(e1.evaluateNode(new ComplexNumber(1,0), e1.tree.get(e1.length)) + " @x=" + new ComplexNumber(1,0));
+        System.out.println(e1.evaluateNode(new ComplexNumber(0,1), e1.tree.get(e1.length)) + " @x=" + new ComplexNumber(0,1));
+    }
+
 }

@@ -15,10 +15,10 @@ public class Equation {
         includeOmittedMultiplication();
 //        System.out.println(eq + "CLEAN");
         length = createTreeSpecialFunctions(eq);
-        ddxTree.add(createDerivativeNode(this.tree.get(this.length))); // include first derivative
-        ddxTree.add(createDerivativeNode(ddxTree.get(0))); // second derivative
-        ddxTree.add(createDerivativeNode(ddxTree.get(1))); // third
-        ddxTree.add(createDerivativeNode(ddxTree.get(2))); // fourth (I stop here but this is arbitrary, and you could implement further derivation)
+//        ddxTree.add(createDerivativeNode(this.tree.get(this.length))); // include first derivative
+//        ddxTree.add(createDerivativeNode(ddxTree.get(0))); // second derivative
+//        ddxTree.add(createDerivativeNode(ddxTree.get(1))); // third
+//        ddxTree.add(createDerivativeNode(ddxTree.get(2))); // fourth (I stop here but this is arbitrary, and you could implement further derivation)
     }
 
     public int findCloseParenthesis(int start, String input){
@@ -164,7 +164,7 @@ public class Equation {
 //                    System.out.println(input + "  " + input.substring(i+6,findCloseBrace(i+5, input)));
                     if (input.charAt(i+6) == '{'){
                         int subTree = createTreeSpecialFunctions(input.substring(i+7,findCloseBrace(i+6, input)));
-                        tree.add(new Node(functionName, tree.get(subTree), new Node()));
+                        tree.add(new Node(functionName, tree.get(subTree)));
                         partialEqSP.append("~").append(tree.size() - 1).append("~");
                     } else {
                         System.out.println("Error");
@@ -176,7 +176,7 @@ public class Equation {
                     String functionName = input.substring(i+1,i+5);
                     if (input.charAt(i+5) == '{'){
                         int subTree = createTreeSpecialFunctions(input.substring(i+6,findCloseBrace(i+5, input)));
-                        tree.add(new Node(functionName, tree.get(subTree), new Node()));
+                        tree.add(new Node(functionName, tree.get(subTree)));
                         partialEqSP.append("~").append(tree.size() - 1).append("~");
                     } else {
                         System.out.println("Error");
@@ -188,7 +188,7 @@ public class Equation {
 //                    System.out.println(input + "  " + input.substring(i+6,findCloseBrace(i+5, input)));
                     if (input.charAt(i+4) == '{'){
                         int subTree = createTreeSpecialFunctions(input.substring(i+5,findCloseBrace(i+4, input)));
-                        tree.add(new Node(functionName, tree.get(subTree), new Node()));
+                        tree.add(new Node(functionName, tree.get(subTree)));
                         partialEqSP.append("~").append(tree.size() - 1).append("~");
                     } else {
                         System.out.println("Error");
@@ -447,11 +447,13 @@ public class Equation {
             // I split it up like this to save time (for the computer (not very important))
             // trig
             if (head.sub.size() > 1) {
+                System.out.println(head.sub);
                 System.out.println("Error: Wrong number of inputs found in evaluate node for trig");
                 return new ComplexNumber(0, 0);
             }
             switch (head.operator) {
                 case "sin" -> {
+                    System.out.println(head.sub.get(0));
                     return this.evaluateNode(myX, head.sub.get(0)).sin(myX); // this same method is used for each of the single input functions
                 }
                 case "cos" -> {
