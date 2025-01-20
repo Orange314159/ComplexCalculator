@@ -46,6 +46,8 @@ public class DrawPoint extends JPanel {
 
     }
 
+
+
     @Override
     public String toString() {
         return points.toString();

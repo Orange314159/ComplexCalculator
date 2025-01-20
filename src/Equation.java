@@ -900,6 +900,10 @@ public class Equation {
         }
     }
 
+    public String title(){
+        return tree.get(length) + "";
+    }
+
     @Override
     public String toString() {
         return "INPUT:\t" + eq + "\nOUTPUT:\t" + tree.get(length);
