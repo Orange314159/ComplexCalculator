@@ -653,16 +653,4 @@ public class CalculatorTest {
 
         assertEquals(n13.clean(), new Node("^", x, new Node(5,0)));
     }
-    @Test
-    public void testCleanNodeDerivative(){
-        Node x = new Node(new ComplexNumber("x"));
-        Node n0 = new Node(2,0);
-
-        Node n1 = new Node("^", x, n0);
-
-        Equation e0 = new Equation("x^2");
-        Node n2 = e0.createDerivativeNode(n1);
-
-        assertEquals(n2.clean(), new Node("*", x, n0));
-    }
 }

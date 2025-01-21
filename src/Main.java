@@ -1,11 +1,9 @@
-// TODO: add in method to clean node
 // TODO: add in different "modes", different ways to represent the points
 // TODO: connect the dots created by visualization to make surfaces (this sounds especially hard)
 
 
 
 import java.util.ArrayList;
-import java.util.Scanner; // although I don't use this I still will include it if someone wishes to use it in their code
 import javax.swing.*;
 import java.awt.event.*;
 
@@ -14,12 +12,11 @@ import java.awt.event.*;
 public class Main {
     public static void main(String[] args) {
         // debugON is can be set to true if you wish for more verbose prints (includes player x.y.z,pitch,roll, etc)
-        boolean debugOn = false;
 
         //------------------------------ Equation Stuff ------------------------------\\
         System.out.println("Hello world!"); // this is still here to make sure that the code actually runs and isn't broken
         // Testing Derivative function
-        Equation e0 = new Equation("\\sin{x^2}");
+//        Equation e0 = new Equation("\\sin{x^2}");
 //        System.out.println(e0.tree.get(e0.length));
 //        System.out.println(e0.evaluateNode(new ComplexNumber(0,0), e0.tree.get(e0.length)));
 //        System.out.println(e0.evaluateNode(new ComplexNumber(1,0), e0.tree.get(e0.length)));
@@ -47,10 +44,11 @@ public class Main {
         //------------------------------ Sweep Stuff ------------------------------\\
         // Instantiate a sweepXValues class to solve the equation (e1) at x values from -10 to 10 real and 0 to 10 imaginary.
         // The detail 1 tells how many dots will be drawn and the detail 2 tells how many imaginary steps you can move through by scrolling.
-        int grain = 100; // detail 2
+        int grain = 10; // detail 2
         double minIm = 0.0;
         double maxIm = 10.0;
-        SweepXValues sweepXValues = new SweepXValues(-10.0, 10.0, minIm,maxIm,10_000, grain,e1);
+        final short[] mode = {0}; // mode 0 = normal (single line), mode 1 = multiple lines, mode 2 = average line
+        SweepXValues sweepXValues = new SweepXValues(-10.0, 10.0, minIm,maxIm,5_000, grain,e1);
         final Integer[] bValue = {0};
         int bMax = sweepXValues.imaginaryValues;
         // The initial array of points
@@ -86,6 +84,8 @@ public class Main {
         drawPoint.add(equationTitle);
         drawPoint.add(jLabel);
 
+        frame.setResizable(false);
+
         // "Start Now" lets the user know that they can start to move in the scene
         // If they attempt to do something before this it might not work
         System.out.println("Start Now");
@@ -111,29 +111,70 @@ public class Main {
                     // zoom in
                 } else if (e.getKeyCode() == KeyEvent.VK_X) {
                     scene.FOV += 1;
+                } else if (e.getKeyCode() == KeyEvent.VK_M) {
+                    if (mode[0] == 1){
+                        mode[0] = 0;
+                    } else {
+                        mode[0] = 1;
+                    }
                 }
-                String rnd = String.valueOf((((bValue[0]) / (double) grain) * (maxIm - minIm) + minIm)) + "0000000000";
-                jLabel.setText("Im(x)=" + rnd.substring(0,4));
-                if (debugOn){
-                    System.out.println(scene.camera.x + "," + scene.camera.y + "," + scene.camera.z + "\t Yaw=" + scene.yaw + " Pitch=" + scene.pitch);
-                }
-                // Here I create all the points and transform them depending on scene
-                // I also create the axis which are useful for user reference (and just make it look better)
-                Vector[] drawPoints = scene.drawFrame();
-                drawPoint.points = new ArrayList<>();
-                drawPoint.axisPoints = new ArrayList<>();
-                // Loop through all the points that I created and add them to my drawing object
-                for (Vector point : drawPoints){
-                    drawPoint.addPoint((int)point.x, (int)point.y);
-                }
-                // Finally draw the points and axis
-                Vector[] drawAxis = scene.drawAxis();
-                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[1].x , (int)drawAxis[0].y, (int)drawAxis[1].y);
-                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[3].x , (int)drawAxis[0].y, (int)drawAxis[3].y);
-                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[5].x , (int)drawAxis[0].y, (int)drawAxis[5].y);
-            }
 
-        });
+                String rnd = (((bValue[0]) / (double) grain) * (maxIm - minIm) + minIm) + "0000000000";
+                jLabel.setText("Im(x)=" + rnd.substring(0,4));
+
+                if (mode[0] == 0){
+                    // Here I create all the points and transform them depending on scene
+                    // I also create the axis which are useful for user reference (and just make it look better)
+                    Vector[] drawPoints = scene.drawFrame();
+                    drawPoint.points = new ArrayList<>();
+                    drawPoint.colors = new ArrayList<>();
+                    drawPoint.axisPoints = new ArrayList<>();
+                    // Loop through all the points that I created and add them to my drawing object
+                    for (Vector point : drawPoints){
+                        drawPoint.addPoint((int)point.x, (int)point.y, 0);
+                    }
+                    // Finally draw the points and axis
+                    Vector[] drawAxis = scene.drawAxis();
+                    drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[1].x , (int)drawAxis[0].y, (int)drawAxis[1].y);
+                    drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[3].x , (int)drawAxis[0].y, (int)drawAxis[3].y);
+                    drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[5].x , (int)drawAxis[0].y, (int)drawAxis[5].y);
+                } else {
+                    scene.points = sweepXValues.calculateYValuesVector(bValue[0]);
+                    Vector[] drawPoints = scene.drawFrame();
+                    drawPoint.points = new ArrayList<>();
+                    drawPoint.colors = new ArrayList<>();
+                    drawPoint.axisPoints = new ArrayList<>();
+                    for (Vector point : drawPoints){
+                        drawPoint.addPoint((int)point.x, (int)point.y, 0);
+                    }
+
+                    for (int i = 0; i < 4; i++) {
+                        bValue[0] += 1;
+                        if (bValue[0] >= bMax) {
+                            bValue[0] = 0;
+                        }
+                        scene.points = sweepXValues.calculateYValuesVector(bValue[0]);
+                        drawPoints = scene.drawFrame();
+                        for (Vector point : drawPoints){
+                            drawPoint.addPoint((int)point.x, (int)point.y, i%2+1);
+                        }
+                    }
+
+                    bValue[0] -=4;
+                    if (bValue[0] < 0){
+                        bValue[0] += bMax; // loops up to the end
+                    } else if (bValue[0] >= bMax) {
+                        bValue[0] -= bMax; // loops back to the start
+                    }
+
+
+                    Vector[] drawAxis = scene.drawAxis();
+                    drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[1].x , (int)drawAxis[0].y, (int)drawAxis[1].y);
+                    drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[3].x , (int)drawAxis[0].y, (int)drawAxis[3].y);
+                    drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[5].x , (int)drawAxis[0].y, (int)drawAxis[5].y);
+                } // end mode check
+            } // end key pressed
+        }); // end key check
 
         // This is called each time that the mouseWheel changes (this can be from a mouse or trackpad)
         // I highly recommend using a mouse because it gives much higher precision
@@ -146,24 +187,61 @@ public class Main {
                 bValue[0] = 0; // loops back to the start
             }
             scene.points = sweepXValues.calculateYValuesVector(bValue[0]);
-            String rnd = String.valueOf((((bValue[0]) / (double) grain) * (maxIm - minIm) + minIm)) + "0000000000";
+            String rnd = (((bValue[0]) / (double) grain) * (maxIm - minIm) + minIm) + "0000000000";
             jLabel.setText("Im(x)=" + rnd.substring(0,4));
 
-            if (debugOn) {
-                System.out.println(scene.camera.x + "," + scene.camera.y + "," + scene.camera.z + "\t Yaw=" + scene.yaw + " Pitch=" + scene.pitch);
-            }
             // This is the same code that is used in the keyListener
-            Vector[] drawPoints = scene.drawFrame();
-            drawPoint.points = new ArrayList<>();
-            drawPoint.axisPoints = new ArrayList<>();
-            for (Vector point : drawPoints){
-                drawPoint.addPoint((int)point.x, (int)point.y);
-            }
-            Vector[] drawAxis = scene.drawAxis();
-            drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[1].x , (int)drawAxis[0].y, (int)drawAxis[1].y);
-            drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[3].x , (int)drawAxis[0].y, (int)drawAxis[3].y);
-            drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[5].x , (int)drawAxis[0].y, (int)drawAxis[5].y);
-//            transparentLabel.setLabelText("new");
+            if (mode[0] == 0){
+                // Here I create all the points and transform them depending on scene
+                // I also create the axis which are useful for user reference (and just make it look better)
+                Vector[] drawPoints = scene.drawFrame();
+                drawPoint.points = new ArrayList<>();
+                drawPoint.colors = new ArrayList<>();
+                drawPoint.axisPoints = new ArrayList<>();
+                // Loop through all the points that I created and add them to my drawing object
+                for (Vector point : drawPoints){
+                    drawPoint.addPoint((int)point.x, (int)point.y, 0);
+                }
+                // Finally draw the points and axis
+                Vector[] drawAxis = scene.drawAxis();
+                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[1].x , (int)drawAxis[0].y, (int)drawAxis[1].y);
+                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[3].x , (int)drawAxis[0].y, (int)drawAxis[3].y);
+                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[5].x , (int)drawAxis[0].y, (int)drawAxis[5].y);
+            } else {
+                scene.points = sweepXValues.calculateYValuesVector(bValue[0]);
+                Vector[] drawPoints = scene.drawFrame();
+                drawPoint.points = new ArrayList<>();
+                drawPoint.colors = new ArrayList<>();
+                drawPoint.axisPoints = new ArrayList<>();
+                for (Vector point : drawPoints){
+                    drawPoint.addPoint((int)point.x, (int)point.y, 0);
+                }
+
+                for (int i = 0; i < 4; i++) {
+                    bValue[0] += 1;
+                    if (bValue[0] >= bMax) {
+                        bValue[0] = 0;
+                    }
+                    scene.points = sweepXValues.calculateYValuesVector(bValue[0]);
+                    drawPoints = scene.drawFrame();
+                    for (Vector point : drawPoints){
+                        drawPoint.addPoint((int)point.x, (int)point.y, i%2+1);
+                    }
+                }
+
+                bValue[0] -=4;
+                if (bValue[0] < 0){
+                    bValue[0] += bMax; // loops up to the end
+                } else if (bValue[0] >= bMax) {
+                    bValue[0] -= bMax; // loops back to the start
+                }
+
+
+                Vector[] drawAxis = scene.drawAxis();
+                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[1].x , (int)drawAxis[0].y, (int)drawAxis[1].y);
+                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[3].x , (int)drawAxis[0].y, (int)drawAxis[3].y);
+                drawPoint.addAxis((int)drawAxis[0].x, (int)drawAxis[5].x , (int)drawAxis[0].y, (int)drawAxis[5].y);
+            } // end mode check
         }); // end wheelListener
     } // end main
 } // end Main

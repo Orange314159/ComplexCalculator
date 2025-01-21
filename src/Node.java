@@ -183,10 +183,6 @@ public class Node {
                 Node rightPart = new Node("*", this.right.right, this.left);
                 return new Node("+", leftPart, rightPart).clean();
             }
-            if (this.right.isX() || this.right.isNumber() && this.left.nodeType() == 4){
-                // (some number or x) * (something * something)
-                // this is a short look ahead to see if I can combine like terms
-            }
             if (this.left.left != null && this.left.operator.equals("^") && this.right.operator.equals("^") && this.left.left.equals(this.right.left)){
                 // I include the not null part to stop the possible warnings
                 Node topPart = new Node("+", this.left.right, this.right.right);
