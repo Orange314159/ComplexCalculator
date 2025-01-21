@@ -55,26 +55,28 @@ public class Scene {
     public void moveCameraInCircle(double deltaYaw, double deltaPitch){
         // I can move the camera in a circle and rotate the camera in the oposite direction at the same rate to keep focus on one point
         this.relativeCameraYaw   += deltaYaw;
+        double circleRadiusXZ;
 
-        double circleRadiusXZ = 2;
-        if (pitch - deltaPitch > (1.3)){ // it's nice to set this to a value that does not let you go too far
-            this.pitch = (1.3);
-            this.camera.y = -2.0;
-        } else if (pitch - deltaPitch < -(1.3)) {
-            this.pitch = -(1.3);
-            this.camera.y = 2.0;
-        } else {
-            this.relativeCameraPitch += deltaPitch;
-            this.pitch    -= deltaPitch;
-            this.camera.y  = 2.2 * Math.sin(relativeCameraPitch) + 1;
-            circleRadiusXZ = 2.2 * Math.cos(relativeCameraPitch);
+        this.relativeCameraPitch += deltaPitch; // when you are looking down you are above the object and that makes the math wierd so...
+        this.pitch -= deltaPitch;
+
+        if(this.pitch >= 1.3) { // limit angle
+            this.pitch = 1.3;
+            this.relativeCameraPitch = -1.3;
         }
+        else if (this.pitch <= -1.3){
+            this.pitch = -1.3;
+            this.relativeCameraPitch = 1.3;
+        }
+
+        this.camera.y  = 2.2 * Math.sin(relativeCameraPitch) + 1;
+        circleRadiusXZ = 2.2 * Math.cos(relativeCameraPitch);
 
         // these are kinda like parametric equations for a circle
         this.camera.x = circleRadiusXZ * Math.cos(relativeCameraYaw);
         this.camera.z = circleRadiusXZ * Math.sin(relativeCameraYaw);
 
-        this.yaw   += deltaYaw;
+        this.yaw += deltaYaw;
     }
 
     public void pointAt(){

@@ -4,7 +4,6 @@
 
 
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Scanner; // although I don't use this I still will include it if someone wishes to use it in their code
 import javax.swing.*;
@@ -65,12 +64,8 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(720, 480);
         frame.setVisible(true);
-//        TransparentLabel transparentLabel = new TransparentLabel("Hello World", 100);
-//        frame.add(transparentLabel);
-
 
         JLabel jLabel = new JLabel("");
-//        jLabel.setBackground(Color.BLACK);
 
         JLabel equationTitle = new JLabel(e1.title());
 
@@ -117,7 +112,8 @@ public class Main {
                 } else if (e.getKeyCode() == KeyEvent.VK_X) {
                     scene.FOV += 1;
                 }
-                jLabel.setText("Im(x)=" + (((Integer.parseInt(bValue[0].toString())) / (double) grain) * (maxIm - minIm) + minIm));
+                String rnd = String.valueOf((((bValue[0]) / (double) grain) * (maxIm - minIm) + minIm)) + "0000000000";
+                jLabel.setText("Im(x)=" + rnd.substring(0,4));
                 if (debugOn){
                     System.out.println(scene.camera.x + "," + scene.camera.y + "," + scene.camera.z + "\t Yaw=" + scene.yaw + " Pitch=" + scene.pitch);
                 }
@@ -150,7 +146,8 @@ public class Main {
                 bValue[0] = 0; // loops back to the start
             }
             scene.points = sweepXValues.calculateYValuesVector(bValue[0]);
-            jLabel.setText("Im(x)=" + (((Integer.parseInt(bValue[0].toString())) / (double) grain) * (maxIm - minIm) + minIm));
+            String rnd = String.valueOf((((bValue[0]) / (double) grain) * (maxIm - minIm) + minIm)) + "0000000000";
+            jLabel.setText("Im(x)=" + rnd.substring(0,4));
 
             if (debugOn) {
                 System.out.println(scene.camera.x + "," + scene.camera.y + "," + scene.camera.z + "\t Yaw=" + scene.yaw + " Pitch=" + scene.pitch);
