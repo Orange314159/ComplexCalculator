@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import javax.swing.*;
 import java.awt.event.*;
+import java.util.Scanner;
 
 
 public class Main {
@@ -10,7 +11,14 @@ public class Main {
         //------------------------------ Equation Stuff ------------------------------\\
         System.out.println("Hello world!"); // this is still here to make sure that the code actually runs and isn't broken
 
-        Equation e1 = new Equation("x*\\sin{x}");
+//        Equation e1 = new Equation("x*\\sin{x}");
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter equation");
+        String equationText = scanner.nextLine();
+        Equation e1 = new Equation(equationText);
+        scanner.close();
+
+
         // Print out three values of the equation for you to check and make sure that the function seems approximately right
         System.out.println(e1.evaluateEquation(new ComplexNumber(0,0), e1.length) + " @x=" + new ComplexNumber(0,0));
         System.out.println(e1.evaluateEquation(new ComplexNumber(1,0), e1.length) + " @x=" + new ComplexNumber(1,0));
@@ -147,7 +155,7 @@ public class Main {
                         scene.points = sweepXValues.calculateYValuesVector(bValue[0]);
                         drawPoints = scene.drawFrame();
                         for (Vector point : drawPoints){
-                            drawPoint.addPoint((int)point.x, (int)point.y, i%color[0]+1);
+                            drawPoint.addPoint((int)point.x, (int)point.y, 1+(i%color[0]));
                         }
                     }
 
