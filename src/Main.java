@@ -1,12 +1,6 @@
-// TODO: add in different "modes", different ways to represent the points
-// TODO: connect the dots created by visualization to make surfaces (this sounds especially hard)
-
-
-
 import java.util.ArrayList;
 import javax.swing.*;
 import java.awt.event.*;
-
 
 
 public class Main {
@@ -15,25 +9,7 @@ public class Main {
 
         //------------------------------ Equation Stuff ------------------------------\\
         System.out.println("Hello world!"); // this is still here to make sure that the code actually runs and isn't broken
-        // Testing Derivative function
-//        Equation e0 = new Equation("\\sin{x^2}");
-//        System.out.println(e0.tree.get(e0.length));
-//        System.out.println(e0.evaluateNode(new ComplexNumber(0,0), e0.tree.get(e0.length)));
-//        System.out.println(e0.evaluateNode(new ComplexNumber(1,0), e0.tree.get(e0.length)));
-//        System.out.println(e0.evaluateNode(new ComplexNumber(2,0), e0.tree.get(e0.length)));
-//        System.out.println(e0.createDerivativeNode(e0.tree.get(e0.length)));
-//        System.out.println(e0.evaluateNode(new ComplexNumber(12,0), e0.createDerivativeNode(e0.tree.get(e0.length))));
-//        System.out.println(e0.ddxTree);
-        // Testing of Cleaning Function
 
-        // Testing of Complex Function
-//        Equation e0 = new Equation("x^{5.0}*(2.7182818)^{-x}");
-//        System.out.println(e0.riemannSumOfDefiniteIntegral(0,30,0.2));
-//        ComplexNumber c0 = new ComplexNumber(1, 0);
-//        System.out.println(c0.asin(c0));
-        // Other options for e1 that can be interesting
-//        Equation e1 = new Equation("\\log_{23.2}{7*x-3}");
-//        Equation e1 = new Equation("x^2");
         Equation e1 = new Equation("x*\\sin{x}");
         // Print out three values of the equation for you to check and make sure that the function seems approximately right
         System.out.println(e1.evaluateEquation(new ComplexNumber(0,0), e1.length) + " @x=" + new ComplexNumber(0,0));
@@ -47,8 +23,9 @@ public class Main {
         int grain = 10; // detail 2
         double minIm = 0.0;
         double maxIm = 10.0;
-        final short[] mode = {0}; // mode 0 = normal (single line), mode 1 = multiple lines, mode 2 = average line
-        SweepXValues sweepXValues = new SweepXValues(-10.0, 10.0, minIm,maxIm,5_000, grain,e1);
+        final short[] mode = {0}; // mode 0 = normal (single line), mode 1 = multiple lines
+        final short[] count = {2};
+        SweepXValues sweepXValues = new SweepXValues(-10.0, 10.0, minIm,maxIm,2_500, grain,e1);
         final Integer[] bValue = {0};
         int bMax = sweepXValues.imaginaryValues;
         // The initial array of points
@@ -62,6 +39,7 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(720, 480);
         frame.setVisible(true);
+        final short[] color = {3};
 
         JLabel jLabel = new JLabel("");
 
@@ -98,25 +76,37 @@ public class Main {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     // remove the window VERY IMPORTANT
                     frame.dispose();
-                } else if(e.getKeyCode() == KeyEvent.VK_H){
+                } else if(e.getKeyCode() == KeyEvent.VK_D){
                     scene.moveCameraInCircle(0.1,  0);
-                } else if(e.getKeyCode() == KeyEvent.VK_F){
+                } else if(e.getKeyCode() == KeyEvent.VK_A){
                     scene.moveCameraInCircle(-0.1, 0);
-                } else if(e.getKeyCode() == KeyEvent.VK_T){
+                } else if(e.getKeyCode() == KeyEvent.VK_W){
                     scene.moveCameraInCircle(0,    0.1);
-                } else if(e.getKeyCode() == KeyEvent.VK_G){
+                } else if(e.getKeyCode() == KeyEvent.VK_S){
                     scene.moveCameraInCircle(0,   -0.1);
                 } else if (e.getKeyCode() == KeyEvent.VK_Z) {
                     scene.FOV -= 1;
-                    // zoom in
+                    // zoom
                 } else if (e.getKeyCode() == KeyEvent.VK_X) {
                     scene.FOV += 1;
                 } else if (e.getKeyCode() == KeyEvent.VK_M) {
+                    // mode
                     if (mode[0] == 1){
                         mode[0] = 0;
                     } else {
                         mode[0] = 1;
                     }
+                } else if (e.getKeyCode() == KeyEvent.VK_C) {
+                    // color
+                    color[0] +=1;
+                    color[0] %=5; // 5
+                    if (color[0] == 0){
+                        color[0] = 1;
+                    }
+                } else if (e.getKeyCode() == KeyEvent.VK_N) {
+                    // number of lines
+                    count[0] += 1;
+                    count[0] %= 5; // max 4 additional lines
                 }
 
                 String rnd = (((bValue[0]) / (double) grain) * (maxIm - minIm) + minIm) + "0000000000";
@@ -125,6 +115,7 @@ public class Main {
                 if (mode[0] == 0){
                     // Here I create all the points and transform them depending on scene
                     // I also create the axis which are useful for user reference (and just make it look better)
+                    scene.points = sweepXValues.calculateYValuesVector(bValue[0]);
                     Vector[] drawPoints = scene.drawFrame();
                     drawPoint.points = new ArrayList<>();
                     drawPoint.colors = new ArrayList<>();
@@ -148,7 +139,7 @@ public class Main {
                         drawPoint.addPoint((int)point.x, (int)point.y, 0);
                     }
 
-                    for (int i = 0; i < 4; i++) {
+                    for (int i = 0; i < count[0]; i++) {
                         bValue[0] += 1;
                         if (bValue[0] >= bMax) {
                             bValue[0] = 0;
@@ -156,11 +147,11 @@ public class Main {
                         scene.points = sweepXValues.calculateYValuesVector(bValue[0]);
                         drawPoints = scene.drawFrame();
                         for (Vector point : drawPoints){
-                            drawPoint.addPoint((int)point.x, (int)point.y, i%2+1);
+                            drawPoint.addPoint((int)point.x, (int)point.y, i%color[0]+1);
                         }
                     }
 
-                    bValue[0] -=4;
+                    bValue[0] -= count[0];
                     if (bValue[0] < 0){
                         bValue[0] += bMax; // loops up to the end
                     } else if (bValue[0] >= bMax) {
@@ -217,7 +208,7 @@ public class Main {
                     drawPoint.addPoint((int)point.x, (int)point.y, 0);
                 }
 
-                for (int i = 0; i < 4; i++) {
+                for (int i = 0; i < count[0]; i++) {
                     bValue[0] += 1;
                     if (bValue[0] >= bMax) {
                         bValue[0] = 0;
@@ -225,11 +216,11 @@ public class Main {
                     scene.points = sweepXValues.calculateYValuesVector(bValue[0]);
                     drawPoints = scene.drawFrame();
                     for (Vector point : drawPoints){
-                        drawPoint.addPoint((int)point.x, (int)point.y, i%2+1);
+                        drawPoint.addPoint((int)point.x, (int)point.y, i%color[0]+1);
                     }
                 }
 
-                bValue[0] -=4;
+                bValue[0] -= count[0];
                 if (bValue[0] < 0){
                     bValue[0] += bMax; // loops up to the end
                 } else if (bValue[0] >= bMax) {

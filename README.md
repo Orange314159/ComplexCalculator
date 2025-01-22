@@ -1,24 +1,14 @@
 # Complex Calculator
-## This is a calculator that attempts to graph equations with complex inputs and outputs.
-## How it is written
-This is written in Java and uses the Swing and AWT libraries for graphics and some user input. 
-In addition, many functions make use of ArrayLists and Lists. 
-The main function also uses scanner to take input from the user of the equation that they wish to graph.
-When inputting and equation to graph you should use the LATEX common format for equations.
-You may not include a `~` in your equation because it is a reserved character that I use to link nodes on the binary tree.
-The currently supported functions are as follows: `log_{b}{a}` `log{a}` `\frac{a}{b}`  `sin{a}` `cos{a}` `tan{a}` `sec{a}` `csc{a}` `cot{a}` `sinh{a}` `cosh{a}` `tanh{a}` `sech{a}` `csch{a}` `coth{a}` `asin{a}` `acos{a}` `atan{a}` `asec{a}` `acsc{a}` `acot{a}` `asinh{a}` `acosh{a}` `atanh{a}` `asech{a}` `acsch{a}` `acoth{a}` `gam{a}` `abs{a}` `^` `^{a}` `*` `/` `+` `-`.
-## What you should know before reading the code
-You should be familiar with the concept of complex numbers (a number that includes both a real and imaginary part).
-You should also have some familiarity with the idea of how functions may act on numbers like these.
-A basic LATEX knowledge could be useful, but I find those sections of the code to be more intuitive.
-In addition, a basic knowledge of binary trees and recursion is likely necessary to fully understand.
+This document describes a complex number graphing calculator written in Java. The calculator utilizes the Swing and AWT libraries to render graphical output and handle some user input. Additionally, it leverages ArrayLists and Lists for various data structures. The primary function, `Main.java`, employs a scanner to accept user input for the equation to be visualized. **Equation Input** Equations for graphing must adhere to the common LaTeX format. It is important to note that the tilde (`~`) character is reserved for internal purposes within the code and cannot be included within the input equation. The calculator supports a comprehensive set of mathematical functions, including logarithmic (base specified and natural), trigonometric (sine, cosine, tangent, secant, cosecant, cotangent), hyperbolic (sinh, cosh, tanh, sech, csch, coth), inverse trigonometric (asin, acos, atan, asec, acsc, acot), inverse hyperbolic (asinh, acosh, atanh, asech, acsch, acoth), gamma function, absolute value, exponentiation (base-e and arbitrary power), multiplication, division, addition, and subtraction.
+## Understanding the Code
+A fundamental understanding of complex numbers (numbers encompassing both real and imaginary components) is essential for comprehending the code. Intermediate mastery of how functions operate on complex numbers is also beneficial. While a working knowledge of LaTeX is helpful, it may not be necessary with enough exploration though comments. Furthermore, a basic understanding of trees as data structures and recursion is likely necessary to realize the code's functionality.
 ## How does the code function
 The code is run from the `Main.java` class.
-You can choose to add in any equation into the instantiated equation class, or you can configure it to allow for user input.
+User input is taken in 
 The equation class will take this string input and create a binary tree of the entire equation.
 The tree is made up of the Nodes via the Node class. 
 These Nodes have either data or and operator and either two or zero sub-nodes (left and right).
-The equation class creates this tree by following PEMDAS (Parenthesis, Exponentiation, Multiplication/Division, Addition/Subtraction) and adding in a node for each operator and number.
+The equation class creates this tree by adheres PEMDAS (Parenthesis, Exponentiation, Multiplication/Division, Addition/Subtraction) and adding in a node for each operator and number.
 Each number is stored as a complex number from the Complex Number class.
 This includes `i` which would be stored as `0 + 1i`. 
 The equation parser goes very far in splitting number as to turn `2 + 4i` into three separate nodes (plus two operator nodes `+` `*` ): `2 + 0i` `1 + 0i` and `0 + 1i`.
@@ -27,19 +17,17 @@ The Main script then initializes the frame that will be used by Swing and AWT.
 The next step is the other major part of the program: the scene.
 Main creates a scene by passing in values of the camera, points and desired view of the scene.
 Scene is able to interprete this and by using the Vector class and Matrix class will create a 2D projection of the 4D graph.
-(This is not descriptive, but it would be redundant to fully explain how the code works here)
 From there SweepXValues is used to evaluate the equation at many x-values and will return the values at a given imaginary value of x to the main script.
-(I find detail values of 100-1000 work best)
+(through testing I have discovered the optimal range to be from 100-1000, but this will clearly depend on computer processing power)
 The main script then uses DrawPoint to add all the sweep values and draw them.
 This is called on every key press. (It would be unnecessary to call this more often)
 By using the scroll wheel of the mouse the user is able to move through any of the calculated imaginary x-values.
-Hopefully this makes sense and if anything does not make sense I recommend reading the code.
+The second mode used allows for the visualisation of multiple lines at the same time. 
+For example if your current slice is set to `Im[x] = 0` the next lines will be of the same equation but will have different Im[x] values.
 ## How to use the code
-I recommend using this code by inputting an equation in a string in the code, but if you prefer to take user input from you should import java scanner and scan for nextLine. (The parser in equation should be able to handle the direct output from that)
-When typing in the equation you should keep in mind Latex format.
-In addition, for trig functions you must use curly braces instead of regular parenthesis for the argument. (Ex. \sin{2} NOT \sin(2))
-Wait for the program to print "Start Now" before you start to move the camera.
-Use `t` `f` `g` `h` to move and `z` and `x` to zoom in and out.
+The equation parser within the code is designed to handle the output from the scanner directly. When entering the equation, adhere to the LaTeX format. It is important to note that trigonometric functions must use curly braces `{}` to enclose the argument instead of regular parentheses `()`. For instance, use `\sin{2}` instead of `\sin(2)`.
+Use `w` `a` `s` `d` to move and `z` and `x` to zoom in and out.
 Use the scroll wheel or scroll on the trackpad to move through different imaginary inputs for x.
-While `|x|` is often used for absolute value, you should not use that in my program.
-To conform to my format you must use `abs{x}`.
+Use `m` to toggle between modes 1 and 2.
+Use `n` to change the number of additional lines in mode 2.
+Use `c` to change color pallete for mode 2.
