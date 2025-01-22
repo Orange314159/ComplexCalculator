@@ -25,6 +25,8 @@ By using the scroll wheel of the mouse the user is able to move through any of t
 The second mode used allows for the visualisation of multiple lines at the same time. 
 For example if your current slice is set to `Im[x] = 0` the next lines will be of the same equation but will have different Im[x] values.
 ## How to use the code
+If you wish to input your own equation use version taged as V2.0.0. V1.1.0 allows for viewing of a singular equation. 
+To run the program type the following command in the terminal (in the same directory as the file): `java -jar ComplexCalculatorV2.0.0.jar`.
 The equation parser within the code is designed to handle the output from the scanner directly. When entering the equation, adhere to the LaTeX format. It is important to note that trigonometric functions must use curly braces `{}` to enclose the argument instead of regular parentheses `()`. For instance, use `\sin{2}` instead of `\sin(2)`.
 Use `w` `a` `s` `d` to move and `z` and `x` to zoom in and out.
 Use the scroll wheel or scroll on the trackpad to move through different imaginary inputs for x.
