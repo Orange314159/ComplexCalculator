@@ -11,7 +11,7 @@ public class Main {
         //------------------------------ Equation Stuff ------------------------------\\
         System.out.println("Hello world!"); // this is still here to make sure that the code actually runs and isn't broken
 
-//        Equation e1 = new Equation("x*\\sin{x}");
+//        Equation e1 = new Equation("\\sin{x}*x");
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter equation");
         String equationText = scanner.nextLine();
@@ -33,7 +33,7 @@ public class Main {
         double maxIm = 10.0;
         final short[] mode = {0}; // mode 0 = normal (single line), mode 1 = multiple lines
         final short[] count = {2};
-        SweepXValues sweepXValues = new SweepXValues(-10.0, 10.0, minIm,maxIm,2_500, grain,e1);
+        SweepXValues sweepXValues = new SweepXValues(-10.0, 10.0, minIm,maxIm,2_000, grain,e1);
         final Integer[] bValue = {0};
         int bMax = sweepXValues.imaginaryValues;
         // The initial array of points
