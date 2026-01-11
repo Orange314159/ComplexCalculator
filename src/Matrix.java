@@ -59,7 +59,6 @@ public class Matrix {
         mat[3][2] = z;
     }
     public void makeProjection(double fovDeg, double aspectRatio, double fNear, double fFar){
-        // this matrix is hard to explain, but the general idea is that you are able to multiply a 3d point by this matrix, and it will return a point that compresses it into two dimensions
         double fovRad = 1.0f / Math.tan(fovDeg * 0.5f / 180.0f * Math.PI);
         mat = new double[4][4];
         mat[0][0] = aspectRatio * fovRad;

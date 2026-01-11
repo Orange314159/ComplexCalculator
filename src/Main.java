@@ -33,7 +33,7 @@ public class Main {
         double maxIm = 10.0;
         final short[] mode = {0}; // mode 0 = normal (single line), mode 1 = multiple lines
         final short[] count = {2};
-        SweepXValues sweepXValues = new SweepXValues(-10.0, 10.0, minIm,maxIm,2_000, grain,e1);
+        SweepXValues sweepXValues = new SweepXValues(-10.0, 10.0, minIm,maxIm,5_000, grain,e1);
         final Integer[] bValue = {0};
         int bMax = sweepXValues.imaginaryValues;
         // The initial array of points
@@ -52,7 +52,6 @@ public class Main {
         JLabel jLabel = new JLabel("");
 
         JLabel equationTitle = new JLabel(e1.title());
-
         //------------------------------ Swing Stuff ------------------------------\\
 
 
